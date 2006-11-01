@@ -50,6 +50,7 @@ http://www.gtk.org/
 
 H3: wxWidgets (supported platforms and compilers)
 
+***********TODO
 Gtk1 is partly compatible with Gtk2 so some applications can be compiled against both libraries. wxWidgets introduces a set of #ifdefs that mark the different parts, so programmers don't have to pay much attention and simply pick the one they want. Some of the widgets that don't exist in Gtk1 are emulated by wxWidgets.
 
 There are multiple applications that allow you to design forms:
@@ -62,12 +63,37 @@ H4: wxDesigner ... itd.
 H1:Cross-platform options for C/C++ access to Firebird
 
 H2: ODBC
+
+Open Database Connectivity (ODBC) is an industry standard way for accessing database management systems. There are ODBC implementations for various operating systems: Microsoft ODBC for Windows, UnixODBC for Linux/UNIX, iODBC for Mac, Solaris, FreeBSD, etc. To access database from application, wxWidgets provide wxODBC set of classes. In case you don't use wxWidgets, there is libodbcxx library:
+
+http://libodbcxx.sourceforge.net/
+
+As for Firebird, there are various ODBC drivers, some open source (like the one supplied by the project) and some commercial. The quality and features differ, so better try it out before going deep into development.
+
+http://www.firebirdsql.org/index.php?op=files&id=odbc
+
+ODBC is great if you need to access other non-Firebird databases. However, supporting many DBMSes meant it covers the lowest common denominator, so most of the advanced stuff (things provided by Firebird's Services API) is not available. Also, ODBC seems much thicker layer around Firebird C API than lightweight IBPP.
+
 H2: C API (good, but complex and error prone)
-H2: IBPP (lock into Firebird, but full access to all functions - plus, if C API changes interface remains the same)
+
+Firebird C API comes with default instalation. There are even examples in "examples" directory. This is the fastest and most efficient way to access the database. However, it is also the most complex and thus most error prone. C API is useful if you don't want to depend on C++ library and compiler, especially if you're building a driver for other programming languages. But, if you're build a C++ desktop application, IBPP is much better option...
+
+H2: IBPP 
+
+***********TODO
+(lock into Firebird, but full access to all functions - plus, if C API changes interface remains the same)
+
+
+H2: SQLAPI++
+
+SQLAPI++ is an interesting option. It's a wrapper similar to IBPP, but it can be used against different database systems (Firebird, Oracle, MSSQL, Sybase, DB2, MySQL, etc.). The main problem is that Firebird specific functions (like creating database for example) are left for developer to implement in native C API. Just like with ODBC, you get multiple DBMS support, but you're cut off from functions offered by Firebird's Services API. SQLAPI++ is shareware, priced at $249 at the time of writing.
+
+http://www.sqlapi.com/
 
 
 H1: Setting up wxWidgets application with Firebird support (IBPP)
 
+***********TODO
 - Using FlameRobin (MIT licensed) classes and setup code
 - Bakefile: single build system for all platforms and compilers
 - empty project.zip
