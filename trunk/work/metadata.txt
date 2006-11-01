@@ -1,0 +1,68 @@
+1. Managing metadata changes
+
+
+Outline:
+--------
+
+Development of database applications involves three distinct activities: changing the database schema, updating the data
+in the database and changing the code that uses the database. The last one is easy to manage: we have version control
+software for source code, and many ways to distribute executables to customers.
+
+However, during development we all face problem of managing the database metadata in development and productions
+systems. In development systems many developers can work on their own (sandbox) versions of database, and apply their
+changes to the master database. When new version is ready for release, changes have to be applied to the customer's
+database.
+
+This session covers various ways to do that job, and also presents a way to manage the databases the same way we manage
+the source code (version control). It also demonstrates Firebird-based open source tools that are used to automate this
+process. These tools enable developers to work separately of each other, and get in sync once they decide so. A
+developer can even work at customer's site, make the changes in application or database structure, and easily migrate
+those back into development database once he returns back to the office.
+
+Using the version control systems for database structure makes it easy to resolve conflicting changes. It shows who made
+the change, when (s)he did it and why. Since changes are plain text files, they can be committed together with
+application source code within same revision, making the entire change atomic.
+
+
+Track:
+------
+
+* The problem
+    - metadata changes in development databases
+    - metadata changes in production databases
+    - multiple developers
+    - databases in field (laptop, etc.)
+    - multiple client sites (branch offices, etc.)
+* Possible solutions used in practice:
+    - copy metadata backup / create DB script and...
+        1. pump the data (problem with big DB, unmatched columns)
+        2. run dbcomparer (manual work, Windows only)
+    - none of these is fully automatic, and all are error-prone
+    - both approaches neglect the change in data (show examples)
+* The solution
+    - logging changes in sql files:
+        - manual (copy/paste to .sql files)
+        - automatic (flamerobin, others...)
+            - problem updating the version of current development database (after commit)
+        - .sql scripts should be stored in same folder as app. code for atomic commits.
+        - can be applied to current databases - no need to start from scratch
+    - keeping database version in a database table
+    - applying changes:
+        a) manual update
+            - scripts:
+                - updatedb
+                    - why is it important to commit after each statement.
+            - movesql (move/rename script, fill the gaps made by deleting some scripts)
+        b) automatic update (running the app.)
+            - problem with FKs and other
+    - things to be careful of:
+        - name your constraints (names like INTEG_88 are bad when DROPPING is needed)
+        - defer PK,FK creation (in Fb1.0/Fb1.5/Fb2.0) to separate SQL statements
+    - Dilemma: master databases (needed or not?)
+* Branching and merging
+    - you can't easily go back as you can with code
+        - writing the "reverse" scripts: problems with irreversible changes
+    - master database for each branch is a good idea
+    - clashing .sql numbers in HEAD and branches
+
+---------------------------------------------------------------------------------------------

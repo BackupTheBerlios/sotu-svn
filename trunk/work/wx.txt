@@ -1,0 +1,97 @@
+
+H1: About author
+
+...blabla
+
+H1:Cross-platform options for desktop applications
+
+When you install Firebird, you get the database engine and a set of tools that let you administer it. For users to efficiently access the database you need a "desktop" application. Firebird has C API available out of the box. However, there is an abundance of 3rd party interfaces for various programming languages and development environments. This paper concentrates on libraries and tools that allow user to create desktop applications that would run on multiple operating systems without (or with minimum) changes to the code. Here are the various toolkits and programming languages that are viable options today:
+
+H2: Java + JDBC
+
+Java is an object-oriented programming language, well proven in enterprise area. It is portable to various operating systems (Windows, Linux, Solaris, etc.) and hardware (Intel, Sparc, PowerPC). Java is semi-interpreted. The source code is first compiled into byte-code, and later run by Java virtual machine. For desktop applications it offers various toolkits like Swing and AWT. For database connectivity, there is a standard called JDBC, and there is suitable driver for Firebird called JayBird. Java is surely one of the options anyone should consider. It is easy to find programmers that know it, and the language itself has proven stable and robust. The main problem with Java shows when you want to run in on low-end hardware, as it has much bigger demands for memory and CPU power than the equivallent C++ application. Java is free as in beer, and there are even talks that Sun might open source the Java code soon.
+
+http://java.sun.com
+http://jaybirdwiki.firebirdsql.org/JayBirdHome
+
+H2: Python (wxPython + kinterbasd)
+
+Python is also an object-oriented language, with looser typing and more flexibility. Python is also compiled into bytecode (.pyc files) and then run. Interesting thing is that Python has been ported to Java and .Net virtual machines. It runs on Windows, Linux, Mac OS X, OS/2, etc. Python is very interesting option as wxWidgets library is ported to Python (and called wxPython). Beside that, there are bindings for other popular GUI libraries like PyQt and PyGtk. For database connectivity, Python uses the "Python Database API". For Firebird there is a Python Database API 2.0-compliant driver called kinterbasdb. Python suffers from same problems as Java on low-end and older hardware. Python is an open-source project released under The Python License, which allows you to distribute your commercial applications without releasing the source code.
+
+http://www.python.org/
+http://www.wxpython.org/
+http://kinterbasdb.sourceforge.net/
+
+H2: C++
+
+C++ is another object-oriented language. The main difference compared to Java and Python is that C++ compiler creates native executable files (programs). This makes them run much faster with less memory demand. C++ is ported to many (all?) platforms that exist today. There are various compilers available. Some are open source and run on multiple platforms (like GCC for example). Others are either closed-source or freeware and usually tied to a single platform. To name some compilers: Microsoft Visual C++, Borland C++, Digital Mars C++, Intel C++, Bloodshed Dev-C++, Apple C++. Good thing about C++ is that you could write code and compile with one compiler on one platform and with different compiler on another, whichever suits you best. However, the graphics systems (desktop environments) are different on each platform and have a different API. That's why we need wrapper libraries in order to "write once, run everywhere":
+
+H3: Qt
+
+Qt is a library developed by Trolltech. It has a rich collection of classes that allow GUI programming. Qt is available on Windows, Mac OS X and platforms that run X11 server (Linux, Solaris, HP-UX, IRIX, AIX and many other Unix variants). Qt uses the window it gets from the host system to draw all the controls itself. That's why Qt applications don't look native, but they look the same on all the platforms. However, Qt offers "theming", so developers can create custom look of controls and windows. 
+
+Qt is dual licensed. Open source projects can used open sourced version, while closed source projects have to pay licenses. This makes Qt less attractive then other options to developers of commercial applications. On the other hand, Qt is used by the KDE Desktop Environment which is default on many Linux distributions, and has proven that it is fast, robust and reliable library with low memory requirements. Many people don't see KDE as such, which is because of layer of KDE libraries built upon Qt. Pure Qt applications (like LinCVS for example) run lightningly fast.
+
+To design forms, you can use Qt Designer, and there is excellent IDE called KDevelop. KDevelop is part of the KDE, so it is currently not available on Windows.
+
+http://www.trolltech.com/products/qt
+
+
+H3: Gtk+
+
+Gtk+ is a multi-platform toolkit for creating graphical user interfaces. It started as a toolkit for The Gimp (GNU Image Manipulation Program), but became so good that entire desktop environments (Gnome) are built on it. Same as with Qt, Gtk renders (draws) all of its controls on window given by the host system (Windows or X11). Gtk is written in C, which is one drawback compared to Qt: as C++ exceptions cannot propagate through C code, you have to be very careful not to throw C++ exceptions from asynchronous event-handling functions. Gtk comes in two versions Gtk1 and Gtk2. Gtk1 is an older library with limited set of widgets. However, it is really fast and low memory requirements. It is suitable for low-end machines and applications where eye-candy is not an important issue. Gtk2 is a modern set of widgets and it allows theming and has Unicode support. Important thing about Gtk1 is that is has much less dependencies, so it is easier to install and maintain. If we compare Qt and Gtk, one can say that Qt works as fast as Gtk1 and looks as good as Gtk2 on screen.
+
+Gtk is an open-source library, released under LGPL license. This allows anyone to build commercial applications without having to pay or release the source code. Beside that, many people choose Gtk as it looks native on Gnome which is the default desktop environment on RedHat/Fedora and Ubuntu, two among leading Linux distributions. Works on Windows, Linux, FreeBSD, Solaris and should work on any platform where you have X11 window system and GNU GCC compiler available.
+
+To design forms, you can use Glade, which is a standard builder for Gtk applications.
+
+http://www.gtk.org/
+
+
+H3: wxWidgets (supported platforms and compilers)
+
+Gtk1 is partly compatible with Gtk2 so some applications can be compiled against both libraries. wxWidgets introduces a set of #ifdefs that mark the different parts, so programmers don't have to pay much attention and simply pick the one they want. Some of the widgets that don't exist in Gtk1 are emulated by wxWidgets.
+
+There are multiple applications that allow you to design forms:
+
+H4: wxGlade
+H4: wxFormBuilder
+H4: wxDesigner ... itd.
+
+
+H1:Cross-platform options for C/C++ access to Firebird
+
+H2: ODBC
+H2: C API (good, but complex and error prone)
+H2: IBPP (lock into Firebird, but full access to all functions - plus, if C API changes interface remains the same)
+
+
+H1: Setting up wxWidgets application with Firebird support (IBPP)
+
+- Using FlameRobin (MIT licensed) classes and setup code
+- Bakefile: single build system for all platforms and compilers
+- empty project.zip
+
+- Example: A simple frame with controls to enter data and show data in grid (using wxFormBuilder)
+mb_filler class?
+
+
+- Comparison with Delphi
+    - single integrated tool vs many separate specialized tools
+    - .dfm files: .xml turns into .xrc or .cpp
+    - no properties
+    - event macros vs Delphi's RAD approach
+- Solving typical problems:
+    - fatal exception handling
+    - conversion between string types
+    - layout (styleguide classes)
+    - thinking in cross-platform way (what is abstracted and what is not)
+        - sizers instead of fixed coordinates (reasons to use them)
+        - paths
+        - fonts
+        - colors
+        - screen (displays)
+        - etc.
+- Demo (Linux?, Windows)
+    - FlameRobin
+    - POS application (topsol) 
