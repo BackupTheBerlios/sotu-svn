@@ -64,7 +64,7 @@ H1:Cross-platform options for C/C++ access to Firebird
 
 H2: ODBC
 
-Open Database Connectivity (ODBC) is an industry standard way for accessing database management systems. There are ODBC implementations for various operating systems: Microsoft ODBC for Windows, UnixODBC for Linux/UNIX, iODBC for Mac, Solaris, FreeBSD, etc. To access database from application, wxWidgets provide wxODBC set of classes. In case you don't use wxWidgets, there is libodbcxx library:
+Open Database Connectivity (ODBC) is an industry standard way for accessing database management systems. There are ODBC implementations for various operating systems: Microsoft ODBC for Windows, UnixODBC for Linux/UNIX, iODBC for Mac, Solaris, FreeBSD, etc. To access database from application, wxWidgets provide wxODBC set of classes. In case you don't use wxWidgets, there is libodbc++ library:
 
 http://libodbcxx.sourceforge.net/
 
@@ -76,12 +76,19 @@ ODBC is great if you need to access other non-Firebird databases. However, suppo
 
 H2: C API (good, but complex and error prone)
 
-Firebird C API comes with default instalation. There are even examples in "examples" directory. This is the fastest and most efficient way to access the database. However, it is also the most complex and thus most error prone. C API is useful if you don't want to depend on C++ library and compiler, especially if you're building a driver for other programming languages. But, if you're build a C++ desktop application, IBPP is much better option...
+Firebird C API comes with default instalation. There are even examples in "examples" directory. This is the fastest and most efficient way to access the database. However, it is also the most complex and thus most error prone. C API is useful if you don't want to depend on C++ library and compiler, especially if you're building a driver for other programming languages. But, if you're building a C++ desktop application, IBPP is much better option...
 
 H2: IBPP 
 
-***********TODO
-(lock into Firebird, but full access to all functions - plus, if C API changes interface remains the same)
+IBPP is a thin C++ wrapper around Firebird C API. It is not a simple translation of functions from C to C++, but rather nice object-oriented interface to database features. IBPP offers full access to all Firebird's functions, so you can create, drop, backup, restore and fix databases, manage users, etc. IBPP is easily integrated into your applications, and highly portable: works on Windows, Linux, MacOSX, FreeBSD, Solaris, and probably more. The library itself uses standard C++, so you don't need to install anything else.
+
+IBPP is currently Firebird-only, so you're locked into Firebird if you decide to use it. One of the great advantages over C API is also that you're safe from API change. If some future versions of Firebird decide to change the C API (which is not likely, but still) you don't need to change your code as the changes would be done in IBPP itself.
+
+IBPP has an open-source license, which is very simple and allows the use of IBPP in both open and closed-source projects without any drawbacks.
+
+Author note: My experience with IBPP has been excellent. I'm using it since 2002 in various commercial and open source projects. It has proven to be rock-solid and support from lead developer Olivier Mascia is great.
+
+http://www.ibpp.org/
 
 
 H2: SQLAPI++
@@ -89,6 +96,13 @@ H2: SQLAPI++
 SQLAPI++ is an interesting option. It's a wrapper similar to IBPP, but it can be used against different database systems (Firebird, Oracle, MSSQL, Sybase, DB2, MySQL, etc.). The main problem is that Firebird specific functions (like creating database for example) are left for developer to implement in native C API. Just like with ODBC, you get multiple DBMS support, but you're cut off from functions offered by Firebird's Services API. SQLAPI++ is shareware, priced at $249 at the time of writing.
 
 http://www.sqlapi.com/
+
+
+H2: DatabaseLayer
+
+Some time ago, an interesting project has been started to provide native access to various DBMS systems from wxWidgets. This is a nice alternative to wxODBC. It currently supports Firebird, MySQL, Postgresql and SQLite. You can also hook up and ODBC data source to it. Once more, there is no interface to Services API. DatabaseLayer is an open source project, released under same license as wxWidgets.
+
+http://wxcode.sourceforge.net/components/databaselayer/
 
 
 H1: Setting up wxWidgets application with Firebird support (IBPP)
