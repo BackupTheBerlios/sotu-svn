@@ -48,23 +48,69 @@ To design forms, you can use Glade, which is a standard builder for Gtk applicat
 http://www.gtk.org/
 
 
-H3: wxWidgets (supported platforms and compilers)
+H3: wxWidgets
 
-***********TODO
-Gtk1 is partly compatible with Gtk2 so some applications can be compiled against both libraries. wxWidgets introduces a set of #ifdefs that mark the different parts, so programmers don't have to pay much attention and simply pick the one they want. Some of the widgets that don't exist in Gtk1 are emulated by wxWidgets.
+wxWidgets is a cross-platform toolkit that exists for more than ten years and provides ports to many platforms. It's uncommon in sense that it wraps around native toolkit on a platform instead of drawing all the controls itself. On Windows it uses the Windows API. On Linux, FreeBSD and Solaris it gives option between Gtk (both Gtk1 and Gtk2), motif and X11. On Mac OS X it uses Carbon, and Cocoa port is on the way. All this makes the applications using it look and feel native on each platform. In
+fact, those are native applications, which just use the additional layer that makes platform differences almost transparent. All this make easier for users to accept the application, since everything looks familiar.
 
-There are multiple applications that allow you to design forms:
+Beside basic graphic widgets, wxWidgets also offers various components needed in application development like: clipboard support, drag and drop, multi-threading, image loading and saving in various formats, HTML viewing support, printing, etc. All of those wrap a native way to do it on each platform. If something is missing, wxWidgets provide their own replacement if possible. Good example of this is tree widget on Gtk1, which Gtk1 does not provide, so wxWidgets draw their own generic version of the control.
 
-H4: wxGlade
-H4: wxFormBuilder
-H4: wxDesigner ... itd.
+In most cases, when working with wxWidgets, you don't have to care which platform the code it written for. For example, Gtk1 is partly compatible with Gtk2 so some applications can be compiled against both libraries. wxWidgets introduces a set of #ifdefs that mark the different parts, so programmers don't have to pay much attention and simply pick the one they want. Some of the widgets that don't exist in Gtk1 are emulated by wxWidgets. With wxWidgets, you first build the wxWidgets library against desired toolkit (WindowsAPI, Gtk1, Gtk2, X11, Motif, Carbon, etc.) and then you link your application against wxWidgets library. In most cases you don't need to change code at all in order to work on different platform.
+
+wxWidgets can be built with various compilers. At FlameRobin project, we are successfully using GNU GCC and Microsoft Visual C++ from the very beginning. You can also use GCC on Windows using MinGW environment. Borland's Free C++ Compiler is also very good for smaller projects, while linker sometimes chokes when project gets really big (100+ units). It can also be built with DJGPP, DigitalMars, CodeWarrior, Sun CC, Symantec C++, Watcom C++, IBM Visual Age and AIX Compiler (xlc), although these are not extensively tested.
+
+There are various closed and open source applications that allow you to design wxWidgets forms:
+
+H4: wxFormBuilder 
+
+wxFormBuilder is an open source tool written in C++ using wxWidgets itself. It still young but already very powerful. It is a pure form designer, without support to edit event handlers. However, it is really fast and robust. Newer versions have all the common widgets available in it, and even some contributed ones.
+
+http://www.wxformbuilder.org/
+
+H4: wxGlade 
+
+wxGlade is an open source form designer written in wxPython (so it works on all platforms supported by wxWidgets). It was one of the first free tools to offer quality editing, but development is slow. It marks the places in code where developers should, and where they shouldn't write their code. It does not create event handlers automatically.
+
+http://wxglade.sourceforge.net/
+
+H4: wxDesigner
+
+wxDesigner is a commercial form designer. It is one of the most complete tools, allowing you to build and test dialogs and write code for event handlers. Event handlers are not as easy as Delphi's double-click the control, but it is still quite usable and much easier than adding those by hand. It also features built-in editor, so it can almost be used as IDE (there are no options to compile, run, debug the code).
+
+http://www.roebling.de/
+
+H4: VisualVx
+
+VisualVx is a freeware form designer and a RAD tool. It supports event handlers. The tool is Windows-only and doesn't work on other platforms. The main problem is that the code it generates is somewhat hard for humans to read as it has too many code guards and makes obscure variable names.
+
+http://visualwx.altervista.org/
+
+
+H4: DialogBlocks
+
+******** TODO
+
+http://www.anthemion.co.uk/dialogblocks/download.htm
+
+
+You can use various IDEs for wxWidgets development:
+
+- CodeBlocks - http://codeblocks.org/
+- wxDev-C++ - http://wxdsgn.sourceforge.net/
+- MinGW developer studio - http://www.parinyasoft.com/
+- Eclipse - http://www.wxwidgets.org/wiki/index.php/Eclipse
+- Chinook - http://www.degarrah.com/products/chinook/
 
 
 H1:Cross-platform options for C/C++ access to Firebird
 
 H2: ODBC
 
-Open Database Connectivity (ODBC) is an industry standard way for accessing database management systems. There are ODBC implementations for various operating systems: Microsoft ODBC for Windows, UnixODBC for Linux/UNIX, iODBC for Mac, Solaris, FreeBSD, etc. To access database from application, wxWidgets provide wxODBC set of classes. In case you don't use wxWidgets, there is libodbc++ library:
+Open Database Connectivity (ODBC) is an industry standard way for accessing database management systems. There are ODBC implementations for various operating systems: Microsoft ODBC for Windows, UnixODBC for Linux/UNIX, iODBC for Mac, Solaris, FreeBSD, etc. To access database from application, wxWidgets provide wxODBC set of classes:
+
+http://www.wxwidgets.org/wiki/index.php/ODBC
+
+In case you don't use wxWidgets, there is libodbc++ library:
 
 http://libodbcxx.sourceforge.net/
 
