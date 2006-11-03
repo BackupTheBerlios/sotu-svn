@@ -153,21 +153,44 @@ http://wxcode.sourceforge.net/components/databaselayer/
 
 H1: Setting up wxWidgets application with Firebird support (IBPP)
 
-***********TODO
-- Using FlameRobin (MIT licensed) classes and setup code
-- Bakefile: single build system for all platforms and compilers
-- empty project.zip
+In the past, setting up wxWidgets builds was a matter of manual setup of makefiles. While it is still possible today, it's a tedious process, especially if your project has a lot of files and you build on multiple platforms. Since version 2.6 of wxWidgets, a new build system was introduced. It is called Bakefile, and although it's primary purpose is to serve wxWidgets development, it is a standalone open source project:
 
-- Example: A simple frame with controls to enter data and show data in grid (using wxFormBuilder)
-mb_filler class?
+http://bakefile.sourceforge.net
+
+Bakefile allows you to maintain a single definition file for all platforms and compilers. Simply edit the textual (xml-like) definition file and add your source files (.cpp/.h), resource files (icons and stuff) and installation files (files and directories that need to be installed with you application). Bakefile uses this definition file (which has .bkl extension) to create makefiles for various compilers, and also project files for MSVC. 
+
+Setting up bakefile build system for your own projects in not an easy task. The only real example you have is build system used for wxWidgets, but it is somewhat specific as it is oriented around building the library instead of building an application. Based on our experience with FlameRobin, we created a minimal Bakefile-based build system for anyone who wants to build wxWidgets application and use IBPP to access Firebird from it. This system shares FlameRobin license: Expat, also known as MIT. It's a BSD style license and basically it means that you can take all the code, do whatever you want with it, use it in either open or close sourced project, and you don't have to give anything back (neither code or money). The only requirement is that you keep our copyright notice in files. Of course, for you own files and modifications you make, you can put whichever license you wish.
+
+Minimal build system is available from FlameRobin Subversion repository. You can fetch it with:
+
+svn co https://svn.sourceforge.net/svnroot/flamerobin/trunk/template-project
+
+Once you download it, read HOWTO.txt for step-by-step setup. 
+
+This is just a starting point, and now you can add your own files. Beside minimal system, entire FlameRobin source code available, so you can learn how to do some things, and you can even take some ready-made classes and functions and shorten the time needed to build the Firebird-based application. There are also plans to reduce the dependencies of some FlameRobin classes on others, so you could, for example, take ready-made DataGrid class without having to include 5-10 other files from the project.
 
 
-- Comparison with Delphi
+
+H1: Comparison with Delphi
+
+Delphi is a well known tool that set up a standard for rapid application development (RAD). It is a tool that most Firebird developers are using when developing desktop applications. Therefore, Delphi is a very good reference point to compare any other alternative with.
+
+******** TODO: probati CodeBlocks prvo
     - single integrated tool vs many separate specialized tools
     - .dfm files: .xml turns into .xrc or .cpp
-    - no properties
-    - event macros vs Delphi's RAD approach
-- Solving typical problems:
+
+H2: No properties
+
+Unlike C++ Builder, wxWidgets are pure C++, so there aren't any non-standard extensions like Borland's properties. You have to use GetXXX/SetXXX methods to access class data.
+
+H2: Event macros vs Delphi's RAD approach
+
+
+H2: Data aware controls
+
+IBPP is a thin C++ access layer. This means that you have classes like Database, Transaction and Statement, but there are no advanced concepts like Dataset or data-aware GUI controls. This means that more things have to be programmed by the developer.
+
+H1: Solving typical problems:
     - fatal exception handling
     - conversion between string types
     - layout (styleguide classes)
@@ -178,6 +201,12 @@ mb_filler class?
         - colors
         - screen (displays)
         - etc.
-- Demo (Linux?, Windows)
+
+H1: Conclusion
+
+If plan to develop database applications that need to run on multiple platforms, wxWidgets is one of the best choices available. It is robust, scalable and has much lower memory and CPU power requirements than most other alternatives. It is still not a the RAD level of Delphi, but you get cross-platform functionality for free, so it isn't hard to put in a little bit more effort. Being open source and having a lot of active developers for over ten years shows that this framework would not become obsolete as happened to many others which were bound to a single platform or a single company. 
+
+
+(slajdovi samo): Demo (Linux?, Windows)
     - FlameRobin
     - POS application (topsol) 
