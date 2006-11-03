@@ -88,7 +88,7 @@ http://visualwx.altervista.org/
 
 H4: DialogBlocks
 
-******** TODO
+DialogBlocks is a commercial IDE and dialog editor written by Julian Smart, creator and lead developer of wxWidgets. It is cross-platform (although there are some glitches on Windows98, it works fine on moderno operating systems). DialogBlocks allows editing of code and automatic creation of event handlers, which saves developers from tedious copy/pasting of event handlers. This is probably the best tool available for wxWidgets development.
 
 http://www.anthemion.co.uk/dialogblocks/download.htm
 
@@ -100,7 +100,7 @@ Of all the free tools, wxDev-C++ looks like the best one. It it both form-design
 http://wxdsgn.sourceforge.net/
 
 
-Beside wxDev-C++ , you can use various other IDEs for wxWidgets development:
+Beside wxDev-C++ and DialogBlocks, you can use various other IDEs for wxWidgets development:
 
 - CodeBlocks - http://codeblocks.org/
 - MinGW developer studio - http://www.parinyasoft.com/
@@ -167,13 +167,13 @@ Bakefile allows you to maintain a single definition file for all platforms and c
 
 Setting up bakefile build system for your own projects in not an easy task. The only real example you have is build system used for wxWidgets, but it is somewhat specific as it is oriented around building the library instead of building an application. Based on our experience with FlameRobin, we created a minimal Bakefile-based build system for anyone who wants to build wxWidgets application and use IBPP to access Firebird from it. This system shares FlameRobin license: Expat, also known as MIT license. It's a BSD style license and basically it means that you can take all the code, do whatever you want with it, use it in either open or close sourced project, and you don't have to give anything back (neither code or money). The only requirement is that you keep our copyright notice in files. Of course, for you own files and modifications you make, you can put whichever license you wish.
 
-Minimal build system is available from FlameRobin Subversion repository. You can fetch it with:
+Minimal build system package should be in same package as this document. If it is not, or you wish to fetch the latest version, you can always check it out from FlameRobin's Subversion repository:
 
 svn co https://svn.sourceforge.net/svnroot/flamerobin/trunk/template-project
 
 Once you download it, read HOWTO.txt for step-by-step setup. 
 
-This is just a starting point, and now you can add your own files. Beside minimal system, entire FlameRobin source code available, so you can learn how to do some things, and you can even take some ready-made classes and functions and shorten the time needed to build the Firebird-based application. There are also plans to reduce the dependencies of some FlameRobin classes on others, so you could, for example, take ready-made DataGrid class without having to include 5-10 other files from the project.
+This is just a starting point, after which you can add your own files. Beside minimal system, entire FlameRobin source code is available, so you can learn how to do some things, and you can even take some ready-made classes and functions and shorten the time needed to build the Firebird-based application. There are also plans to reduce the dependencies of some FlameRobin classes on others, so you could, for example, take ready-made DataGrid class without having to include 5-10 other files from the project.
 
 
 
@@ -256,7 +256,7 @@ As a final note, make sure you recompile your application on every target platfo
 
 H1: Conclusion
 
-If plan to develop database applications that need to run on multiple platforms, wxWidgets is one of the best choices available. It is robust, scalable and has much lower memory and CPU power requirements than most other alternatives. It is still not a the RAD level of Delphi, and it lacks easy to use data aware controls, but you get cross-platform functionality for free, so it isn't hard to put in a little bit more effort. Being open source and having a lot of active developers for over ten years shows that this framework would not become obsolete as happened to many others which were bound to a single platform or a single company. 
+If you plan to develop database applications that need to run on multiple platforms, wxWidgets is one of the best choices available. It is robust, scalable and has much lower memory and CPU power requirements than most other alternatives. It is still not a the RAD level of Delphi, and it lacks easy to use data aware controls, but you get cross-platform functionality for free, so it isn't hard to put in a little bit more effort. Being open source and having a lot of active developers for over ten years shows that this framework would not become obsolete as happened to many others which were bound to a single platform or a single company. 
 
 
 (slajdovi samo): Demo (Linux?, Windows)
