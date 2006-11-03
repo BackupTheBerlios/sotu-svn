@@ -93,10 +93,16 @@ H4: DialogBlocks
 http://www.anthemion.co.uk/dialogblocks/download.htm
 
 
-You can use various IDEs for wxWidgets development:
+H4: wxDev-C++
+
+Of all the free tools, wxDev-C++ looks like the best one. It it both form-designer with event-handler editor and an IDE. It's IDE is closest to Delphi. You can design dialogs and frames, double click on buttons and other controls to create event handlers. Only drawback is that it is a Windows-only tool. This means that you would do development on Windows. However, the code it generates can be compiled on all other platforms as well. This basically means that you design dialogs and write code on Windows, and later you take an re-compile generated code on target platform. If you're looking for free integrated IDE and RAD tool, wxDev-C++ is the one. If you want to work on Linux, I recommend you use wxFormBuilder and write the event handlers by hand.
+
+http://wxdsgn.sourceforge.net/
+
+
+Beside wxDev-C++ , you can use various other IDEs for wxWidgets development:
 
 - CodeBlocks - http://codeblocks.org/
-- wxDev-C++ - http://wxdsgn.sourceforge.net/
 - MinGW developer studio - http://www.parinyasoft.com/
 - Eclipse - http://www.wxwidgets.org/wiki/index.php/Eclipse
 - Chinook - http://www.degarrah.com/products/chinook/
@@ -159,7 +165,7 @@ http://bakefile.sourceforge.net
 
 Bakefile allows you to maintain a single definition file for all platforms and compilers. Simply edit the textual (xml-like) definition file and add your source files (.cpp/.h), resource files (icons and stuff) and installation files (files and directories that need to be installed with you application). Bakefile uses this definition file (which has .bkl extension) to create makefiles for various compilers, and also project files for MSVC. 
 
-Setting up bakefile build system for your own projects in not an easy task. The only real example you have is build system used for wxWidgets, but it is somewhat specific as it is oriented around building the library instead of building an application. Based on our experience with FlameRobin, we created a minimal Bakefile-based build system for anyone who wants to build wxWidgets application and use IBPP to access Firebird from it. This system shares FlameRobin license: Expat, also known as MIT. It's a BSD style license and basically it means that you can take all the code, do whatever you want with it, use it in either open or close sourced project, and you don't have to give anything back (neither code or money). The only requirement is that you keep our copyright notice in files. Of course, for you own files and modifications you make, you can put whichever license you wish.
+Setting up bakefile build system for your own projects in not an easy task. The only real example you have is build system used for wxWidgets, but it is somewhat specific as it is oriented around building the library instead of building an application. Based on our experience with FlameRobin, we created a minimal Bakefile-based build system for anyone who wants to build wxWidgets application and use IBPP to access Firebird from it. This system shares FlameRobin license: Expat, also known as MIT license. It's a BSD style license and basically it means that you can take all the code, do whatever you want with it, use it in either open or close sourced project, and you don't have to give anything back (neither code or money). The only requirement is that you keep our copyright notice in files. Of course, for you own files and modifications you make, you can put whichever license you wish.
 
 Minimal build system is available from FlameRobin Subversion repository. You can fetch it with:
 
@@ -173,11 +179,16 @@ This is just a starting point, and now you can add your own files. Beside minima
 
 H1: Comparison with Delphi
 
-Delphi is a well known tool that set up a standard for rapid application development (RAD). It is a tool that most Firebird developers are using when developing desktop applications. Therefore, Delphi is a very good reference point to compare any other alternative with.
+Delphi is a well known tool that set up a standard for rapid application development (RAD). It is a tool that most Firebird developers are using when developing desktop applications. Therefore, Delphi is a very good reference point to compare any other alternatives with.
 
-******** TODO: probati CodeBlocks prvo
-    - single integrated tool vs many separate specialized tools
-    - .dfm files: .xml turns into .xrc or .cpp
+
+H2: Single integrated tool vs many separate specialized tools
+
+If you develop on Windows with wxDev-C++, then there isn't too much difference. IDE looks very similar to Delphi, you can design, write code, compile, run and debug from it. However, on Linux you need to use various tools in the chain. You can use the wxFormBuilder to design dialogs, and an IDE like CodeBlocks to write code, build and debug. Or, you can follow the old Unix tradition and use separate tools for each task. For example, I manage a project by having good structure of directories, I edit the code with Kate editor and use make directly from shell to build the executable. For debugging I use Kdbg. That is one example of Linux tool-chain used to create wxWidgets applications.
+
+H1: Dialog definition files
+
+Delphi uses .dfm files. wxDev-C++ has .wxform files which have a similar layout (wxDev-C++ is written in Delphi itself). Most other tools use custom files in XML format, or wxWidgets special XRC format (XML-like) which enables loading and creating controls at runtime. A lot of tools keep XML representation only for design purposes and final product is either C++ or XRC file.
 
 H2: No properties
 
@@ -185,26 +196,67 @@ Unlike C++ Builder, wxWidgets are pure C++, so there aren't any non-standard ext
 
 H2: Event macros vs Delphi's RAD approach
 
+Event handling in Delphi is done behind the screens. In wxWidgets there are two approaches: event macros and dynamic binding with Connect() funtions. Event macros look like this:
+
+BEGIN_EVENT_TABLE(MyFrame, wxFrame)
+	EVT_CLOSE(MyFrame::OnClose)
+	EVT_BUTTON(MyButton_ID, MyFrame::OnMyButtonClick)
+END_EVENT_TABLE()
+
+Tools that support event handlers add these automatically for you. These event handlers are needed to map the event (EVT_BUTTON is a button click for example) with event handling function: OnMyButtonClick in the example above. In the above example EVT_CLOSE is bound to MyFrame directly, but button click event is bound to one of the child buttons. Therefore we need to supply the button ID of that button: MyButton_ID. MyButton_ID is an integer value usually specified somewhere in class' the .h file. The event handling function looks like this:
+
+void MyFrame::OnMyButtonClick(wxCommandEvent& event)
+{
+	// write your code here
+}
+
 
 H2: Data aware controls
 
-IBPP is a thin C++ access layer. This means that you have classes like Database, Transaction and Statement, but there are no advanced concepts like Dataset or data-aware GUI controls. This means that more things have to be programmed by the developer.
+IBPP is a thin C++ access layer. This means that you have classes like Database, Transaction and Statement, but there are no advanced concepts like Dataset or data-aware GUI controls. This means that more things have to be programmed by the developer. If you use wxODBC, there is wxGridTableBase, which can be used as a data source to fill visual grids, but that's about it. FlameRobin's code can help here, as there are classes that allow you to display data in the grid, and also to convert various datatypes to human-readable strings.
 
-H1: Solving typical problems:
-    - fatal exception handling
-    - conversion between string types
-    - layout (styleguide classes)
-    - thinking in cross-platform way (what is abstracted and what is not)
-        - sizers instead of fixed coordinates (reasons to use them)
-        - paths
-        - fonts
-        - colors
-        - screen (displays)
-        - etc.
+
+H1: Solving typical problems
+
+When people are coming from single to multiplatform developement, there are issues awaiting which they aren't aware of. While wxWidgets tries to hide all the platform differences behind their classes, there are some things worth knowing before you run into brick wall with your application:
+
+H2: Layout
+
+One of the main problems with cross-platform enviroment are differences in the graphics systems on which application runs. Displays on one system can differ in DPI settings or number of colors, but with multiplatform other things are added, like different sets of fonts for example. While you could force some users to use some settings you built your application for, it is generally not a good idea. This is why wxWidgets have gone a long way to stay away from fixed coordinate systems when designing dialogs. 
+
+In wxWidgets, all the layout should be done via sizers. Sizers make the dialogs and controls resize themselves appropriately in order for all the text to fit nicely on the screen. Of course, you can define rules how do you want layout to behave: which is the proportion of some controls, which controls you wish to grow if more size is available, etc. There is a lot of sizer classes, each with its own purpose. Most commonly used is the wxBoxSizer, which is a generic control that distibutes controls vertically or horizontally. It is sufficient for many uses as you can combine multiple sizers one inside another (they don't add any visual spacing unless you explicitly tell them to). For most of the dialogs, wxFlexGridSizer sizer is appropriate solution. It can have fixed and growable rows or columns, and fits most of the needs. For users with special needs, there is always wxGridBagSizer, which is as flexfible as editing HTML tables, i.e. any control can span multiple rows or columns - exactly as you want it. 
+
+It takes some time to get used to the sizers and the way they work, but it pays off. Never again would your dialogs have controls that are cut off, or text being too big to fit in. This also simplifies the developement of applications which are translated in multiple languages, as you don't have to worry if text of some translation is going "out off the bounds".
+
+Another imporant issue with layout is the native look and feel of applications. Microsoft, Apple and Gnome team define the Human Interface Guidelines (HIG) standards for each platform (Windows, Mac OS X, Linux and others that use Gtk+ respectively). These define the common layout of controls themselves (is the Ok button left and Cancel right or vice versa) and the spacing among them as well. To help with some of that, FlameRobin project has built a set of StyleGuide classes, which are also part of minimal build system, so you can reuse them into your projects. They return spacing constants for all of those platforms. Here are some more details about usage:
+
+http://www.flamerobin.org/dokuwiki/doku.php?id=wiki:platformspecifics
+
+
+H2: Conversion between string types
+
+Since wxWidgets use wxString class for all string operations, it is a challenge to use any external library which uses standard C++ string (std::string). It is not easy for beginner to handle as you can build wxWidgets in both ANSI and Unicode more, so translation needs to take care of wxString representation. We have faced this problem in FlameRobin and created two utility functions: wx2std and std2wx which allow easy transliteration of strings. Just include StringUtils.h header file (supplied in template-project) and enjoy.
+
+As for strings them selves, there are two kinds of strings in wxWidgets: ones that should be translated in localized versions of application, and ones that should not. Both need to be enclosed in string macros, so that they work properly for both ANSI and Unicode build. Translated strings should be enclosed with _(), and others with wxT(). For more info, read the following document:
+
+http://www.flamerobin.org/dokuwiki/doku.php?id=wiki:wxstring
+
+
+H2: Fatal exception handling
+
+In C++ if an exception goes uncaught, the program crashes. While developement tools like Delphi and C++ builder protect you by installing their own fatal exception handler, with wxWidgets you have to do it yourself. It is not hard, as wxWidgets provide cross-platform wrapper around it, and you can see it implemented in main.cpp of the minimal build system. However, one thing is important to remember: Gtk+ is written in C and its event loop is a C code. If some of code in your event handlers throws an C++ exception it will go back through a layer of C code, and cannot be caught by general try..catch handler with is put around application startup code. So, make sure you protect your event handlers with try..catch block if you think there is any chance of exception being thrown.
+
+
+H2: Thinking in cross-platform way
+
+There are many things that are abstracted by wxWidgets, so it is worth mentioning in order that you don't start to reinvent the wheel. Standard paths (application installation directory, etc.) are covered with wxStandardPaths class. There is wxFont class, where you can say what type of font you want, and you'll get the appropriate one on the given platform. So, you don't say: I want Arial, but you say: I want Roman or Sans-serif, or something like that. Handling multiple displays (which is quite different on Linux and Windows) is encapsulated in wxDisplay class, and you should use off-screen coordinates to access the second display.
+
+As a final note, make sure you recompile your application on every target platform each time you do some major change. There are things like, for example, handling key presses, that can yield surprises, as some keys are reserved for operating system use. Tip: stay clear from F9-F12 section.
+
 
 H1: Conclusion
 
-If plan to develop database applications that need to run on multiple platforms, wxWidgets is one of the best choices available. It is robust, scalable and has much lower memory and CPU power requirements than most other alternatives. It is still not a the RAD level of Delphi, but you get cross-platform functionality for free, so it isn't hard to put in a little bit more effort. Being open source and having a lot of active developers for over ten years shows that this framework would not become obsolete as happened to many others which were bound to a single platform or a single company. 
+If plan to develop database applications that need to run on multiple platforms, wxWidgets is one of the best choices available. It is robust, scalable and has much lower memory and CPU power requirements than most other alternatives. It is still not a the RAD level of Delphi, and it lacks easy to use data aware controls, but you get cross-platform functionality for free, so it isn't hard to put in a little bit more effort. Being open source and having a lot of active developers for over ten years shows that this framework would not become obsolete as happened to many others which were bound to a single platform or a single company. 
 
 
 (slajdovi samo): Demo (Linux?, Windows)
