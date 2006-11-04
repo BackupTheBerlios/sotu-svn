@@ -1,64 +1,143 @@
-1. Managing metadata changes
+
+H1: About author
+
+blabla...
+
+H1: Metadata management problem
+
+Development of database applications involves three distinct activities: changing the database schema, updating the data in the database and changing the code that uses the database. The last one is easy to manage: we have version control software for source code, and many ways to distribute executables to customers.
+
+However, during development we all face problem of managing the database metadata in development and productions systems. In development systems many developers can work on their own (sandbox) versions of database, and apply their changes to the master database. When new version is ready for release, changes have to be applied to the customer's database.
+
+Thare are also developers that work in the field. For example, they take notebook computer and go to the customer's site to fix some problems. During that process, they might need to change database structure. When they get back to the office they need to merge their changes with others. However, in the meantime, some of the developers in the office are making their own changes. 
+
+Some of your clients might have more than one sites where software and database is installed. Some may even have dozens of branch offices all around the world. Sometimes it's much easier to have an automated system that would propagate the changes you make at the head office.
+
+All these situations call for some kind of metadata management system.
 
 
-Outline:
---------
+H1: Possible solutions 
 
-Development of database applications involves three distinct activities: changing the database schema, updating the data
-in the database and changing the code that uses the database. The last one is easy to manage: we have version control
-software for source code, and many ways to distribute executables to customers.
+Developers have been facing these situations for years, and developed various methods to handle them. Here are some of the many solutions currently in use:
 
-However, during development we all face problem of managing the database metadata in development and productions
-systems. In development systems many developers can work on their own (sandbox) versions of database, and apply their
-changes to the master database. When new version is ready for release, changes have to be applied to the customer's
-database.
+H2: Compare target and source database and do the changes
 
-This session covers various ways to do that job, and also presents a way to manage the databases the same way we manage
-the source code (version control). It also demonstrates Firebird-based open source tools that are used to automate this
-process. These tools enable developers to work separately of each other, and get in sync once they decide so. A
-developer can even work at customer's site, make the changes in application or database structure, and easily migrate
-those back into development database once he returns back to the office.
+There are specialized tools like DBComparer that can compare the structure of two databases and dump the script with ALTER, DROP and CREATE statements that change one of the databases to be same as another. Some general administration tools like IBExpert also have this feature. There are two problems with this approach. The main problem is that beside metadata, there is also support-data which is not inserted by the final user, but rather by development team. Those are various helper tables that contain data needed by applications to run properly. When changing the structure, some of those data need to be changed as well, so developers have to remember it. Also, some of the user's data needs to be validated and/or transformed. The second problem is that this process is semi-automatic and requires manual work and concentration.
 
-Using the version control systems for database structure makes it easy to resolve conflicting changes. It shows who made
-the change, when (s)he did it and why. Since changes are plain text files, they can be committed together with
-application source code within same revision, making the entire change atomic.
+H2: Create blank database with desired structure and pump the data
+
+There are various approaches to create a blank database. One is to do metadata-only backup (gbak -m) of database, and then restore it. Other is to DELETE FROM all tables and then backup and restore to reduce the size. Third is to re-create database from .sql script each time. The latter one requires that you maintain database creation script while developing, or create it from database using isql -x or some other tool. There are various tools that can pump the data, like IBDBPump on Windows or FBCopy on Linux, Mac or FreeBSD. The problem with this approach is that some columns names might have changed so you need to map them to appropriate ones.
+
+None of these approaches is fully automatic, and all are error-prone. The main problem is that they neglect the required changes in "supporting" data.
+
+[screenshots: IBExpert, DBComparer, CompareData]
+
+H1: The solution
+
+The most natural way of doing the tracking of changes in metadata is to record them. Later, you can replay them on any other database. In order to do this, we must add a version number to each database structure. To handle it easily, we add a simple table in the database, calling it DATABASE_VERSION. Here's the DDL:
+
+CREATE TABLE DATABASE_VERSION
+(
+	CURRENT_VERSION INTEGER NOT NULL,
+	LAST_CHANGE TIMESTAMP NOT NULL
+);
+
+You can add other fields as well, or name the table differently. For each change you make, increase the version number. For example, suppose you have an empty database, only with DATABASE_VERSION table. Now, set it up, by setting the version to one.
+
+INSERT INTO DATABASE_VERSION VALUES (1, current_timestamp);
+
+Now, let's create some table to play with:
+
+CREATE TABLE TEST_TABLE
+(
+	ID INTEGER NOT NULL PRIMARY KEY
+);
+
+Now, backup and restore the database to a different name. You'll have two identical databases with version one. Let's change one of them:
+
+ALTER TABLE TEST_TABLE ADD X INTEGER;
+
+Save that SQL statement to some .sql file and call it version_2.sql or something like that. After the change is made, increment the version number:
+
+UPDATE DATABASE_VERSION SET CURRENT_VERSION = 2;
+
+Now, when you wish to upgrade the other database, you would first check for database version:
+
+SELECT CURRENT_VERSION FROM DATABASE_VERSION;
+
+It returns 1. Now, you see that you have version_2.sql and you run it. Thus the other database is also updated to version 2.
+
+You can put multiple changes into a single .sql file, or keep "one statement by file" rule. The later is a better idea as situations may happen when upgrading fails, and database is left beetween versions and it has to be debugged manually. 
+
+With this approach you can easily track the needed changes in data as well. Suppose you add something like this:
+
+INSERT INTO INVOICE_TYPES VALUES ('Export');
+
+You simply add it to the list of version_XXX.sql files and increase the CURRENT_VERSION by one. This way the changes would be propagated to anyone. Of course, you shouldn't log everything, only the changes you wish to be replicated to any other database. You may run some statements or create some test data that is meant only for your sandbox database.
+
+Beside logging changes to .sql files, you could alternatively put them in some database table as well. However, in practice, the solution with files has been proven easier to maintain.
+
+To implement all this, you don't need to start from scratch. You can easily apply to any of your current databases. Just add the DATABASE_VERSION table and set the version number to one. This will be the initial version.
 
 
-Track:
-------
+H2: Logging changes to sql files
 
-* The problem
-    - metadata changes in development databases
-    - metadata changes in production databases
-    - multiple developers
-    - databases in field (laptop, etc.)
-    - multiple client sites (branch offices, etc.)
-* Possible solutions used in practice:
-    - copy metadata backup / create DB script and...
-        1. pump the data (problem with big DB, unmatched columns)
-        2. run dbcomparer (manual work, Windows only)
-    - none of these is fully automatic, and all are error-prone
-    - both approaches neglect the change in data (show examples)
-* The solution
-    - logging changes in sql files:
-        - manual (copy/paste to .sql files)
-        - automatic (flamerobin, others...)
-            - problem updating the version of current development database (after commit)
-        - .sql scripts should be stored in same folder as app. code for atomic commits.
-        - can be applied to current databases - no need to start from scratch
-    - keeping database version in a database table
-    - applying changes:
-        a) manual update
-            - scripts:
-                - updatedb
-                    - why is it important to commit after each statement.
-            - movesql (move/rename script, fill the gaps made by deleting some scripts)
-        b) automatic update (running the app.)
-            - problem with FKs and other
-    - things to be careful of:
-        - name your constraints (names like INTEG_88 are bad when DROPPING is needed)
-        - defer PK,FK creation (in Fb1.0/Fb1.5/Fb2.0) to separate SQL statements
-    - Dilemma: master databases (needed or not?)
+You could do it manually, for example IBExpert is quite usable that way as it has Copy button for each script it executes. However, it is much easier to use the administration tool that has built in logging like FlameRobin. 
+
+[FR screenshot and demo]
+
+The main problem is updating the version of current development database after commit. While we could add a feature to run custom update script supplying version as a parameter, it is not necessary. For reasons why, read the section about using repostiory to track the changes ******* (tamo napisati da posle commita treba uraditi update, videti da li SVN ima tako nesto).
+
+As it happens, there are changes you make to both data and metadata during development, that you don't want to propagate. For example, you might add some testing data, or you might create some object and drop it afterwards as you change your mind. FlameRobin (and other tools as well) would log those changes nevertheless. Later, when you remove those scripts, you're left with gaps in number sequence. There are various ways to handle that situation. One is to write the update script in such way to skip the missing files. However, I wouldn't recommend it as it is better to have all the files in sequence, and missing files would mean that something is wrong. It is much better to take and renumber the files to fill in the gaps. For that purpose, here is a small PHP script that does the renumbering.
+
+[movesql source]
+
+Beside filling the gaps, it can be also used to move a bunch of scripts few numbers up or down in case some other developer has already made changes to the database - see section about using repository to track the changes.
+
+
+H2: Applying changes
+
+There are various techniques to apply the changes to other databases. You could simply open the SQL editor and run scripts one by one, but that is highly inefficient. One of the solutions is to write a program that reads all the version_XXX.sql files in a directory and update the database one by one. Here is a simple PHP program that does it, but it is trivial to write your own:
+
+[updatedb.php source]
+
+[ examples how to run it ]
+
+As you can see, after each script is commits and disconnects from database. This is important, especially for older versions of Firebird, as some statements can run without errors, but when you try to commit, the error shows up. So, if multiple statements would be stacked up, it would be hard to tell which one is problematic. One of such usual problems is creation of foreign keys when there are other connections to the database. Some of the statements might also report the famous OBJECT IS IN USE error, so the best way is to disconnect and connect again between each statement.
+
+Beside using an external program like updatedb.php, you can always write an equivalent piece of code in your own application and let the end-user run it. Or, integrate is into installer of your applications. It is also useful to add a check in your applications: what is the minimal version of database structure it needs to run properly. When application is started it can select the CURRENT_VERSION from DATABASE_VERSION table and not allow user to work if either application or database are not up to date. One of the approaches is also to integrate update scripts with each application, so first user that runs it would trigger the upgrade of database structure. The main problem with such approaches is that they break if you try to add a foreign key or similar task that requires exclusive access.
+
+If your customer has multiple sites and you're doing some kind of replication, it is useful to integrate metadata upgrade scripts into the system. They should happen before replication starts in order to make sure that replicated databases have the same structure.
+
+
+H2: Things to be careful of
+
+If you're going to use any kind of automated system, there are some things to watch for in order to make the system robust and less error prone. One of the main problems are the unnamed constraints. For example, in one of the examples, I run a statement:
+
+CREATE TABLE TEST_TABLE
+(
+	ID INTEGER NOT NULL PRIMARY KEY
+);
+
+The primary key constraint would get an autogenerated name by Firebird, something like INTEG_88. Everything would work fine for a while. Imagine one day your cusomer has a hard-disk crash and has to restore a backup. While backup is restoring, there is no guarantee that that primary key would get the same constraint name. The problem is now created: if you wish to drop that primary key, you would run:
+
+ALTER TABLE TEST_TABLE DROP CONSTRAINT INTEG_88;
+
+However, it would fail on customers database. Things like this are improved with each Firebird version. In the meantime, make sure you name your constraints. Also, a good idea is to defer creation of primary and foreign keys to separate SQL statements.
+
+
+H2: Dilemma: master databases (needed or not?)
+
+************TODO
+
+
+H1: Using version control software
+
+Using the version control systems for database structure makes it easy to resolve conflicting changes. It shows who made the change, when (s)he did it and why. Since changes are plain text files, they can be committed together with application source code within same revision, making the entire change atomic. Therefore, it is recommended that change scripts are kept close to source code files, possibly in one of the project's subdirectories. This makes it easier to track changes of both application code and database structure at the same time.
+
+There are a lot of version control software available, both commercial and open source. Of open source ones, I would highly recommend Subversion, which seems to be the right successor for CVS. Version control systems enable you to track changes that were made and also prevent developers from stepping on each other's toes. Suppose one developer has made changes to the database and moved it from version 2 to version 5. He commits scripts: version_3, version_4 and version_5. Now, another developer did his development in the meantime, and made one change himself, moving from version 2 to version 3 in his sandbox. When he tries to commit the changes, commit would fail, as the file version_3.sql already exists in repository. At this time, developers have to resolve the conflict manually. If changes are compatible, the other developer would simply move his script to version 6 and then commit it. In case there are a lot of files that need moving, movesql.php script mentioned before is quite useful.
+
+
 * Branching and merging
     - you can't easily go back as you can with code
         - writing the "reverse" scripts: problems with irreversible changes
