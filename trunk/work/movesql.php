@@ -22,7 +22,7 @@ for ($i = $start; $i <= $end; $i++)
   $from = sprintf($inp, $i);
   if (!file_exists($from))
   {
-    echo "FILE: $from does not exists, skipping.\n";
+    echo "FILE: $from does not exist, skipping.\n";
     continue;
   }
   $to = sprintf($outp, $moveto++);
