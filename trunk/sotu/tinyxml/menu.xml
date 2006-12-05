@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!--
+This may not be up-to-date anymore...
+
+<!DOCTYPE Menu [
+    <!ELEMENT Menu      (MenuEntry|Menu|Seperator)*>
+    <!ELEMENT MenuEntry (#PCDATA)>
+
+    <!ATTLIST Menu Name CDATA #REQUIRED>
+    <!ATTLIST MenuEntry Name CDATA #REQUIRED>
+    <!ATTLIST MenuEntry Action CDATA #IMPLIED>
+    <!ATTLIST MenuEntry IntValue CDATA "0">
+    <!ATTLIST MenuEntry BoolValue CDATA "">
+    <!ATTLIST MenuEntry FloatValue CDATA "0.0">
+    <!ATTLIST MenuEntry StringValue CDATA "">
+    <!ATTLIST Seperator Type (None|Line) "None">
+]>
+-->
+
+<Menu Name="Critical Mass">
+  <MenuEntry Action="NewGame" Name="New Game" />
+  <Menu                       Name="Options">
+      <MenuEntry IntValue="0 300"      Name="Horse Power" />
+      <MenuEntry BoolValue="Show Hide" Name="Show FPS" />
+      <MenuEntry FloatValue="0.0 1.0"  Name="Mouse Smoothing" />
+      <Seperator Type="None"           Name="" />
+      <Menu                            Name="Controls">
+	  <MenuEntry Name="Left" />
+	  <MenuEntry Name="Right" />
+	  <MenuEntry Name="Fire1" />
+	  <MenuEntry Name="Fire2" />
+      </Menu>
+  </Menu>
+  <Menu                       Name="About">
+      <MenuEntry Name="About Critter" />
+      <MenuEntry Name="(C) 2001 Frank Becker" />
+  </Menu>
+  <Menu                       Name="Help">
+      <MenuEntry Name="Sorry, no help..." />
+  </Menu>
+  <Seperator Type="None"      Name="" />
+  <MenuEntry Action="Quit"    Name="Quit">
+</Menu>

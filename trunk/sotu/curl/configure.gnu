@@ -1,0 +1,1 @@
+CFLAGS="-Os -DCURL_STATICLIB" ./configure --disable-dependency-tracking --disable-shared --enable-static --enable-http --disable-ftp --disable-gopher --disable-file --disable-ldap --disable-dict --disable-telnet --disable-manual --disable-ares --disable-verbose --disable-sspi --disable-crypto-auth --disable-cookies --without-ssl --without-libidn --disable-ipv6
