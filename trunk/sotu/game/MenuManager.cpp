@@ -349,6 +349,10 @@ void MenuManager::turnMenuOn( void)
     //ask input system to forward all input to us
     InputS::instance()->enableInterceptor( this);
     GameState::stopwatch.pause();
+
+    // just in case we were in pause mode in game
+    SDL_ShowCursor(SDL_DISABLE);
+    SDL_WM_GrabInput(SDL_GRAB_ON);
 }
 
 void MenuManager::turnMenuOff( void)
