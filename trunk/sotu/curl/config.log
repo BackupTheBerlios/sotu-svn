@@ -909,8 +909,8 @@ configure:21189: checking whether to provide built-in manual
 configure:21196: result: no
 configure:21213: checking for gethostbyname
 configure:21270: gcc -o conftest.exe -Os -DCURL_STATICLIB -I/usr/local/include  conftest.c  >&5
-c:/windows/TEMP/ccEKUfgb.o(.text+0x11):conftest.c: undefined reference to `gethostbyname'
-c:/windows/TEMP/ccEKUfgb.o(.data+0x0):conftest.c: undefined reference to `gethostbyname'
+c:/windows/TEMP/ccwoLgab.o(.text+0x11):conftest.c: undefined reference to `gethostbyname'
+c:/windows/TEMP/ccwoLgab.o(.data+0x0):conftest.c: undefined reference to `gethostbyname'
 configure:21276: $? = 1
 configure: failed program was:
 | /* confdefs.h.  */
@@ -1162,8 +1162,8 @@ configure:21737: $? = 0
 configure:21749: result: yes
 configure:21902: checking for connect
 configure:21959: gcc -o conftest.exe -Os -DCURL_STATICLIB -I/usr/local/include  conftest.c -lws2_32  >&5
-c:/windows/TEMP/ccgKUfgb.o(.text+0x11):conftest.c: undefined reference to `connect'
-c:/windows/TEMP/ccgKUfgb.o(.data+0x0):conftest.c: undefined reference to `connect'
+c:/windows/TEMP/ccwoLgab.o(.text+0x11):conftest.c: undefined reference to `connect'
+c:/windows/TEMP/ccwoLgab.o(.data+0x0):conftest.c: undefined reference to `connect'
 configure:21965: $? = 1
 configure: failed program was:
 | /* confdefs.h.  */
@@ -1300,8 +1300,8 @@ configure: failed program was:
 configure:22058: result: no
 configure:22072: checking for dlclose
 configure:22129: gcc -o conftest.exe -Os -DCURL_STATICLIB -I/usr/local/include  conftest.c -lws2_32  >&5
-c:/windows/TEMP/ccgKUfgb.o(.text+0x11):conftest.c: undefined reference to `dlclose'
-c:/windows/TEMP/ccgKUfgb.o(.data+0x0):conftest.c: undefined reference to `dlclose'
+c:/windows/TEMP/ccwoLgab.o(.text+0x11):conftest.c: undefined reference to `dlclose'
+c:/windows/TEMP/ccwoLgab.o(.data+0x0):conftest.c: undefined reference to `dlclose'
 configure:22135: $? = 1
 configure: failed program was:
 | /* confdefs.h.  */
@@ -1644,8 +1644,8 @@ configure: failed program was:
 configure:27382: result: no
 configure:27418: checking for gethostbyname_r
 configure:27475: gcc -o conftest.exe -Os -DCURL_STATICLIB -I/usr/local/include  conftest.c -lwinmm -lws2_32  -lz >&5
-c:/windows/TEMP/ccEKUfgb.o(.text+0x11):conftest.c: undefined reference to `gethostbyname_r'
-c:/windows/TEMP/ccEKUfgb.o(.data+0x0):conftest.c: undefined reference to `gethostbyname_r'
+c:/windows/TEMP/ccwoLgab.o(.text+0x11):conftest.c: undefined reference to `gethostbyname_r'
+c:/windows/TEMP/ccwoLgab.o(.data+0x0):conftest.c: undefined reference to `gethostbyname_r'
 configure:27481: $? = 1
 configure: failed program was:
 | /* confdefs.h.  */
@@ -1732,8 +1732,8 @@ configure: failed program was:
 configure:27506: result: no
 configure:27806: checking for inet_ntoa_r
 configure:27863: gcc -o conftest.exe -Os -DCURL_STATICLIB -I/usr/local/include  conftest.c -lwinmm -lws2_32  -lz >&5
-c:/windows/TEMP/ccgKUfgb.o(.text+0x11):conftest.c: undefined reference to `inet_ntoa_r'
-c:/windows/TEMP/ccgKUfgb.o(.data+0x0):conftest.c: undefined reference to `inet_ntoa_r'
+c:/windows/TEMP/ccwoLgab.o(.text+0x11):conftest.c: undefined reference to `inet_ntoa_r'
+c:/windows/TEMP/ccwoLgab.o(.data+0x0):conftest.c: undefined reference to `inet_ntoa_r'
 configure:27869: $? = 1
 configure: failed program was:
 | /* confdefs.h.  */
@@ -1820,8 +1820,8 @@ configure: failed program was:
 configure:27894: result: no
 configure:27972: checking for localtime_r
 configure:28029: gcc -o conftest.exe -Os -DCURL_STATICLIB -I/usr/local/include  conftest.c -lwinmm -lws2_32  -lz >&5
-c:/windows/TEMP/ccEKUfgb.o(.text+0x11):conftest.c: undefined reference to `localtime_r'
-c:/windows/TEMP/ccEKUfgb.o(.data+0x0):conftest.c: undefined reference to `localtime_r'
+c:/windows/TEMP/ccwoLgab.o(.text+0x11):conftest.c: undefined reference to `localtime_r'
+c:/windows/TEMP/ccwoLgab.o(.data+0x0):conftest.c: undefined reference to `localtime_r'
 configure:28035: $? = 1
 configure: failed program was:
 | /* confdefs.h.  */
@@ -1908,8 +1908,8 @@ configure: failed program was:
 configure:28060: result: no
 configure:28127: checking for strerror_r
 configure:28184: gcc -o conftest.exe -Os -DCURL_STATICLIB -I/usr/local/include  conftest.c -lwinmm -lws2_32  -lz >&5
-c:/windows/TEMP/ccgKUfgb.o(.text+0x11):conftest.c: undefined reference to `strerror_r'
-c:/windows/TEMP/ccgKUfgb.o(.data+0x0):conftest.c: undefined reference to `strerror_r'
+c:/windows/TEMP/ccwoLgab.o(.text+0x11):conftest.c: undefined reference to `strerror_r'
+c:/windows/TEMP/ccwoLgab.o(.data+0x0):conftest.c: undefined reference to `strerror_r'
 configure:28190: $? = 1
 configure: failed program was:
 | /* confdefs.h.  */
@@ -1996,8 +1996,8 @@ configure: failed program was:
 configure:28215: result: no
 configure:28478: checking for gmtime_r
 configure:28535: gcc -o conftest.exe -Os -DCURL_STATICLIB -I/usr/local/include  conftest.c -lwinmm -lws2_32  -lz >&5
-c:/windows/TEMP/cc8JUfgb.o(.text+0x11):conftest.c: undefined reference to `gmtime_r'
-c:/windows/TEMP/cc8JUfgb.o(.data+0x0):conftest.c: undefined reference to `gmtime_r'
+c:/windows/TEMP/ccwoLgab.o(.text+0x11):conftest.c: undefined reference to `gmtime_r'
+c:/windows/TEMP/ccwoLgab.o(.data+0x0):conftest.c: undefined reference to `gmtime_r'
 configure:28541: $? = 1
 configure: failed program was:
 | /* confdefs.h.  */
@@ -4879,8 +4879,8 @@ configure:32494: $? = 0
 configure:32506: result: yes
 configure:32418: checking for socket
 configure:32475: gcc -o conftest.exe -Os -DCURL_STATICLIB -I/usr/local/include  conftest.c -lwinmm -lws2_32  -lz >&5
-c:/windows/TEMP/ccKNUfgb.o(.text+0x11):conftest.c: undefined reference to `socket'
-c:/windows/TEMP/ccKNUfgb.o(.data+0x0):conftest.c: undefined reference to `socket'
+c:/windows/TEMP/ccUqIgab.o(.text+0x11):conftest.c: undefined reference to `socket'
+c:/windows/TEMP/ccUqIgab.o(.data+0x0):conftest.c: undefined reference to `socket'
 configure:32481: $? = 1
 configure: failed program was:
 | /* confdefs.h.  */
@@ -5001,7 +5001,7 @@ configure: failed program was:
 configure:32506: result: no
 configure:32515: checking deeper for socket
 configure:32533: gcc -o conftest.exe -Os -DCURL_STATICLIB -I/usr/local/include  conftest.c -lwinmm -lws2_32  -lz >&5
-c:/windows/TEMP/ccKNUfgb.o(.text+0x9):conftest.c: undefined reference to `socket'
+c:/windows/TEMP/ccUqIgab.o(.text+0x9):conftest.c: undefined reference to `socket'
 configure:32539: $? = 1
 configure: failed program was:
 | /* confdefs.h.  */
@@ -5086,8 +5086,8 @@ configure: failed program was:
 configure:32567: result: but still no
 configure:32418: checking for select
 configure:32475: gcc -o conftest.exe -Os -DCURL_STATICLIB -I/usr/local/include  conftest.c -lwinmm -lws2_32  -lz >&5
-c:/windows/TEMP/cc2KUfgb.o(.text+0x11):conftest.c: undefined reference to `select'
-c:/windows/TEMP/cc2KUfgb.o(.data+0x0):conftest.c: undefined reference to `select'
+c:/windows/TEMP/ccUqIgab.o(.text+0x11):conftest.c: undefined reference to `select'
+c:/windows/TEMP/ccUqIgab.o(.data+0x0):conftest.c: undefined reference to `select'
 configure:32481: $? = 1
 configure: failed program was:
 | /* confdefs.h.  */
@@ -5208,7 +5208,7 @@ configure: failed program was:
 configure:32506: result: no
 configure:32515: checking deeper for select
 configure:32533: gcc -o conftest.exe -Os -DCURL_STATICLIB -I/usr/local/include  conftest.c -lwinmm -lws2_32  -lz >&5
-c:/windows/TEMP/ccgKUfgb.o(.text+0x9):conftest.c: undefined reference to `select'
+c:/windows/TEMP/ccUqIgab.o(.text+0x9):conftest.c: undefined reference to `select'
 configure:32539: $? = 1
 configure: failed program was:
 | /* confdefs.h.  */
@@ -5312,8 +5312,8 @@ configure:32494: $? = 0
 configure:32506: result: yes
 configure:32418: checking for strtok_r
 configure:32475: gcc -o conftest.exe -Os -DCURL_STATICLIB -I/usr/local/include  conftest.c -lwinmm -lws2_32  -lz >&5
-c:/windows/TEMP/cc2KUfgb.o(.text+0x11):conftest.c: undefined reference to `strtok_r'
-c:/windows/TEMP/cc2KUfgb.o(.data+0x0):conftest.c: undefined reference to `strtok_r'
+c:/windows/TEMP/ccUqIgab.o(.text+0x11):conftest.c: undefined reference to `strtok_r'
+c:/windows/TEMP/ccUqIgab.o(.data+0x0):conftest.c: undefined reference to `strtok_r'
 configure:32481: $? = 1
 configure: failed program was:
 | /* confdefs.h.  */
@@ -5436,7 +5436,7 @@ configure: failed program was:
 configure:32506: result: no
 configure:32515: checking deeper for strtok_r
 configure:32533: gcc -o conftest.exe -Os -DCURL_STATICLIB -I/usr/local/include  conftest.c -lwinmm -lws2_32  -lz >&5
-c:/windows/TEMP/ccgKUfgb.o(.text+0x9):conftest.c: undefined reference to `strtok_r'
+c:/windows/TEMP/ccUqIgab.o(.text+0x9):conftest.c: undefined reference to `strtok_r'
 configure:32539: $? = 1
 configure: failed program was:
 | /* confdefs.h.  */
@@ -5523,8 +5523,8 @@ configure: failed program was:
 configure:32567: result: but still no
 configure:32418: checking for uname
 configure:32475: gcc -o conftest.exe -Os -DCURL_STATICLIB -I/usr/local/include  conftest.c -lwinmm -lws2_32  -lz >&5
-c:/windows/TEMP/cc8JUfgb.o(.text+0x11):conftest.c: undefined reference to `uname'
-c:/windows/TEMP/cc8JUfgb.o(.data+0x0):conftest.c: undefined reference to `uname'
+c:/windows/TEMP/ccUqIgab.o(.text+0x11):conftest.c: undefined reference to `uname'
+c:/windows/TEMP/ccUqIgab.o(.data+0x0):conftest.c: undefined reference to `uname'
 configure:32481: $? = 1
 configure: failed program was:
 | /* confdefs.h.  */
@@ -5647,7 +5647,7 @@ configure: failed program was:
 configure:32506: result: no
 configure:32515: checking deeper for uname
 configure:32533: gcc -o conftest.exe -Os -DCURL_STATICLIB -I/usr/local/include  conftest.c -lwinmm -lws2_32  -lz >&5
-c:/windows/TEMP/ccKNUfgb.o(.text+0x9):conftest.c: undefined reference to `uname'
+c:/windows/TEMP/ccUqIgab.o(.text+0x9):conftest.c: undefined reference to `uname'
 configure:32539: $? = 1
 configure: failed program was:
 | /* confdefs.h.  */
@@ -5754,8 +5754,8 @@ configure:32494: $? = 0
 configure:32506: result: yes
 configure:32418: checking for gethostbyaddr
 configure:32475: gcc -o conftest.exe -Os -DCURL_STATICLIB -I/usr/local/include  conftest.c -lwinmm -lws2_32  -lz >&5
-c:/windows/TEMP/ccgKUfgb.o(.text+0x11):conftest.c: undefined reference to `gethostbyaddr'
-c:/windows/TEMP/ccgKUfgb.o(.data+0x0):conftest.c: undefined reference to `gethostbyaddr'
+c:/windows/TEMP/ccUqIgab.o(.text+0x11):conftest.c: undefined reference to `gethostbyaddr'
+c:/windows/TEMP/ccUqIgab.o(.data+0x0):conftest.c: undefined reference to `gethostbyaddr'
 configure:32481: $? = 1
 configure: failed program was:
 | /* confdefs.h.  */
@@ -5881,7 +5881,7 @@ configure: failed program was:
 configure:32506: result: no
 configure:32515: checking deeper for gethostbyaddr
 configure:32533: gcc -o conftest.exe -Os -DCURL_STATICLIB -I/usr/local/include  conftest.c -lwinmm -lws2_32  -lz >&5
-c:/windows/TEMP/ccKNUfgb.o(.text+0x9):conftest.c: undefined reference to `gethostbyaddr'
+c:/windows/TEMP/ccUqIgab.o(.text+0x9):conftest.c: undefined reference to `gethostbyaddr'
 configure:32539: $? = 1
 configure: failed program was:
 | /* confdefs.h.  */
@@ -5971,8 +5971,8 @@ configure: failed program was:
 configure:32567: result: but still no
 configure:32418: checking for gettimeofday
 configure:32475: gcc -o conftest.exe -Os -DCURL_STATICLIB -I/usr/local/include  conftest.c -lwinmm -lws2_32  -lz >&5
-c:/windows/TEMP/cc8JUfgb.o(.text+0x11):conftest.c: undefined reference to `gettimeofday'
-c:/windows/TEMP/cc8JUfgb.o(.data+0x0):conftest.c: undefined reference to `gettimeofday'
+c:/windows/TEMP/ccUqIgab.o(.text+0x11):conftest.c: undefined reference to `gettimeofday'
+c:/windows/TEMP/ccUqIgab.o(.data+0x0):conftest.c: undefined reference to `gettimeofday'
 configure:32481: $? = 1
 configure: failed program was:
 | /* confdefs.h.  */
@@ -6098,7 +6098,7 @@ configure: failed program was:
 configure:32506: result: no
 configure:32515: checking deeper for gettimeofday
 configure:32533: gcc -o conftest.exe -Os -DCURL_STATICLIB -I/usr/local/include  conftest.c -lwinmm -lws2_32  -lz >&5
-c:/windows/TEMP/ccKNUfgb.o(.text+0x9):conftest.c: undefined reference to `gettimeofday'
+c:/windows/TEMP/ccUqIgab.o(.text+0x9):conftest.c: undefined reference to `gettimeofday'
 configure:32539: $? = 1
 configure: failed program was:
 | /* confdefs.h.  */
@@ -6188,8 +6188,8 @@ configure: failed program was:
 configure:32567: result: but still no
 configure:32418: checking for inet_addr
 configure:32475: gcc -o conftest.exe -Os -DCURL_STATICLIB -I/usr/local/include  conftest.c -lwinmm -lws2_32  -lz >&5
-c:/windows/TEMP/ccKNUfgb.o(.text+0x11):conftest.c: undefined reference to `inet_addr'
-c:/windows/TEMP/ccKNUfgb.o(.data+0x0):conftest.c: undefined reference to `inet_addr'
+c:/windows/TEMP/ccUqIgab.o(.text+0x11):conftest.c: undefined reference to `inet_addr'
+c:/windows/TEMP/ccUqIgab.o(.data+0x0):conftest.c: undefined reference to `inet_addr'
 configure:32481: $? = 1
 configure: failed program was:
 | /* confdefs.h.  */
@@ -6315,7 +6315,7 @@ configure: failed program was:
 configure:32506: result: no
 configure:32515: checking deeper for inet_addr
 configure:32533: gcc -o conftest.exe -Os -DCURL_STATICLIB -I/usr/local/include  conftest.c -lwinmm -lws2_32  -lz >&5
-c:/windows/TEMP/cc8NUfgb.o(.text+0x9):conftest.c: undefined reference to `inet_addr'
+c:/windows/TEMP/ccUqIgab.o(.text+0x9):conftest.c: undefined reference to `inet_addr'
 configure:32539: $? = 1
 configure: failed program was:
 | /* confdefs.h.  */
@@ -6405,8 +6405,8 @@ configure: failed program was:
 configure:32567: result: but still no
 configure:32418: checking for inet_ntoa
 configure:32475: gcc -o conftest.exe -Os -DCURL_STATICLIB -I/usr/local/include  conftest.c -lwinmm -lws2_32  -lz >&5
-c:/windows/TEMP/ccKNUfgb.o(.text+0x11):conftest.c: undefined reference to `inet_ntoa'
-c:/windows/TEMP/ccKNUfgb.o(.data+0x0):conftest.c: undefined reference to `inet_ntoa'
+c:/windows/TEMP/ccUqIgab.o(.text+0x11):conftest.c: undefined reference to `inet_ntoa'
+c:/windows/TEMP/ccUqIgab.o(.data+0x0):conftest.c: undefined reference to `inet_ntoa'
 configure:32481: $? = 1
 configure: failed program was:
 | /* confdefs.h.  */
@@ -6532,7 +6532,7 @@ configure: failed program was:
 configure:32506: result: no
 configure:32515: checking deeper for inet_ntoa
 configure:32533: gcc -o conftest.exe -Os -DCURL_STATICLIB -I/usr/local/include  conftest.c -lwinmm -lws2_32  -lz >&5
-c:/windows/TEMP/ccKNUfgb.o(.text+0x9):conftest.c: undefined reference to `inet_ntoa'
+c:/windows/TEMP/ccUqIgab.o(.text+0x9):conftest.c: undefined reference to `inet_ntoa'
 configure:32539: $? = 1
 configure: failed program was:
 | /* confdefs.h.  */
@@ -6622,8 +6622,8 @@ configure: failed program was:
 configure:32567: result: but still no
 configure:32418: checking for inet_pton
 configure:32475: gcc -o conftest.exe -Os -DCURL_STATICLIB -I/usr/local/include  conftest.c -lwinmm -lws2_32  -lz >&5
-c:/windows/TEMP/ccKNUfgb.o(.text+0x11):conftest.c: undefined reference to `inet_pton'
-c:/windows/TEMP/ccKNUfgb.o(.data+0x0):conftest.c: undefined reference to `inet_pton'
+c:/windows/TEMP/ccUqIgab.o(.text+0x11):conftest.c: undefined reference to `inet_pton'
+c:/windows/TEMP/ccUqIgab.o(.data+0x0):conftest.c: undefined reference to `inet_pton'
 configure:32481: $? = 1
 configure: failed program was:
 | /* confdefs.h.  */
@@ -6749,7 +6749,7 @@ configure: failed program was:
 configure:32506: result: no
 configure:32515: checking deeper for inet_pton
 configure:32533: gcc -o conftest.exe -Os -DCURL_STATICLIB -I/usr/local/include  conftest.c -lwinmm -lws2_32  -lz >&5
-c:/windows/TEMP/cc8JUfgb.o(.text+0x9):conftest.c: undefined reference to `inet_pton'
+c:/windows/TEMP/ccUqIgab.o(.text+0x9):conftest.c: undefined reference to `inet_pton'
 configure:32539: $? = 1
 configure: failed program was:
 | /* confdefs.h.  */
@@ -6848,8 +6848,8 @@ configure:32494: $? = 0
 configure:32506: result: yes
 configure:32418: checking for closesocket
 configure:32475: gcc -o conftest.exe -Os -DCURL_STATICLIB -I/usr/local/include  conftest.c -lwinmm -lws2_32  -lz >&5
-c:/windows/TEMP/ccKNUfgb.o(.text+0x11):conftest.c: undefined reference to `closesocket'
-c:/windows/TEMP/ccKNUfgb.o(.data+0x0):conftest.c: undefined reference to `closesocket'
+c:/windows/TEMP/ccUqIgab.o(.text+0x11):conftest.c: undefined reference to `closesocket'
+c:/windows/TEMP/ccUqIgab.o(.data+0x0):conftest.c: undefined reference to `closesocket'
 configure:32481: $? = 1
 configure: failed program was:
 | /* confdefs.h.  */
@@ -6976,7 +6976,7 @@ configure: failed program was:
 configure:32506: result: no
 configure:32515: checking deeper for closesocket
 configure:32533: gcc -o conftest.exe -Os -DCURL_STATICLIB -I/usr/local/include  conftest.c -lwinmm -lws2_32  -lz >&5
-c:/windows/TEMP/ccKNUfgb.o(.text+0x9):conftest.c: undefined reference to `closesocket'
+c:/windows/TEMP/ccUqIgab.o(.text+0x9):conftest.c: undefined reference to `closesocket'
 configure:32539: $? = 1
 configure: failed program was:
 | /* confdefs.h.  */
@@ -7067,8 +7067,8 @@ configure: failed program was:
 configure:32567: result: but still no
 configure:32418: checking for siginterrupt
 configure:32475: gcc -o conftest.exe -Os -DCURL_STATICLIB -I/usr/local/include  conftest.c -lwinmm -lws2_32  -lz >&5
-c:/windows/TEMP/cc8NUfgb.o(.text+0x11):conftest.c: undefined reference to `siginterrupt'
-c:/windows/TEMP/cc8NUfgb.o(.data+0x0):conftest.c: undefined reference to `siginterrupt'
+c:/windows/TEMP/ccUqIgab.o(.text+0x11):conftest.c: undefined reference to `siginterrupt'
+c:/windows/TEMP/ccUqIgab.o(.data+0x0):conftest.c: undefined reference to `siginterrupt'
 configure:32481: $? = 1
 configure: failed program was:
 | /* confdefs.h.  */
@@ -7195,7 +7195,7 @@ configure: failed program was:
 configure:32506: result: no
 configure:32515: checking deeper for siginterrupt
 configure:32533: gcc -o conftest.exe -Os -DCURL_STATICLIB -I/usr/local/include  conftest.c -lwinmm -lws2_32  -lz >&5
-c:/windows/TEMP/ccKNUfgb.o(.text+0x9):conftest.c: undefined reference to `siginterrupt'
+c:/windows/TEMP/ccUqIgab.o(.text+0x9):conftest.c: undefined reference to `siginterrupt'
 configure:32539: $? = 1
 configure: failed program was:
 | /* confdefs.h.  */
@@ -7286,8 +7286,8 @@ configure: failed program was:
 configure:32567: result: but still no
 configure:32418: checking for sigaction
 configure:32475: gcc -o conftest.exe -Os -DCURL_STATICLIB -I/usr/local/include  conftest.c -lwinmm -lws2_32  -lz >&5
-c:/windows/TEMP/ccKNUfgb.o(.text+0x11):conftest.c: undefined reference to `sigaction'
-c:/windows/TEMP/ccKNUfgb.o(.data+0x0):conftest.c: undefined reference to `sigaction'
+c:/windows/TEMP/ccUqIgab.o(.text+0x11):conftest.c: undefined reference to `sigaction'
+c:/windows/TEMP/ccUqIgab.o(.data+0x0):conftest.c: undefined reference to `sigaction'
 configure:32481: $? = 1
 configure: failed program was:
 | /* confdefs.h.  */
@@ -7414,7 +7414,7 @@ configure: failed program was:
 configure:32506: result: no
 configure:32515: checking deeper for sigaction
 configure:32533: gcc -o conftest.exe -Os -DCURL_STATICLIB -I/usr/local/include  conftest.c -lwinmm -lws2_32  -lz >&5
-c:/windows/TEMP/cc8NUfgb.o(.text+0x9):conftest.c: undefined reference to `sigaction'
+c:/windows/TEMP/ccUqIgab.o(.text+0x9):conftest.c: undefined reference to `sigaction'
 configure:32539: $? = 1
 configure: failed program was:
 | /* confdefs.h.  */
@@ -7514,8 +7514,8 @@ configure:32494: $? = 0
 configure:32506: result: yes
 configure:32418: checking for getpass_r
 configure:32475: gcc -o conftest.exe -Os -DCURL_STATICLIB -I/usr/local/include  conftest.c -lwinmm -lws2_32  -lz >&5
-c:/windows/TEMP/ccKNUfgb.o(.text+0x11):conftest.c: undefined reference to `getpass_r'
-c:/windows/TEMP/ccKNUfgb.o(.data+0x0):conftest.c: undefined reference to `getpass_r'
+c:/windows/TEMP/ccUqIgab.o(.text+0x11):conftest.c: undefined reference to `getpass_r'
+c:/windows/TEMP/ccUqIgab.o(.data+0x0):conftest.c: undefined reference to `getpass_r'
 configure:32481: $? = 1
 configure: failed program was:
 | /* confdefs.h.  */
@@ -7643,7 +7643,7 @@ configure: failed program was:
 configure:32506: result: no
 configure:32515: checking deeper for getpass_r
 configure:32533: gcc -o conftest.exe -Os -DCURL_STATICLIB -I/usr/local/include  conftest.c -lwinmm -lws2_32  -lz >&5
-c:/windows/TEMP/ccKNUfgb.o(.text+0x9):conftest.c: undefined reference to `getpass_r'
+c:/windows/TEMP/ccUqIgab.o(.text+0x9):conftest.c: undefined reference to `getpass_r'
 configure:32539: $? = 1
 configure: failed program was:
 | /* confdefs.h.  */
@@ -7735,8 +7735,8 @@ configure: failed program was:
 configure:32567: result: but still no
 configure:32418: checking for strlcat
 configure:32475: gcc -o conftest.exe -Os -DCURL_STATICLIB -I/usr/local/include  conftest.c -lwinmm -lws2_32  -lz >&5
-c:/windows/TEMP/cc8NUfgb.o(.text+0x11):conftest.c: undefined reference to `strlcat'
-c:/windows/TEMP/cc8NUfgb.o(.data+0x0):conftest.c: undefined reference to `strlcat'
+c:/windows/TEMP/ccUqIgab.o(.text+0x11):conftest.c: undefined reference to `strlcat'
+c:/windows/TEMP/ccUqIgab.o(.data+0x0):conftest.c: undefined reference to `strlcat'
 configure:32481: $? = 1
 configure: failed program was:
 | /* confdefs.h.  */
@@ -7864,7 +7864,7 @@ configure: failed program was:
 configure:32506: result: no
 configure:32515: checking deeper for strlcat
 configure:32533: gcc -o conftest.exe -Os -DCURL_STATICLIB -I/usr/local/include  conftest.c -lwinmm -lws2_32  -lz >&5
-c:/windows/TEMP/ccKNUfgb.o(.text+0x9):conftest.c: undefined reference to `strlcat'
+c:/windows/TEMP/ccUqIgab.o(.text+0x9):conftest.c: undefined reference to `strlcat'
 configure:32539: $? = 1
 configure: failed program was:
 | /* confdefs.h.  */
@@ -7956,8 +7956,8 @@ configure: failed program was:
 configure:32567: result: but still no
 configure:32418: checking for getpwuid
 configure:32475: gcc -o conftest.exe -Os -DCURL_STATICLIB -I/usr/local/include  conftest.c -lwinmm -lws2_32  -lz >&5
-c:/windows/TEMP/ccKNUfgb.o(.text+0x11):conftest.c: undefined reference to `getpwuid'
-c:/windows/TEMP/ccKNUfgb.o(.data+0x0):conftest.c: undefined reference to `getpwuid'
+c:/windows/TEMP/ccUqIgab.o(.text+0x11):conftest.c: undefined reference to `getpwuid'
+c:/windows/TEMP/ccUqIgab.o(.data+0x0):conftest.c: undefined reference to `getpwuid'
 configure:32481: $? = 1
 configure: failed program was:
 | /* confdefs.h.  */
@@ -8085,7 +8085,7 @@ configure: failed program was:
 configure:32506: result: no
 configure:32515: checking deeper for getpwuid
 configure:32533: gcc -o conftest.exe -Os -DCURL_STATICLIB -I/usr/local/include  conftest.c -lwinmm -lws2_32  -lz >&5
-c:/windows/TEMP/ccKNUfgb.o(.text+0x9):conftest.c: undefined reference to `getpwuid'
+c:/windows/TEMP/ccUqIgab.o(.text+0x9):conftest.c: undefined reference to `getpwuid'
 configure:32539: $? = 1
 configure: failed program was:
 | /* confdefs.h.  */
@@ -8177,8 +8177,8 @@ configure: failed program was:
 configure:32567: result: but still no
 configure:32418: checking for geteuid
 configure:32475: gcc -o conftest.exe -Os -DCURL_STATICLIB -I/usr/local/include  conftest.c -lwinmm -lws2_32  -lz >&5
-c:/windows/TEMP/cc2KUfgb.o(.text+0x11):conftest.c: undefined reference to `geteuid'
-c:/windows/TEMP/cc2KUfgb.o(.data+0x0):conftest.c: undefined reference to `geteuid'
+c:/windows/TEMP/ccUqIgab.o(.text+0x11):conftest.c: undefined reference to `geteuid'
+c:/windows/TEMP/ccUqIgab.o(.data+0x0):conftest.c: undefined reference to `geteuid'
 configure:32481: $? = 1
 configure: failed program was:
 | /* confdefs.h.  */
@@ -8306,7 +8306,7 @@ configure: failed program was:
 configure:32506: result: no
 configure:32515: checking deeper for geteuid
 configure:32533: gcc -o conftest.exe -Os -DCURL_STATICLIB -I/usr/local/include  conftest.c -lwinmm -lws2_32  -lz >&5
-c:/windows/TEMP/ccgKUfgb.o(.text+0x9):conftest.c: undefined reference to `geteuid'
+c:/windows/TEMP/ccUqIgab.o(.text+0x9):conftest.c: undefined reference to `geteuid'
 configure:32539: $? = 1
 configure: failed program was:
 | /* confdefs.h.  */
@@ -8398,8 +8398,8 @@ configure: failed program was:
 configure:32567: result: but still no
 configure:32418: checking for dlopen
 configure:32475: gcc -o conftest.exe -Os -DCURL_STATICLIB -I/usr/local/include  conftest.c -lwinmm -lws2_32  -lz >&5
-c:/windows/TEMP/ccKNUfgb.o(.text+0x11):conftest.c: undefined reference to `dlopen'
-c:/windows/TEMP/ccKNUfgb.o(.data+0x0):conftest.c: undefined reference to `dlopen'
+c:/windows/TEMP/ccUqIgab.o(.text+0x11):conftest.c: undefined reference to `dlopen'
+c:/windows/TEMP/ccUqIgab.o(.data+0x0):conftest.c: undefined reference to `dlopen'
 configure:32481: $? = 1
 configure: failed program was:
 | /* confdefs.h.  */
@@ -8527,7 +8527,7 @@ configure: failed program was:
 configure:32506: result: no
 configure:32515: checking deeper for dlopen
 configure:32533: gcc -o conftest.exe -Os -DCURL_STATICLIB -I/usr/local/include  conftest.c -lwinmm -lws2_32  -lz >&5
-c:/windows/TEMP/ccKNUfgb.o(.text+0x9):conftest.c: undefined reference to `dlopen'
+c:/windows/TEMP/ccUqIgab.o(.text+0x9):conftest.c: undefined reference to `dlopen'
 configure:32539: $? = 1
 configure: failed program was:
 | /* confdefs.h.  */
@@ -8628,8 +8628,8 @@ configure:32494: $? = 0
 configure:32506: result: yes
 configure:32418: checking for sigsetjmp
 configure:32475: gcc -o conftest.exe -Os -DCURL_STATICLIB -I/usr/local/include  conftest.c -lwinmm -lws2_32  -lz >&5
-c:/windows/TEMP/ccgKUfgb.o(.text+0x11):conftest.c: undefined reference to `sigsetjmp'
-c:/windows/TEMP/ccgKUfgb.o(.data+0x0):conftest.c: undefined reference to `sigsetjmp'
+c:/windows/TEMP/ccUqIgab.o(.text+0x11):conftest.c: undefined reference to `sigsetjmp'
+c:/windows/TEMP/ccUqIgab.o(.data+0x0):conftest.c: undefined reference to `sigsetjmp'
 configure:32481: $? = 1
 configure: failed program was:
 | /* confdefs.h.  */
@@ -8758,7 +8758,7 @@ configure: failed program was:
 configure:32506: result: no
 configure:32515: checking deeper for sigsetjmp
 configure:32533: gcc -o conftest.exe -Os -DCURL_STATICLIB -I/usr/local/include  conftest.c -lwinmm -lws2_32  -lz >&5
-c:/windows/TEMP/cc2KUfgb.o(.text+0xc):conftest.c: undefined reference to `sigsetjmp'
+c:/windows/TEMP/ccUqIgab.o(.text+0xc):conftest.c: undefined reference to `sigsetjmp'
 configure:32539: $? = 1
 configure: failed program was:
 | /* confdefs.h.  */
@@ -8851,8 +8851,8 @@ configure: failed program was:
 configure:32567: result: but still no
 configure:32418: checking for basename
 configure:32475: gcc -o conftest.exe -Os -DCURL_STATICLIB -I/usr/local/include  conftest.c -lwinmm -lws2_32  -lz >&5
-c:/windows/TEMP/ccKNUfgb.o(.text+0x11):conftest.c: undefined reference to `basename'
-c:/windows/TEMP/ccKNUfgb.o(.data+0x0):conftest.c: undefined reference to `basename'
+c:/windows/TEMP/ccUqIgab.o(.text+0x11):conftest.c: undefined reference to `basename'
+c:/windows/TEMP/ccUqIgab.o(.data+0x0):conftest.c: undefined reference to `basename'
 configure:32481: $? = 1
 configure: failed program was:
 | /* confdefs.h.  */
@@ -8981,7 +8981,7 @@ configure: failed program was:
 configure:32506: result: no
 configure:32515: checking deeper for basename
 configure:32533: gcc -o conftest.exe -Os -DCURL_STATICLIB -I/usr/local/include  conftest.c -lwinmm -lws2_32  -lz >&5
-c:/windows/TEMP/ccKNUfgb.o(.text+0x9):conftest.c: undefined reference to `basename'
+c:/windows/TEMP/ccUqIgab.o(.text+0x9):conftest.c: undefined reference to `basename'
 configure:32539: $? = 1
 configure: failed program was:
 | /* confdefs.h.  */
@@ -9083,8 +9083,8 @@ configure:32494: $? = 0
 configure:32506: result: yes
 configure:32418: checking for ftruncate
 configure:32475: gcc -o conftest.exe -Os -DCURL_STATICLIB -I/usr/local/include  conftest.c -lwinmm -lws2_32  -lz >&5
-c:/windows/TEMP/cc2KUfgb.o(.text+0x11):conftest.c: undefined reference to `ftruncate'
-c:/windows/TEMP/cc2KUfgb.o(.data+0x0):conftest.c: undefined reference to `ftruncate'
+c:/windows/TEMP/ccUqIgab.o(.text+0x11):conftest.c: undefined reference to `ftruncate'
+c:/windows/TEMP/ccUqIgab.o(.data+0x0):conftest.c: undefined reference to `ftruncate'
 configure:32481: $? = 1
 configure: failed program was:
 | /* confdefs.h.  */
@@ -9214,7 +9214,7 @@ configure: failed program was:
 configure:32506: result: no
 configure:32515: checking deeper for ftruncate
 configure:32533: gcc -o conftest.exe -Os -DCURL_STATICLIB -I/usr/local/include  conftest.c -lwinmm -lws2_32  -lz >&5
-c:/windows/TEMP/ccKNUfgb.o(.text+0x9):conftest.c: undefined reference to `ftruncate'
+c:/windows/TEMP/ccUqIgab.o(.text+0x9):conftest.c: undefined reference to `ftruncate'
 configure:32539: $? = 1
 configure: failed program was:
 | /* confdefs.h.  */
@@ -9308,8 +9308,8 @@ configure: failed program was:
 configure:32567: result: but still no
 configure:32418: checking for pipe
 configure:32475: gcc -o conftest.exe -Os -DCURL_STATICLIB -I/usr/local/include  conftest.c -lwinmm -lws2_32  -lz >&5
-c:/windows/TEMP/ccKNUfgb.o(.text+0x11):conftest.c: undefined reference to `pipe'
-c:/windows/TEMP/ccKNUfgb.o(.data+0x0):conftest.c: undefined reference to `pipe'
+c:/windows/TEMP/ccUqIgab.o(.text+0x11):conftest.c: undefined reference to `pipe'
+c:/windows/TEMP/ccUqIgab.o(.data+0x0):conftest.c: undefined reference to `pipe'
 configure:32481: $? = 1
 configure: failed program was:
 | /* confdefs.h.  */
@@ -9439,7 +9439,7 @@ configure: failed program was:
 configure:32506: result: no
 configure:32515: checking deeper for pipe
 configure:32533: gcc -o conftest.exe -Os -DCURL_STATICLIB -I/usr/local/include  conftest.c -lwinmm -lws2_32  -lz >&5
-c:/windows/TEMP/ccoKUfgb.o(.text+0x9):conftest.c: undefined reference to `pipe'
+c:/windows/TEMP/ccUqIgab.o(.text+0x9):conftest.c: undefined reference to `pipe'
 configure:32539: $? = 1
 configure: failed program was:
 | /* confdefs.h.  */
@@ -9533,8 +9533,8 @@ configure: failed program was:
 configure:32567: result: but still no
 configure:32418: checking for poll
 configure:32475: gcc -o conftest.exe -Os -DCURL_STATICLIB -I/usr/local/include  conftest.c -lwinmm -lws2_32  -lz >&5
-c:/windows/TEMP/ccKNUfgb.o(.text+0x11):conftest.c: undefined reference to `poll'
-c:/windows/TEMP/ccKNUfgb.o(.data+0x0):conftest.c: undefined reference to `poll'
+c:/windows/TEMP/ccUqIgab.o(.text+0x11):conftest.c: undefined reference to `poll'
+c:/windows/TEMP/ccUqIgab.o(.data+0x0):conftest.c: undefined reference to `poll'
 configure:32481: $? = 1
 configure: failed program was:
 | /* confdefs.h.  */
@@ -9664,7 +9664,7 @@ configure: failed program was:
 configure:32506: result: no
 configure:32515: checking deeper for poll
 configure:32533: gcc -o conftest.exe -Os -DCURL_STATICLIB -I/usr/local/include  conftest.c -lwinmm -lws2_32  -lz >&5
-c:/windows/TEMP/cc2KUfgb.o(.text+0x9):conftest.c: undefined reference to `poll'
+c:/windows/TEMP/ccUqIgab.o(.text+0x9):conftest.c: undefined reference to `poll'
 configure:32539: $? = 1
 configure: failed program was:
 | /* confdefs.h.  */
@@ -9758,8 +9758,8 @@ configure: failed program was:
 configure:32567: result: but still no
 configure:32418: checking for getrlimit
 configure:32475: gcc -o conftest.exe -Os -DCURL_STATICLIB -I/usr/local/include  conftest.c -lwinmm -lws2_32  -lz >&5
-c:/windows/TEMP/ccgKUfgb.o(.text+0x11):conftest.c: undefined reference to `getrlimit'
-c:/windows/TEMP/ccgKUfgb.o(.data+0x0):conftest.c: undefined reference to `getrlimit'
+c:/windows/TEMP/ccUqIgab.o(.text+0x11):conftest.c: undefined reference to `getrlimit'
+c:/windows/TEMP/ccUqIgab.o(.data+0x0):conftest.c: undefined reference to `getrlimit'
 configure:32481: $? = 1
 configure: failed program was:
 | /* confdefs.h.  */
@@ -9889,7 +9889,7 @@ configure: failed program was:
 configure:32506: result: no
 configure:32515: checking deeper for getrlimit
 configure:32533: gcc -o conftest.exe -Os -DCURL_STATICLIB -I/usr/local/include  conftest.c -lwinmm -lws2_32  -lz >&5
-c:/windows/TEMP/cc2KUfgb.o(.text+0x9):conftest.c: undefined reference to `getrlimit'
+c:/windows/TEMP/ccUqIgab.o(.text+0x9):conftest.c: undefined reference to `getrlimit'
 configure:32539: $? = 1
 configure: failed program was:
 | /* confdefs.h.  */
@@ -9983,8 +9983,8 @@ configure: failed program was:
 configure:32567: result: but still no
 configure:32418: checking for setrlimit
 configure:32475: gcc -o conftest.exe -Os -DCURL_STATICLIB -I/usr/local/include  conftest.c -lwinmm -lws2_32  -lz >&5
-c:/windows/TEMP/ccKNUfgb.o(.text+0x11):conftest.c: undefined reference to `setrlimit'
-c:/windows/TEMP/ccKNUfgb.o(.data+0x0):conftest.c: undefined reference to `setrlimit'
+c:/windows/TEMP/ccUqIgab.o(.text+0x11):conftest.c: undefined reference to `setrlimit'
+c:/windows/TEMP/ccUqIgab.o(.data+0x0):conftest.c: undefined reference to `setrlimit'
 configure:32481: $? = 1
 configure: failed program was:
 | /* confdefs.h.  */
@@ -10114,7 +10114,7 @@ configure: failed program was:
 configure:32506: result: no
 configure:32515: checking deeper for setrlimit
 configure:32533: gcc -o conftest.exe -Os -DCURL_STATICLIB -I/usr/local/include  conftest.c -lwinmm -lws2_32  -lz >&5
-c:/windows/TEMP/ccKNUfgb.o(.text+0x9):conftest.c: undefined reference to `setrlimit'
+c:/windows/TEMP/ccUqIgab.o(.text+0x9):conftest.c: undefined reference to `setrlimit'
 configure:32539: $? = 1
 configure: failed program was:
 | /* confdefs.h.  */
@@ -10718,16 +10718,16 @@ lt_lt_cv_sys_global_symbol_to_cdecl='"sed -n -e '\''s/^. .* \\(.*\\)\$/extern in
 ## Output variables. ##
 ## ----------------- ##
 
-ACLOCAL='${SHELL} /home/home/SOTU/CriticalMass-1.0.0/curl/missing --run aclocal-1.9'
+ACLOCAL='${SHELL} /c/cygwin/home/home/sdl/sotu/svn/sotu/curl/missing --run aclocal-1.9'
 AMDEPBACKSLASH=''
 AMDEP_FALSE=''
 AMDEP_TRUE='#'
-AMTAR='${SHELL} /home/home/SOTU/CriticalMass-1.0.0/curl/missing --run tar'
+AMTAR='${SHELL} /c/cygwin/home/home/sdl/sotu/svn/sotu/curl/missing --run tar'
 AR='ar'
 AS='as'
-AUTOCONF='${SHELL} /home/home/SOTU/CriticalMass-1.0.0/curl/missing --run autoconf'
-AUTOHEADER='${SHELL} /home/home/SOTU/CriticalMass-1.0.0/curl/missing --run autoheader'
-AUTOMAKE='${SHELL} /home/home/SOTU/CriticalMass-1.0.0/curl/missing --run automake-1.9'
+AUTOCONF='${SHELL} /c/cygwin/home/home/sdl/sotu/svn/sotu/curl/missing --run autoconf'
+AUTOHEADER='${SHELL} /c/cygwin/home/home/sdl/sotu/svn/sotu/curl/missing --run autoheader'
+AUTOMAKE='${SHELL} /c/cygwin/home/home/sdl/sotu/svn/sotu/curl/missing --run automake-1.9'
 AWK='gawk'
 CABUNDLE_FALSE=''
 CABUNDLE_TRUE='#'
@@ -10785,7 +10785,7 @@ LTLIBOBJS=''
 MAINT='#'
 MAINTAINER_MODE_FALSE=''
 MAINTAINER_MODE_TRUE='#'
-MAKEINFO='${SHELL} /home/home/SOTU/CriticalMass-1.0.0/curl/missing --run makeinfo'
+MAKEINFO='${SHELL} /c/cygwin/home/home/sdl/sotu/svn/sotu/curl/missing --run makeinfo'
 MANOPT=''
 MIMPURE_FALSE=''
 MIMPURE_TRUE='#'
@@ -10852,7 +10852,7 @@ host_os='mingw32'
 host_vendor='pc'
 includedir='${prefix}/include'
 infodir='${prefix}/info'
-install_sh='/home/home/SOTU/CriticalMass-1.0.0/curl/install-sh'
+install_sh='/c/cygwin/home/home/sdl/sotu/svn/sotu/curl/install-sh'
 libdir='${exec_prefix}/lib'
 libexecdir='${exec_prefix}/libexec'
 localstatedir='${prefix}/var'
@@ -10955,37 +10955,3 @@ target_alias=''
 extern "C" void std::exit (int) throw (); using std::exit;
 
 configure: exit 0
-
-## ---------------------- ##
-## Running config.status. ##
-## ---------------------- ##
-
-This file was extended by curl config.status -, which was
-generated by GNU Autoconf 2.59.  Invocation command line was
-
-  CONFIG_FILES    = 
-  CONFIG_HEADERS  = 
-  CONFIG_LINKS    = 
-  CONFIG_COMMANDS = 
-  $ ./config.status Makefile
-
-on MILANB
-
-config.status:791: creating Makefile
-
-## ---------------------- ##
-## Running config.status. ##
-## ---------------------- ##
-
-This file was extended by curl config.status -, which was
-generated by GNU Autoconf 2.59.  Invocation command line was
-
-  CONFIG_FILES    = 
-  CONFIG_HEADERS  = 
-  CONFIG_LINKS    = 
-  CONFIG_COMMANDS = 
-  $ ./config.status lib/Makefile
-
-on MILANB
-
-config.status:791: creating lib/Makefile
