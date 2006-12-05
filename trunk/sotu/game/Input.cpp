@@ -2,6 +2,7 @@
 //   Input subsystem.
 //
 // Copyright (C) 2001 Frank Becker
+// Copyright (c) 2006 Milan Babuskov
 //
 // This program is free software; you can redistribute it and/or modify it under
 // the terms of the GNU General Public License as published by the Free Software
@@ -96,52 +97,55 @@ bool Input::tryGetTrigger( Trigger &trigger, bool &isDown)
         return false;
     }
 
-    switch( event.type ) 
+    switch( event.type )
     {
-	case SDL_KEYDOWN:
-	    isDown = true;
+        case SDL_KEYDOWN:
+            isDown = true;
 #ifndef NO_QUICK_EXIT
-	    if( event.key.keysym.sym == SDLK_BACKQUOTE)
-	    {
-		GameState::isAlive = false;
-		LOG_WARNING << "Quick Exit invoked..." << endl;
+            if( event.key.keysym.sym == SDLK_BACKQUOTE)
+            {
+                GameState::isAlive = false;
+                LOG_WARNING << "Quick Exit invoked..." << endl;
 
-		trigger.type = eUnknownTrigger;
-		break;
-	    }
+                trigger.type = eUnknownTrigger;
+                break;
+            }
 #endif
-	    //fall through
+            //fall through
 
-	case SDL_KEYUP:
-	    trigger.type = eKeyTrigger;
-	    trigger.data1 = event.key.keysym.sym;
-	    trigger.data2 = event.key.keysym.mod;
-	    trigger.data3 = event.key.keysym.unicode;
-	    break;
+        case SDL_KEYUP:
+            trigger.type = eKeyTrigger;
+            trigger.data1 = event.key.keysym.sym;
+            trigger.data2 = event.key.keysym.mod;
+            trigger.data3 = event.key.keysym.unicode;
+            break;
 
-	case SDL_MOUSEBUTTONDOWN:
-	    isDown = true;
-	    //fall through
+        case SDL_MOUSEBUTTONDOWN:
+            isDown = true;
+            //fall through
 
-	case SDL_MOUSEBUTTONUP:
-	    trigger.type = eButtonTrigger;
-	    trigger.data1 = event.button.button;
-	    trigger.data2 = 0;
-	    trigger.data3 = 0;
-	    break;
+        case SDL_MOUSEBUTTONUP:
+            trigger.type = eButtonTrigger;
+            trigger.data1 = event.button.button;
+            trigger.data2 = 0;
+            trigger.data3 = 0;
+            break;
 
-	case SDL_MOUSEMOTION:
-	    trigger.type = eUnknownTrigger;
-	    _valDX = event.motion.xrel*_sensitivity;
-	    _valDY = -event.motion.yrel*_sensitivity;
-	    break;
+        case SDL_MOUSEMOTION:
+            trigger.type = eUnknownTrigger;
+            _valDX = event.motion.xrel*_sensitivity;
+            _valDY = -event.motion.yrel*_sensitivity;
 
-	case SDL_QUIT:
-	    GameState::isAlive = false;
-	    break;
+        //if (event.motion.x == 0 || event.motion.y == 0)
+        //    Video
+            break;
 
-	default:
-	    trigger.type = eUnknownTrigger;
+        case SDL_QUIT:
+            GameState::isAlive = false;
+            break;
+
+        default:
+            trigger.type = eUnknownTrigger;
             break;
     }
 
@@ -158,8 +162,8 @@ bool Input::update( void)
     float thisTime = Timer::getTime();
     if( thisTime > nextTime)
     {
-	updateMouseSettings();
-	nextTime = thisTime+0.5f;
+        updateMouseSettings();
+        nextTime = thisTime+0.5f;
     }
 
     _valDX = 0.0f;
@@ -173,24 +177,24 @@ bool Input::update( void)
             continue;
         }
 
-	if( _interceptor)
-	{
-	    //feed trigger to interceptor instead of normal callback mechanism
-	    _interceptor->input( trigger, isDown);
-	    continue;
-	}
-      
+        if( _interceptor)
+        {
+            //feed trigger to interceptor instead of normal callback mechanism
+            _interceptor->input( trigger, isDown);
+            continue;
+        }
+
         if( !_bindMode)
-	{
-	    //find callback for this trigger
-	    //i.e. the action bound to this key
-	    Callback * cb = findHash( trigger, _callbackMap);
-	    if( cb)
-	    {
-//		LOG_INFO << "Callback for [" << cb->getActionName() << "]" << endl;
-		cb->performAction( trigger, isDown);
-	    }
-	}
+        {
+            //find callback for this trigger
+            //i.e. the action bound to this key
+            Callback * cb = findHash( trigger, _callbackMap);
+            if( cb)
+            {
+//                LOG_INFO << "Callback for [" << cb->getActionName() << "]" << endl;
+                cb->performAction( trigger, isDown);
+            }
+        }
         else if( _callback && (trigger.type!=eMotionTrigger))
         {
             //Note: motion triggers can't be bound
@@ -198,12 +202,12 @@ bool Input::update( void)
             //we are in bind-mode, so bind this trigger to callback
             bind( trigger, _callback);
             //go back to normal mode
-	    _bindMode = false;
+            _bindMode = false;
         }
         else if( !_callback)
         {
             LOG_ERROR << "Input is in bind mode, but callback is 0" << endl;
-	    _bindMode = false;
+            _bindMode = false;
         }
     }
     _valDX = feedbackFilter( _valDX, _dampVal, _memoryDX);
@@ -211,24 +215,24 @@ bool Input::update( void)
 
     if( (fabs(_valDX)>1.0e-10) || (fabs(_valDY)>1.0e-10))
     {
-	trigger.type = eMotionTrigger;
-	trigger.fData1 = _valDX; 
-	trigger.fData2 = _valDY;
+        trigger.type = eMotionTrigger;
+        trigger.fData1 = _valDX;
+        trigger.fData2 = _valDY;
 
-	if( _interceptor)
-	{
-	    //feed trigger to interceptor instead of normal callback mechanism
-	    _interceptor->input( trigger, true);
-	}
-	else
-	{
-	    Callback * cb = findHash( trigger, _callbackMap);
-	    if( cb)
-	    {
-//	        LOG_INFO << "Callback for [" << cb->getActionName() << "]" << endl;
-		cb->performAction( trigger, isDown);
-	    }
-	}
+        if( _interceptor)
+        {
+            //feed trigger to interceptor instead of normal callback mechanism
+            _interceptor->input( trigger, true);
+        }
+        else
+        {
+            Callback * cb = findHash( trigger, _callbackMap);
+            if( cb)
+            {
+//                LOG_INFO << "Callback for [" << cb->getActionName() << "]" << endl;
+                cb->performAction( trigger, isDown);
+            }
+        }
     }
 
     return true;
@@ -250,8 +254,8 @@ void Input::handleLine( const string line)
     Trigger trigger;
     if( _keys.convertStringToTrigger( keyname, trigger))
     {
-	Callback *cb = _callbackManager.getCallback( action);
-	bind( trigger, cb);
+        Callback *cb = _callbackManager.getCallback( action);
+        bind( trigger, cb);
     }
 }
 
@@ -263,7 +267,7 @@ void Input::save( ofstream &outfile)
     hash_map< Trigger, Callback*, hash<Trigger> >::const_iterator ci;
     for( ci=_callbackMap.begin(); ci!=_callbackMap.end(); ci++)
     {
-        outfile << "bind " 
+        outfile << "bind "
                 << ci->second->getActionName() << " "
                 << _keys.convertTriggerToString( ci->first)
                 << endl;
@@ -282,7 +286,7 @@ void Input::bind( Trigger &trigger, Callback *callback)
         delete cb;
     }
 
-    LOG_INFO << "Creating binding for " << callback->getActionName() 
+    LOG_INFO << "Creating binding for " << callback->getActionName()
              << " - " << trigger.type << ":" << trigger.data1 << endl;
     _callbackMap[ trigger] = callback;
 }

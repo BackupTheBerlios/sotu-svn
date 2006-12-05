@@ -2,6 +2,7 @@
 //   Action callbacks for mouse and keyboard events.
 //
 // Copyright (C) 2001 Frank Becker
+// Copyright (c) 2006 Milan Babuskov
 //
 // This program is free software; you can redistribute it and/or modify it under
 // the terms of the GNU General Public License as published by the Free Software
@@ -30,14 +31,14 @@ void MotionAction::performAction( Trigger &trigger, bool /*isDown*/)
 //    XTRACE();
     switch( GameState::context)
     {
-	case Context::eInGame:
-	    HeroS::instance()->move( trigger.fData1, trigger.fData2);
-	    break;
-	case Context::eCameraFlyby:
-	    CameraS::instance()->mouseLook( trigger.fData1, trigger.fData2);
-	    break;
-	default:
-	    break;
+        case Context::eInGame:
+            HeroS::instance()->move( trigger.fData1, trigger.fData2);
+            break;
+        case Context::eCameraFlyby:
+            CameraS::instance()->mouseLook( trigger.fData1, trigger.fData2);
+            break;
+        default:
+            break;
     }
 }
 
@@ -46,14 +47,14 @@ void MotionLeftAction::performAction( Trigger &, bool isDown)
 //    XTRACE();
     switch( GameState::context)
     {
-	case Context::eInGame:
-	    HeroS::instance()->move( Direction::eLeft, isDown);
-	    break;
-	case Context::eCameraFlyby:
-	    CameraS::instance()->move( Direction::eLeft, isDown);
-	    break;
-	default:
-	    break;
+        case Context::eInGame:
+            HeroS::instance()->move( Direction::eLeft, isDown);
+            break;
+        case Context::eCameraFlyby:
+            CameraS::instance()->move( Direction::eLeft, isDown);
+            break;
+        default:
+            break;
     }
 }
 
@@ -63,14 +64,14 @@ void MotionRightAction::performAction( Trigger &, bool isDown)
 //    XTRACE();
     switch( GameState::context)
     {
-	case Context::eInGame:
-	    HeroS::instance()->move( Direction::eRight, isDown);
-	    break;
-	case Context::eCameraFlyby:
-	    CameraS::instance()->move( Direction::eRight, isDown);
-	    break;
-	default:
-	    break;
+        case Context::eInGame:
+            HeroS::instance()->move( Direction::eRight, isDown);
+            break;
+        case Context::eCameraFlyby:
+            CameraS::instance()->move( Direction::eRight, isDown);
+            break;
+        default:
+            break;
     }
 }
 
@@ -79,14 +80,14 @@ void MotionUpAction::performAction( Trigger &, bool isDown)
 //    XTRACE();
     switch( GameState::context)
     {
-	case Context::eInGame:
-	    HeroS::instance()->move( Direction::eUp, isDown);
-	    break;
-	case Context::eCameraFlyby:
-	    CameraS::instance()->move( Direction::eUp, isDown);
-	    break;
-	default:
-	    break;
+        case Context::eInGame:
+            HeroS::instance()->move( Direction::eUp, isDown);
+            break;
+        case Context::eCameraFlyby:
+            CameraS::instance()->move( Direction::eUp, isDown);
+            break;
+        default:
+            break;
     }
 }
 
@@ -95,14 +96,14 @@ void MotionDownAction::performAction( Trigger &, bool isDown)
 //    XTRACE();
     switch( GameState::context)
     {
-	case Context::eInGame:
-	    HeroS::instance()->move( Direction::eDown, isDown);
-	    break;
-	case Context::eCameraFlyby:
-	    CameraS::instance()->move( Direction::eDown, isDown);
-	    break;
-	default:
-	    break;
+        case Context::eInGame:
+            HeroS::instance()->move( Direction::eDown, isDown);
+            break;
+        case Context::eCameraFlyby:
+            CameraS::instance()->move( Direction::eDown, isDown);
+            break;
+        default:
+            break;
     }
 }
 
@@ -111,14 +112,14 @@ void WeaponFireAction::performAction( Trigger &, bool isDown)
 //    XTRACE();
     switch( GameState::context)
     {
-	case Context::eInGame:
-	    HeroS::instance()->weaponFire( isDown, _numWeap);
-	    break;
-	case Context::eCameraFlyby:
-	    HeroS::instance()->weaponFire( isDown, _numWeap);
-	    break;
-	default:
-	    break;
+        case Context::eInGame:
+            HeroS::instance()->weaponFire( isDown, _numWeap);
+            break;
+        case Context::eCameraFlyby:
+            HeroS::instance()->weaponFire( isDown, _numWeap);
+            break;
+        default:
+            break;
     }
 }
 
@@ -140,8 +141,8 @@ void ConfirmAction::performAction( Trigger &, bool isDown)
 #if 0
     switch( GameState::context)
     {
-	default:
-	    break;
+        default:
+            break;
     }
 #endif
 }
@@ -153,15 +154,15 @@ void ChangeContext::performAction( Trigger &, bool isDown)
 
     if( GameState::context == Context::eInGame)
     {
-	LOG_INFO << "eCameraFlyby..." << endl;
-	GameState::context = Context::eCameraFlyby;
-	GameState::stopwatch.pause();
+        LOG_INFO << "eCameraFlyby..." << endl;
+        GameState::context = Context::eCameraFlyby;
+        GameState::stopwatch.pause();
     }
     else if( GameState::context == Context::eCameraFlyby)
     {
-	LOG_INFO << "eInGame..." << endl;
-	GameState::context = Context::eInGame;
-	GameState::stopwatch.start();
+        LOG_INFO << "eInGame..." << endl;
+        GameState::context = Context::eInGame;
+        GameState::stopwatch.start();
     }
 }
 
@@ -181,16 +182,20 @@ void PauseGame::performAction( Trigger &, bool isDown)
 
     if( GameState::context == Context::ePaused)
     {
-	LOG_INFO << "un-pausing..." << endl;
-	GameState::context = _prevContext;
-	GameState::stopwatch.start();
+        LOG_INFO << "un-pausing..." << endl;
+        GameState::context = _prevContext;
+        GameState::stopwatch.start();
+        SDL_ShowCursor(SDL_DISABLE);
+        SDL_WM_GrabInput(SDL_GRAB_ON);
     }
     else
     {
-	LOG_INFO << "pausing..." << endl;
-	_prevContext = GameState::context;
-	GameState::context = Context::ePaused;
-	GameState::stopwatch.pause();
+        LOG_INFO << "pausing..." << endl;
+        _prevContext = GameState::context;
+        GameState::context = Context::ePaused;
+        GameState::stopwatch.pause();
+        SDL_ShowCursor(SDL_ENABLE);
+        SDL_WM_GrabInput(SDL_GRAB_OFF);
     }
 }
 
@@ -201,12 +206,12 @@ void EscapeAction::performAction( Trigger &, bool isDown)
 
     switch( GameState::context)
     {
-	case Context::eMenu:
-	    break;
+        case Context::eMenu:
+            break;
 
-	default:
-//	    LOG_INFO << "Menu mode..." << endl;
+        default:
+//            LOG_INFO << "Menu mode..." << endl;
             MenuManagerS::instance()->turnMenuOn();
-	    break;
+            break;
     }
 }

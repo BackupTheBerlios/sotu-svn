@@ -2,6 +2,7 @@
 //   Video subsystem.
 //
 // Copyright (C) 2001 Frank Becker
+// Copyright (c) 2006 Milan Babuskov
 //
 // This program is free software; you can redistribute it and/or modify it under
 // the terms of the GNU General Public License as published by the Free Software
@@ -40,7 +41,7 @@ public:
 
     void toggleCritterBoard( void)
     {
-	_boardVisible = !_boardVisible;
+        _boardVisible = !_boardVisible;
     }
 
     void takeSnapshot( void);
@@ -54,6 +55,7 @@ private:
     void reload( void);
     void updateSettings( void);
     bool setVideoMode( void);
+    void grabAndWarpMouse();
 
     bool _isFullscreen;
     bool _showStarfield;

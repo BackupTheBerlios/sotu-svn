@@ -2,6 +2,7 @@
 //   Video subsystem.
 //
 // Copyright (C) 2001 Frank Becker
+// Copyright (c) 2006 Milan Babuskov
 //
 // This program is free software; you can redistribute it and/or modify it under
 // the terms of the GNU General Public License as published by the Free Software
@@ -48,7 +49,7 @@
 #ifndef SDL_DISABLE
 #define SDL_DISABLE 0
 #endif
-
+//----------------------------------------------------------------------------
 Video::Video():
     _isFullscreen( false),
     _showStarfield( true),
@@ -67,7 +68,7 @@ Video::Video():
 {
     XTRACE();
 }
-
+//----------------------------------------------------------------------------
 Video::~Video()
 {
     XTRACE();
@@ -87,7 +88,7 @@ Video::~Video()
     SDL_QuitSubSystem( SDL_INIT_VIDEO);
     SDL_Quit();
 }
-
+//----------------------------------------------------------------------------
 void Video::reload( void)
 {
     BitmapManagerS::instance()->reload();
@@ -99,7 +100,20 @@ void Video::reload( void)
     ModelManagerS::instance()->reload();
     MenuManagerS::instance()->reload();
 }
-
+//----------------------------------------------------------------------------
+void Video::grabAndWarpMouse()
+{
+    SDL_ShowCursor(SDL_DISABLE);
+    SDL_WM_GrabInput(SDL_GRAB_ON);
+    SDL_WarpMouse( _width/2,  _height/2);
+    SDL_Event event;
+    while( SDL_PollEvent( &event))
+    {
+        //remove any queued up events due to warping, etc.
+        ;
+    }
+}
+//----------------------------------------------------------------------------
 bool Video::init( void)
 {
     XTRACE();
@@ -115,22 +129,22 @@ bool Video::init( void)
     ConfigS::instance()->getInteger( "maxFPS", _maxFPS);
     if( _maxFPS)
     {
-    LOG_INFO << "Video: Restricting FPS to " << _maxFPS << endl;
-    _fpsStepSize = 1.0f/(float)_maxFPS;
+        LOG_INFO << "Video: Restricting FPS to " << _maxFPS << endl;
+        _fpsStepSize = 1.0f/(float)_maxFPS;
     }
 
     ConfigS::instance()->getBoolean( "fullscreen", _isFullscreen);
 
     if( !setVideoMode())
     {
-    return false;
+        return false;
     }
 
     _smallFont = FontManagerS::instance()->getFont( "bitmaps/arial-small");
     if( !_smallFont)
     {
         LOG_ERROR << "Unable to get font... (arial-small)" << endl;
-    SDL_QuitSubSystem( SDL_INIT_VIDEO);
+        SDL_QuitSubSystem( SDL_INIT_VIDEO);
         return false;
     }
 
@@ -138,7 +152,7 @@ bool Video::init( void)
     if( !_scoreFont)
     {
         LOG_ERROR << "Unable to get font... (vipnaUpper)" << endl;
-    SDL_QuitSubSystem( SDL_INIT_VIDEO);
+        SDL_QuitSubSystem( SDL_INIT_VIDEO);
         return false;
     }
 
@@ -146,24 +160,24 @@ bool Video::init( void)
     if( !_gameOFont)
     {
         LOG_ERROR << "Unable to get font... (gameover)" << endl;
-    SDL_QuitSubSystem( SDL_INIT_VIDEO);
+        SDL_QuitSubSystem( SDL_INIT_VIDEO);
         return false;
     }
 
     _board = BitmapManagerS::instance()->getBitmap( "bitmaps/board");
     if( !_board)
     {
-    LOG_ERROR << "Unable to load CritterBoard" << endl;
-    SDL_QuitSubSystem( SDL_INIT_VIDEO);
-        return false;
+        LOG_ERROR << "Unable to load CritterBoard" << endl;
+        SDL_QuitSubSystem( SDL_INIT_VIDEO);
+            return false;
     }
     _boardIndex = _board->getIndex( "CritterBoard");
 
     if( !ResourceManagerS::instance()->selectResource(
       string("bitmaps/titleA.png")))
     {
-    LOG_WARNING << "titleA.png not found." << endl;
-    return false;
+        LOG_WARNING << "titleA.png not found." << endl;
+        return false;
     }
     ziStream &bminfile1 = ResourceManagerS::instance()->getInputStream();
     SDL_RWops *src = RWops_from_ziStream( bminfile1);
@@ -174,8 +188,8 @@ bool Video::init( void)
     if( !ResourceManagerS::instance()->selectResource(
       string("bitmaps/titleB.png")))
     {
-    LOG_WARNING << "titleB.png not found." << endl;
-    return false;
+        LOG_WARNING << "titleB.png not found." << endl;
+        return false;
     }
     ziStream &bminfile2 = ResourceManagerS::instance()->getInputStream();
     src = RWops_from_ziStream( bminfile2);
@@ -183,27 +197,13 @@ bool Video::init( void)
     SDL_RWclose( src);
     _titleB = new GLTexture( GL_TEXTURE_2D, img2, false);
 
-    //hide&grab cursor and warp to centre
-    SDL_ShowCursor( SDL_DISABLE);
-    //don't grab mouse if developer is turned on
-    if( ! GameState::isDeveloper)
-    {
-    SDL_WM_GrabInput( SDL_GRAB_ON);
-    }
-    SDL_WarpMouse( _width/2,  _height/2);
-
-    SDL_Event event;
-    while( SDL_PollEvent( &event))
-    {
-    //remove any queued up events due to warping, etc.
-    ;
-    }
+    grabAndWarpMouse();
 
     LOG_INFO << "OpenGL info follows..." << endl;
     string vendor = (char*)glGetString( GL_VENDOR);
     if( vendor.find( "Brian Paul") != string::npos)
     {
-    LOG_WARNING << "*** Using MESA software rendering." << endl;
+        LOG_WARNING << "*** Using MESA software rendering." << endl;
     }
     LOG_INFO << "  Vendor  : " << vendor << endl;
     LOG_INFO << "  Renderer: " <<  glGetString( GL_RENDERER) << endl;
@@ -238,7 +238,7 @@ bool Video::init( void)
 
     return true;
 }
-
+//----------------------------------------------------------------------------
 bool Video::setVideoMode( void)
 {
     int videoFlags = SDL_OPENGL;
@@ -250,13 +250,13 @@ bool Video::setVideoMode( void)
 
     if( !ConfigS::instance()->getInteger( "width", _width))
     {
-    Value *w = new Value( _width);
-    ConfigS::instance()->updateTransitoryKeyword( "width", w);
+        Value *w = new Value( _width);
+        ConfigS::instance()->updateTransitoryKeyword( "width", w);
     }
     if( !ConfigS::instance()->getInteger( "height", _height))
     {
-    Value *h = new Value( _height);
-    ConfigS::instance()->updateTransitoryKeyword( "height", h);
+        Value *h = new Value( _height);
+        ConfigS::instance()->updateTransitoryKeyword( "height", h);
     }
 
     bool allowSkew = false;
@@ -267,21 +267,21 @@ bool Video::setVideoMode( void)
         LOG_WARNING << "To allow any aspect ratio set allowAnyAspectRatio to true in config file." << endl;
         _height = _width*3/4;
 
-    Value *h = new Value( _height);
-    ConfigS::instance()->updateTransitoryKeyword( "height", h);
+        Value *h = new Value( _height);
+        ConfigS::instance()->updateTransitoryKeyword( "height", h);
     }
 
     if( ! ::init("libGL.so.1"))
     {
-    LOG_ERROR << "SDL Error: " << SDL_GetError() << endl;
-    SDL_QuitSubSystem( SDL_INIT_VIDEO);
-    return false;
+        LOG_ERROR << "SDL Error: " << SDL_GetError() << endl;
+        SDL_QuitSubSystem( SDL_INIT_VIDEO);
+        return false;
     }
 
     if( SDL_SetVideoMode( _width, _height, _bpp, videoFlags ) == NULL )
     {
         LOG_ERROR << "Video Mode: failed #" << SDL_GetError() << endl;
-    SDL_QuitSubSystem( SDL_INIT_VIDEO);
+        SDL_QuitSubSystem( SDL_INIT_VIDEO);
         return false;
     }
     glViewport(0,0, _width, _height);
@@ -298,7 +298,7 @@ bool Video::setVideoMode( void)
 
     return true;
 }
-
+//----------------------------------------------------------------------------
 void  Video::updateSettings( void)
 {
     bool fullscreen = _isFullscreen;
@@ -311,43 +311,29 @@ void  Video::updateSettings( void)
     if( (fullscreen != _isFullscreen) || (width != _width) || (height != _height))
     {
 #ifdef DYNAMIC_GL
-    SDL_QuitSubSystem( SDL_INIT_VIDEO);
-    if( SDL_InitSubSystem( SDL_INIT_VIDEO) < 0 )
-    {
-        LOG_ERROR << "Update Video: failed # " << SDL_GetError() << endl;
-    }
+        SDL_QuitSubSystem( SDL_INIT_VIDEO);
+        if( SDL_InitSubSystem( SDL_INIT_VIDEO) < 0 )
+        {
+            LOG_ERROR << "Update Video: failed # " << SDL_GetError() << endl;
+        }
 #endif
-    setVideoMode();
-    reload();
+        setVideoMode();
+        reload();
 #ifdef DYNAMIC_GL
-    //hide&grab cursor and warp to centre
-    SDL_ShowCursor( SDL_DISABLE);
-    //don't grab mouse if developer is turned on
-    if( ! GameState::isDeveloper)
-    {
-        SDL_WM_GrabInput( SDL_GRAB_ON);
-    }
-    SDL_WarpMouse( _width/2,  _height/2);
-
-    SDL_Event event;
-    while( SDL_PollEvent( &event))
-    {
-        //remove any queued up events due to warping, etc.
-        ;
-    }
+        grabAndWarpMouse();
 #endif
     }
 
     ConfigS::instance()->getBoolean( "showStarfield", _showStarfield);
     ConfigS::instance()->getBoolean( "showNebulas", _showNebulas);
 }
-
+//----------------------------------------------------------------------------
 void Video::updateLogic( void)
 {
     _prevAngle = _angle;
     _angle += 5.0f;
 }
-
+//----------------------------------------------------------------------------
 bool Video::update( void)
 {
     //    XTRACE();
@@ -382,7 +368,7 @@ bool Video::update( void)
     glShadeModel(GL_SMOOTH);
 
     glEnable( GL_NORMALIZE);
-//    glEnable( GL_RESCALE_NORMAL);
+    //    glEnable( GL_RESCALE_NORMAL);
 
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -667,7 +653,7 @@ bool Video::update( void)
 
     return true;
 }
-
+//----------------------------------------------------------------------------
 void Video::takeSnapshot( void)
 {
     static int count = 0;
@@ -691,3 +677,4 @@ void Video::takeSnapshot( void)
 
     SDL_FreeSurface( img);
 }
+//----------------------------------------------------------------------------
