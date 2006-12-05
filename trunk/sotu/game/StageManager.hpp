@@ -3,6 +3,7 @@
 //   level to level.
 //
 // Copyright (C) 2001 Frank Becker
+// Copyright (C) 2006 Milan Babuskov
 //
 // This program is free software; you can redistribute it and/or modify it under
 // the terms of the GNU General Public License as published by the Free Software
@@ -21,7 +22,7 @@
 #include <LevelPack.hpp>
 
 #include <tinyxml.h>
-
+//----------------------------------------------------------------------------
 class StageManager
 {
 friend class Singleton<StageManager>;
@@ -69,7 +70,6 @@ private:
     bool selectLevel();
     bool activateLevel( void);
 };
-
+//----------------------------------------------------------------------------
 typedef Singleton<StageManager> StageManagerS;
-
 #endif
