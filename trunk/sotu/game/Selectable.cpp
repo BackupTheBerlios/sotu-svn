@@ -509,7 +509,6 @@ void BoolSelectable::draw( void)
 }
 
 //------------------------------------------------------------------------------
-
 LeaderBoardSelectable::LeaderBoardSelectable(
     const BoundingBox &r,
     const string &text,
@@ -574,6 +573,7 @@ void LeaderBoardSelectable::activate( void)
 
 void LeaderBoardSelectable::draw( void)
 {
+    // draws ugly blue box
 #if 0
     glColor4f( 0.2, 0.2, 1.0, 0.5);
     glBegin(GL_QUADS);
@@ -978,7 +978,8 @@ void ActionSelectable::select( void)
 //  LOG_INFO << "Selecting: " << _action << endl;
     if (_action == "NewGame")
     {
-        GameS::instance()->startNewGame();
+        //GameS::instance()->startNewGame();
+        GameS::instance()->startNewCampaign();
         //no confirm sound in this case
         return;
     }
@@ -990,15 +991,9 @@ void ActionSelectable::select( void)
 }
 
 //------------------------------------------------------------------------------
-
-MenuSelectable::MenuSelectable(
-    TiXmlNode *node,
-    const BoundingBox &r,
-    const string &text,
-    const string &info):
-
-    TextSelectable(r, text, info),
-    _node(node)
+MenuSelectable::MenuSelectable(TiXmlNode *node, const BoundingBox &r,
+    const string &text, const string &info)
+    :TextSelectable(r, text, info), _node(node)
 {
 }
 
@@ -1007,5 +1002,4 @@ void MenuSelectable::select( void)
     MenuManagerS::instance()->makeMenu( _node);
     AudioS::instance()->playSample( "sounds/confirm.wav");
 }
-
 //------------------------------------------------------------------------------

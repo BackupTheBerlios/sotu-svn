@@ -123,10 +123,6 @@ void Starfield::draw( bool showStars, bool showNebulas)
 {
 //    XTRACE();
 
-    // stars are not shown in planet menu
-    if (GameState::context == Context::ePlanetMenu)
-        return;
-
 //  glDisable(GL_DEPTH_TEST);
     glDisable(GL_LIGHTING);
 

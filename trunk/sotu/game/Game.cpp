@@ -61,6 +61,7 @@ Game::~Game()
 
     // misc cleanup
     MenuManagerS::cleanup();
+    PlanetManagerS::cleanup();
     StageManagerS::cleanup();
     ModelManagerS::cleanup();
     InputS::cleanup();
@@ -88,6 +89,7 @@ bool Game::init( void)
     if( ! VideoS::instance()->init()) return false;
     if( ! InputS::instance()->init()) return false;
     if( ! MenuManagerS::instance()->init()) return false;
+    if( ! PlanetManagerS::instance()->init()) return false;
     if( ! HeroS::instance()->init()) return false;
 
     StarfieldS::instance()->init( -150.0);
@@ -165,6 +167,56 @@ void Game::startNewGame( void)
     HeroS::instance()->allowVerticalMovement(allowVerticalMovement);
 }
 //----------------------------------------------------------------------------
+void Cargo::addItem(std::string groupName, const CargoItem& c)
+{
+    _items.insert(std::pair<std::string,CargoItem>(groupName, c));
+}
+//----------------------------------------------------------------------------
+void Cargo::clearCargo()
+{
+    _items.clear();
+
+    // create empty cargo list (used for trading as well)
+    // when player visits planet for first time, the list is built
+
+    // Limited by cargo space (0 - total)
+    addItem("Goods", CargoItem("Food"));
+    addItem("Goods", CargoItem("Electronics"));
+    addItem("Goods", CargoItem("Clothing"));
+    addItem("Goods", CargoItem("Alien artifacts"));
+    addItem("Goods", CargoItem("Jewelry"));
+    addItem("Goods", CargoItem("Firearms"));   // * illegal with empire
+    addItem("Goods", CargoItem("Narcotics"));  // * illegal everywhere
+    addItem("Goods", CargoItem("Slaves"));     // * illegal with rebels
+
+    // Don't take cargo space, Min = 0, Max = 1
+    addItem("Equipment", CargoItem("Rocket launcher"));
+    addItem("Equipment", CargoItem("Neutron gun"));
+    addItem("Equipment", CargoItem("Neutron gun enhancer"));
+    addItem("Equipment", CargoItem("Proton flank burst"));
+    addItem("Equipment", CargoItem("Proton enhancer"));
+    addItem("Equipment", CargoItem("Wave emitter"));
+    addItem("Equipment", CargoItem("Smart bomb"));
+    addItem("Equipment", CargoItem("Vertical thrusters"));
+    // special case, Min = 0, Max = 9
+    addItem("Equipment", CargoItem("Fuel"));
+
+    // special case
+    addItem("Other", CargoItem("Save game"));
+}
+//----------------------------------------------------------------------------
+void Game::startNewCampaign()
+{
+    _cargo.clearCargo();
+
+    // currentPlanet = MapS::instance->createUniverse();
+    // reset player stats (kills, empStatus, rebelStatus)
+    // reset campaign data, Chapter = 0
+    // reset quests
+
+    PlanetManagerS::instance()->enable();
+}
+//----------------------------------------------------------------------------
 void Game::updateOtherLogic( void)
 {
     int stepCount = 0;
@@ -176,8 +228,8 @@ void Game::updateOtherLogic( void)
         if (GameState::context == Context::eMenu)
             MenuManagerS::instance()->update();
 
-        //if (GameState::context == Context::ePlanetMenu)
-        //    PlanetMenuManagerS::instance()->update();
+        if (GameState::context == Context::ePlanetMenu)
+            PlanetManagerS::instance()->update();
 
         //advance to next start-of-game-step point in time
         GameState::startOfStep += GAME_STEP_SIZE;

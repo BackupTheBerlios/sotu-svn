@@ -210,15 +210,16 @@ bool Video::init( void)
     LOG_INFO << "  Version : " << glGetString( GL_VERSION) << endl;
 
     glViewport(0,0, _width, _height);
-/*
-    GLfloat mat_ambient[]  = { 0.7, 0.7, 0.7, 0.0 };
-    GLfloat mat_diffuse[]  = { 0.6, 0.6, 0.6, 0.0 };
-    GLfloat mat_specular[] = { 1.0, 1.0, 1.0, 0.0 };
-*/
 
+#if 0
+    GLfloat mat_ambient[]  = { 0.7f, 0.7f, 0.7f, 0.0f };
+    GLfloat mat_diffuse[]  = { 0.6f, 0.6f, 0.6f, 0.0f };
+    GLfloat mat_specular[] = { 1.0f, 1.0f, 1.0f, 0.0f };
+#else
     GLfloat mat_ambient[]  = { 0.5f, 0.5f, 0.5f, 0.5f };
     GLfloat mat_diffuse[]  = { 0.4f, 0.4f, 0.4f, 0.5f };
     GLfloat mat_specular[] = { 0.6f, 0.6f, 0.6f, 0.5f };
+#endif
     GLfloat mat_shininess[] = { 60.0f };
     glMaterialfv(GL_FRONT, GL_SPECULAR, mat_specular);
     glMaterialfv(GL_FRONT, GL_SHININESS, mat_shininess);
@@ -290,11 +291,8 @@ bool Video::setVideoMode( void)
     SDL_WM_SetCaption( "Scum of the Universe", "SotU" );
 
     SDL_Surface *surf = SDL_GetVideoSurface();
-
-    LOG_INFO << "Video Mode: OK ("
-             << surf->w << "x"
-         << surf->h << "x"
-         << (int)surf->format->BitsPerPixel << ")" << endl;
+    LOG_INFO << "Video Mode: OK (" << surf->w << "x"
+         << surf->h << "x" << (int)surf->format->BitsPerPixel << ")" << endl;
 
     return true;
 }
@@ -418,9 +416,12 @@ bool Video::update( void)
         glEnable( GL_DEPTH_TEST);
     }
 
-    StarfieldS::instance()->draw( _showStarfield, _showNebulas);
+    // stars are not shown in planet menu
+    if (GameState::context != Context::ePlanetMenu)
+        StarfieldS::instance()->draw( _showStarfield, _showNebulas);
 
-    if (GameState::context != Context::eMenu)
+    if (GameState::context == Context::eInGame
+        || GameState::context == Context::ePaused)
     {
         if (HeroS::instance()->alive())
         {
@@ -450,9 +451,10 @@ bool Video::update( void)
         smallFont.DrawString( FPS::GetFPSString(), 0, 0,  0.6f, 0.6f);
     }
 
-    if (GameState::context != Context::eMenu)
+    if (GameState::context == Context::eInGame
+        || GameState::context == Context::ePaused)
     {
-        if( !HeroS::instance()->alive())
+        if (!HeroS::instance()->alive())
         {
             glColor4f(1.0f,1.0f,1.0f,0.8f);
             gameOFont.DrawString( "GAME OVER" , 80, 320, 1.3f, 1.3f);
@@ -507,7 +509,6 @@ bool Video::update( void)
     if( GameState::context == Context::eMenu)
     {
         glEnable(GL_TEXTURE_2D);
-
         float z=-1.0;
         float dx= 1.0/512.0;
 
@@ -526,7 +527,6 @@ bool Video::update( void)
         glTexCoord2f( 1.0f-dx,1-dx ); glVertex3f(650,560, z);
         glTexCoord2f( dx     ,1-dx ); glVertex3f(500,560, z);
         glEnd();
-
         glDisable(GL_TEXTURE_2D);
 
         MenuManagerS::instance()->draw();
@@ -536,7 +536,11 @@ bool Video::update( void)
         float width = smallFont.GetWidth( gVersion.c_str(), 0.6f);
         smallFont.DrawString( gVersion.c_str() , 995.0f-width, 5.0f, 0.6f, 0.4f);
     }
-    else
+    else if (GameState::context == Context::ePlanetMenu)
+    {
+        PlanetManagerS::instance()->draw();
+    }
+    else // InGame, Paused, MouseLook
     {
         float boardWidth = (float)_board->getWidth( _boardIndex);
 
@@ -649,8 +653,8 @@ bool Video::update( void)
         }
     }
 
-    SDL_GL_SwapBuffers( );
 
+    SDL_GL_SwapBuffers( );
     return true;
 }
 //----------------------------------------------------------------------------

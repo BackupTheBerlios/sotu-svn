@@ -2,6 +2,7 @@
 //   Menu Manager/Controller.
 //
 // Copyright (C) 2001 Frank Becker
+// Copyright (C) 2006 Milan Babuskov
 //
 // This program is free software; you can redistribute it and/or modify it under
 // the terms of the GNU General Public License as published by the Free Software
@@ -27,8 +28,8 @@
 #include <OnlineUpdateDisplay.hpp>
 
 class Selectable;
-class GLTextureCubeMap;
-
+// class GLTextureCubeMap;
+//----------------------------------------------------------------------------
 class MenuManager: public InterceptorI
 {
 friend class Singleton<MenuManager>;
@@ -50,7 +51,6 @@ public:
     void Goto( Selectable *s);
 
     void reload( void);
-
 private:
     virtual ~MenuManager();
     MenuManager( void);
@@ -86,9 +86,46 @@ private:
     bool _showSparks;
     ParticleGroup _burst;
     OnlineUpdateDisplay _onlineUpdateDisplay;
-    GLTextureCubeMap *_nextGenShippyCubeMap;
+    // GLTextureCubeMap *_nextGenShippyCubeMap;
+};
+typedef Singleton<MenuManager> MenuManagerS;
+//----------------------------------------------------------------------------
+class PlanetManager: public InterceptorI
+{
+friend class Singleton<PlanetManager>;
+public:
+    bool init();
+    bool update();
+    bool draw();
+    void enable(bool doEnable=true);
+
+    virtual void input( const Trigger &trigger, const bool &isDown);
+
+private:
+    virtual ~PlanetManager();
+    PlanetManager();
+    PlanetManager( const PlanetManager&);
+    PlanetManager &operator=(const PlanetManager&);
+
+    list<Selectable*> _activeSelectables;
+    list<Selectable*>::iterator _currentSelectable;
+    void Up();
+    void Down();
+    void Left();
+    void Right();
+
+    int _pointer;
+    int _board;
+    float _mouseX, _mouseY;
+    Context::ContextEnum _prevContext;
+
+    typedef enum { stMap, stTrade, stQuests } ScreenType;
+    ScreenType _screenType;
+    void drawCargo();
+    void drawMap();
+    void drawQuests();
 };
 
-typedef Singleton<MenuManager> MenuManagerS;
-
+typedef Singleton<PlanetManager> PlanetManagerS;
+//----------------------------------------------------------------------------
 #endif

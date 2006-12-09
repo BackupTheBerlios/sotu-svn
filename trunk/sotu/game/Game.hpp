@@ -16,7 +16,36 @@
 #define _Game_hpp_
 
 #include <Singleton.hpp>
+#include <map>
+//----------------------------------------------------------------------------
+class CargoItem
+{
+public:
+    CargoItem(std::string name, int quantity = 0, int price = 0)
+        :_name(name), _quantity(quantity), _price(price)
+    {
+    };
+    CargoItem(const CargoItem& other)
+    {
+        _name = other._name;
+        _quantity = other._quantity;
+        _price = other._price;
+    }
+    std::string _name;
+    int _quantity;
+    int _price;
+};
+//----------------------------------------------------------------------------
+class Cargo
+{
+public:
+    // Group, CargoItem(name, qty)
+    std::multimap<std::string, CargoItem> _items;
 
+    void addItem(std::string, const CargoItem&);
+    void clearCargo();
+};
+//----------------------------------------------------------------------------
 class Game
 {
 friend class Singleton<Game>;
@@ -26,6 +55,8 @@ public:
     void reset( void);
     void startNewGame( void);
 
+    void startNewCampaign();
+
 private:
     ~Game();
     Game( void);
@@ -34,8 +65,10 @@ private:
 
     void updateOtherLogic( void);
     void updateInGameLogic( void);
+
+    Cargo _cargo;
+    // Planet *_currentPlanet;
 };
-
 typedef Singleton<Game> GameS;
-
+//----------------------------------------------------------------------------
 #endif
