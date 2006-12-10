@@ -2,6 +2,7 @@
 //   Simple pak file type resouce manager.
 //
 // Copyright (C) 2001 Frank Becker
+// Copyright (c) 2006 Milan Babuskov
 //
 // This program is free software; you can redistribute it and/or modify it under
 // the terms of the GNU General Public License as published by the Free Software
@@ -21,6 +22,15 @@
 #include <FindHash.hpp>
 #include <Endian.hpp>
 #include <WalkDirectory.hpp>
+
+#include <utilsgl/gl++.hpp>
+//#include <utilsgl/GLExtension.hpp>
+#include <utilsgl/GLTexture.hpp>
+#include <SDL.h>
+#include <SDL/SDL_image.h>
+#include "utilssdl/PNG.hpp"
+#include "utilssdl/zrwops.hpp"
+
 
 #ifdef WIN32
 const char PATH_SEPERATOR = '\\';
@@ -57,43 +67,43 @@ void ResourceManager::addResourceDirectoryRecursive( const string &dirName)
     DirEntry dirEntry;
     while( thisDir.getNext( dirEntry))
     {
-	string fileName = dirEntry.name;
-	if( (fileName == ".") || (fileName == "..")) continue;
+        string fileName = dirEntry.name;
+        if( (fileName == ".") || (fileName == "..")) continue;
 
-	string fullName = dirName + PATH_SEPERATOR + fileName;
-	if( dirName == ".")
-	{
-	    fullName = fileName;
-	}
+        string fullName = dirName + PATH_SEPERATOR + fileName;
+        if( dirName == ".")
+        {
+            fullName = fileName;
+        }
 
-	if( dirEntry.type == DirEntry::eDirectory)
-	{
-	    addResourceDirectoryRecursive( fullName);
-	}
-	else if( dirEntry.type == DirEntry::eFile)
-	{
-	    DirectoryEntry *de = new DirectoryEntry;
-	    de->resourcePackFilename = fullName;
-#ifdef WIN32
-	    for( int i=0; i<fullName.length(); i++)
-		if( fullName[i] == '\\') fullName[i] = '/';
-#endif
-	    de->resourceName = fullName.substr( _baseLen, fullName.length()-_baseLen);
-	    de->offset = 0;
-	    de->origSize = (Uint32)dirEntry.size;
-	    de->compSize = (Uint32)dirEntry.size;
+        if( dirEntry.type == DirEntry::eDirectory)
+        {
+            addResourceDirectoryRecursive( fullName);
+        }
+        else if( dirEntry.type == DirEntry::eFile)
+        {
+            DirectoryEntry *de = new DirectoryEntry;
+            de->resourcePackFilename = fullName;
+    #ifdef WIN32
+            for( string::size_type i=0; i<fullName.length(); i++)
+            if( fullName[i] == '\\') fullName[i] = '/';
+    #endif
+            de->resourceName = fullName.substr( _baseLen, fullName.length()-_baseLen);
+            de->offset = 0;
+            de->origSize = (Uint32)dirEntry.size;
+            de->compSize = (Uint32)dirEntry.size;
 
-	    _dirEntryMap[ de->resourceName] = de;
-	}
-	else
-	{
-	    //Handle symlinks?
-	}
+            _dirEntryMap[ de->resourceName] = de;
+        }
+        else
+        {
+            //Handle symlinks?
+        }
     }
 }
 
 //
-bool ResourceManager::addResourcePack( 
+bool ResourceManager::addResourcePack(
   const string &ifilename, const string &basedir)
 {
     string filename = ifilename;
@@ -122,7 +132,7 @@ bool ResourceManager::addResourcePack(
 
     if( magic != RESOURCE_MAGIC)
     {
-	LOG_ERROR << "Incorrect packfile signature! [" 
+	LOG_ERROR << "Incorrect packfile signature! ["
 		  << filename << "]" << endl;
 	return false;
     }
@@ -164,7 +174,7 @@ bool ResourceManager::addResourcePack(
 	    swap( &de.origSize, 4);
 	    swap( &de.compSize, 4);
         }
-	LOG_INFO << "  " 
+	LOG_INFO << "  "
                  << de.resourceName << " ("
 		 << de.origSize << "/"
 		 << de.compSize << ") "
@@ -173,7 +183,7 @@ bool ResourceManager::addResourcePack(
 
 	_dirEntryMap[ de.resourceName] = pde;
     }
-    
+
     delete[] buff;
 
     return true;
@@ -309,7 +319,7 @@ void ResourceManager::dump( void)
 
         LOG_VOID.width(12);
         LOG_VOID.setf( ios::right);
-        LOG_VOID << di.origSize; 
+        LOG_VOID << di.origSize;
 
         LOG_VOID << "  (" << di.compSize << ")" << endl;
 
@@ -318,3 +328,18 @@ void ResourceManager::dump( void)
     }
     LOG_INFO << totalOrig << " (" << totalComp << ") bytes." << endl;
 }
+//----------------------------------------------------------------------------
+GLTexture* ResourceManager::getTexture(const std::string& name)
+{
+    if (!selectResource(name))
+    {
+        LOG_WARNING << name << " not found." << endl;
+        return 0;
+    }
+    ziStream &bminfile1 = getInputStream();
+    SDL_RWops *src = RWops_from_ziStream(bminfile1);
+    SDL_Surface *img1 = IMG_LoadPNG_RW(src);
+    SDL_RWclose(src);
+    return new GLTexture( GL_TEXTURE_2D, img1, false);
+}
+//----------------------------------------------------------------------------

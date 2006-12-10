@@ -28,6 +28,7 @@
 #include <OnlineUpdateDisplay.hpp>
 
 class Selectable;
+class GLTexture;
 // class GLTextureCubeMap;
 //----------------------------------------------------------------------------
 class MenuManager: public InterceptorI
@@ -98,6 +99,7 @@ public:
     bool update();
     bool draw();
     void enable(bool doEnable=true);
+    void reload();
 
     void Up();
     void Down();
@@ -123,12 +125,18 @@ private:
     int _pointer;
     //int _board;
     float _mouseX, _mouseY;
+    float _angle, _prevAngle;
     Context::ContextEnum _prevContext;
+
+    // there will be more, this is just a test
+    typedef std::vector<GLTexture *> PlanetTexList;
+    PlanetTexList _planetTex;
 
     ScreenType _screenType;
     void drawCargo();
     void drawMap();
     void drawQuests();
+    void drawPlanet(float x, float y, float radius, int tex);
 };
 
 typedef Singleton<PlanetManager> PlanetManagerS;

@@ -2,6 +2,7 @@
 //   Different kinds of selectables.
 //
 // Copyright (C) 2001 Frank Becker
+// Copyright (C) 2006 Milan Babuskov
 //
 // This program is free software; you can redistribute it and/or modify it under
 // the terms of the GNU General Public License as published by the Free Software
@@ -28,6 +29,8 @@
 class Selectable
 {
 public:
+    Point2D _infoLocation;
+
     Selectable( const BoundingBox &r, const string &info);
     virtual ~Selectable();
 
@@ -211,7 +214,7 @@ class TextSelectable: public TextOnlySelectable
 {
 public:
     TextSelectable(const BoundingBox &r, const string &text,
-        const string &info);
+        const string &info, float _maxSize = 2.0f);
 
     virtual void input( const Trigger &trigger, const bool &isDown);
     virtual void activate( void);
@@ -221,13 +224,14 @@ public:
 protected:
     float _ds;
     float _prevSize;
+    float _maxSize;
 };
 //------------------------------------------------------------------------------
 class ActionSelectable: public TextSelectable
 {
 public:
     ActionSelectable(const BoundingBox &r, const string &action,
-        const string &text, const string &info);
+        const string &text, const string &info, float _maxSize = 2.0f);
 
     virtual void select( void);
 protected:

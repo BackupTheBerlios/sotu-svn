@@ -31,6 +31,7 @@
 Selectable *Selectable::_active = 0;
 //------------------------------------------------------------------------------
 Selectable::Selectable( const BoundingBox &r, const string &info):
+    _infoLocation(122, 57),
     _inputBox(r),
     _boundingBox(r),
     _info(info)
@@ -63,7 +64,8 @@ void Selectable::draw( void)
     if( _active == this)
     {
         glColor4f(1.0f, 1.0f, 1.0f, 0.6f);
-        _fontWhite->DrawString( _info.c_str(), 122, 57, 0.7f, 0.65f);
+        _fontWhite->DrawString( _info.c_str(), _infoLocation.x, _infoLocation.y,
+            0.7f, 0.65f);
     }
 }
 //------------------------------------------------------------------------------
@@ -754,16 +756,16 @@ void ResolutionSelectable::draw( void)
     float xOff = _fontWhite->GetWidth( _text.c_str(), _size);
     glColor4f(1.0, 1.0, 1.0, 1.0);
     _fontShadow->DrawString(
-    resolution.c_str(),
-    xOff+_boundingBox.min.x+9*_size,_boundingBox.min.y-9*_size,
-    _size, _size);
+        resolution.c_str(),
+        xOff+_boundingBox.min.x+9*_size,_boundingBox.min.y-9*_size,
+        _size, _size);
 
     glColor4f(1.0f, 0.852f, 0.0f, 1.0f);
-//    glColor4f(1.0, 1.0, 1.0, 1.0);
+    //    glColor4f(1.0, 1.0, 1.0, 1.0);
     _fontWhite->DrawString(
-    resolution.c_str(),
-    xOff+_boundingBox.min.x, _boundingBox.min.y,
-    _size, _size);
+        resolution.c_str(),
+        xOff+_boundingBox.min.x, _boundingBox.min.y,
+        _size, _size);
 
     _icons->bind();
     glColor4f(1.0, 1.0, 1.0, 1.0);
@@ -786,9 +788,9 @@ void ResolutionSelectable::draw( void)
 }
 //------------------------------------------------------------------------------
 TextSelectable::TextSelectable(const BoundingBox &r, const string &text,
-    const string &info)
+    const string &info, float(maxSize))
 :
-    TextOnlySelectable(r, text, info), _ds(0.0)
+    TextOnlySelectable(r, text, info), _ds(0.0), _maxSize(maxSize)
 {
     _prevSize = _size;
 }
@@ -843,7 +845,7 @@ void TextSelectable::update( void)
 {
     _prevSize = _size;
     _size += _ds;
-    Clamp( _size, 1.0, 1.8); //any bigger and we'll have overlapping activation areas
+    Clamp( _size, 1.0, _maxSize - 0.2f); //any bigger and we'll have overlapping activation areas
 
     //adjust the input box according to the scaled text
     float dx = (float)(_boundingBox.max.x - _boundingBox.min.x) * (_size-1.0f) / 2.0f;
@@ -860,7 +862,7 @@ void TextSelectable::draw( void)
     Selectable::draw();
 
     float iSize = _prevSize + (_size - _prevSize) * GameState::frameFractionOther;
-    Clamp( iSize, 1.0, 2.0);
+    Clamp( iSize, 1.0, _maxSize);
 
     float halfWidth = _fontWhite->GetWidth( _text.c_str(), iSize-1.0f)/2.0f;
     float halfHeight = _fontWhite->GetHeight( iSize-1.0f)/2.0f;
@@ -878,9 +880,9 @@ void TextSelectable::draw( void)
 }
 //------------------------------------------------------------------------------
 ActionSelectable::ActionSelectable(const BoundingBox &r, const string &action,
-    const string &text, const string &info)
+    const string &text, const string &info, float maxSize)
 :
-    TextSelectable(r, text, info), _action(action)
+    TextSelectable(r, text, info, maxSize), _action(action)
 {
 }
 //------------------------------------------------------------------------------

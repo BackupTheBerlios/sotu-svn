@@ -22,6 +22,7 @@
 #include <HashString.hpp>
 #include <Singleton.hpp>
 
+class GLTexture;
 struct DirectoryEntry
 {
     string resourceName;
@@ -48,6 +49,7 @@ public:
         return size;
     }
     ziStream &getInputStream( void);
+    GLTexture* getTexture(const std::string& name);
 
     void getResourceList( list<string> &rNameList);
     void dump( void);

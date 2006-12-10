@@ -25,7 +25,7 @@ extern "C" { typedef void (*__GL_EXT_FuncPtr)(); }
 # endif
 #endif
 
-#include <gl++.hpp>
+#include <utilsgl/gl++.hpp>
 
 #include "SDL.h"
 
@@ -80,7 +80,7 @@ protected:
     __GL_EXT_FuncPtr GetExtensionProc( char *fName)
     {
 	__GL_EXT_FuncPtr fn = (__GL_EXT_FuncPtr) SDL_GL_GetProcAddress(fName);
-	if(!fn) 
+	if(!fn)
 	{
 	    LOG_ERROR << getName() << ": Unable to get function pointer for "
 	              << fName << endl;

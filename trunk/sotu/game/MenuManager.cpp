@@ -30,6 +30,7 @@
 #include <Config.hpp>
 
 #include <gl++.hpp>
+#include <GL/glu.h>
 
 //#include <GLExtensionTextureCubeMap.hpp>
 //#include <GLTextureCubeMap.hpp>
@@ -491,22 +492,37 @@ bool PlanetManager::init()
     }
     _pointer = icons->getIndex("Pointer");
 
+    for (int i=0; i<7; ++i)
+    {
+        char fn[30];
+        sprintf(fn, "bitmaps/planet%d.png", i);
+        GLTexture* t = ResourceManagerS::instance()->getTexture(fn);
+        if (!t)
+            return false;
+        _planetTex.push_back(t);
+    }
+
     // create clickable stuff available in all tabs
     const GLfloat tabh = 60.0f;
-    const GLfloat tabw[] = { 300.0f, 300.0f, 300.0f };
-
-    BoundingBox r;
-    //r.min = Point2D(20.0f,           740.0f);
-    //r.max = Point2D(20.0f + tabw[0], 740.0f - tabh);
-    r.min = Point2D(20.0f + 0.5f * tabw[0], 740.0f - tabh + 5.0f);
-    _activeSelectables.insert( _activeSelectables.end(),
-        new ActionSelectable(r, "ShowMap", "Galactic Map", "Shows the map"));
-    r.min = Point2D(20.0f + tabw[0] + 0.5f * tabw[1], 740.0f - tabh + 5.0f);
-    _activeSelectables.insert( _activeSelectables.end(),
-        new ActionSelectable(r, "ShowCargo", "Cargo & Trade", "Buy and sell goods and equipment"));
-    r.min = Point2D(20.0f + tabw[0] + tabw[1] + 0.5f * tabw[2], 740.0f - tabh + 5.0f);
-    _activeSelectables.insert( _activeSelectables.end(),
-        new ActionSelectable(r, "ShowQuests", "Quests", "Shows the major and minor quests"));
+    const GLfloat tabw[] = { 270.0f, 300.0f, 200.0f };
+    const char *actions[] = { "ShowMap", "ShowCargo", "ShowQuests" };
+    const char *labels[] = { "Galactic Map", "Cargo & Trade", "Quests" };
+    const char *infos[] = {
+        "Display map and navigate planets",
+        "Buy and sell goods and equipment",
+        "Places to see and things to do"
+    };
+    GLfloat loffset = 20.0f;
+    for (unsigned int i=0; i < sizeof(tabw)/sizeof(GLfloat); ++i)
+    {
+        BoundingBox r;
+        r.min = Point2D(loffset + 0.5f * tabw[i], 740.0f - tabh + 5.0f);
+        Selectable *s = new ActionSelectable(r, actions[i], labels[i], infos[i], 1.4f);
+        s->_infoLocation.x = 20.0f;
+        s->_infoLocation.y = 17.0f;
+        _activeSelectables.insert( _activeSelectables.end(), s);
+        loffset += tabw[i];
+    }
 
     _currentSelectable = _activeSelectables.begin();
     /*
@@ -526,6 +542,9 @@ void PlanetManager::setActiveScreen(ScreenType newone)
 //----------------------------------------------------------------------------
 bool PlanetManager::update()
 {
+    _prevAngle = _angle;
+    _angle += 1.0f;
+
     for(list<Selectable*>::iterator i = _activeSelectables.begin();
         i != _activeSelectables.end(); ++i)
     {
@@ -587,11 +606,62 @@ void PlanetManager::drawCargo()
     //    hide trade buttons and prices
 }
 //----------------------------------------------------------------------------
+void PlanetManager::drawPlanet(float x, float y, float radius, int tex)
+{
+    GLUquadricObj *qobj = gluNewQuadric();
+    gluQuadricNormals(qobj, GL_SMOOTH);
+    gluQuadricTexture(qobj, GL_TRUE);
+    _planetTex[tex]->bind();
+
+    /* wireframe model
+    gluQuadricDrawStyle(qobj, GLU_SILHOUETTE);
+    glLineWidth(1.0f);
+    glColor3f(1.0f, 0.5f, 0.0f);          // orange
+    */
+
+    if (qobj)
+    {
+        glPushMatrix();
+            glTranslatef(x, y, 0.0f);   // move
+            float ang = _prevAngle+(_angle-_prevAngle)*GameState::frameFractionOther;
+            glRotatef(50.0f, 1.0f, 0.0f, 0.0f);   // 50deg. X-axis
+            glRotatef(ang, 0.0f, 0.0f, -1.0f);     // rotate Z axis all the time
+            gluSphere(qobj, radius, 48, 16);       // 60 = radius
+        glPopMatrix();
+    }
+}
+//----------------------------------------------------------------------------
 void PlanetManager::drawMap()
 {
+    const GLfloat tabh = 60.0f;
+
+    // draw rectangle around galaxy
+    glColor3f(0.0f, 0.7f, 0.0f);    // darker green color
+    glBegin(GL_LINE_STRIP);
+        glVertex2f( 980.0f,  60.0f);
+        glVertex2f( 980.0f, 740.0f - tabh - 10.0f);
+        glVertex2f( 210.0f, 740.0f - tabh - 10.0f);
+        glVertex2f( 210.0f,  60.0f);
+        glVertex2f( 980.0f,  60.0f);
+    glEnd();
+
+    GLBitmapFont &fontWhite =
+      *(FontManagerS::instance()->getFont( "bitmaps/menuWhite"));
+    glColor4f(1.0, 1.0, 1.0, 1.0);
+    float w = fontWhite.GetWidth("CURRENT PLANET", 0.6f);
+    fontWhite.DrawString("CURRENT PLANET", 10.0f + (200.0f-w)*0.5f, 700.0f - tabh, 0.6f, 0.6f);
+    w = fontWhite.GetWidth("TARGET PLANET", 0.6f);
+    fontWhite.DrawString("TARGET PLANET", 10.0f + (200.0f-w)*0.5f, 400.0f, 0.6f, 0.6f);
+
+    // draw target planet
+    glEnable(GL_TEXTURE_2D);
+    drawPlanet(110.0f, 320.0f, 60.0f, 6);
+    drawPlanet(110.0f, 560.0f, 60.0f, 3);
+    glDisable(GL_TEXTURE_2D);
+
     // to draw planets use this:
     glBegin(GL_POINTS);    // Specify point drawing
-      glVertex3f(0.0f, 0.0f, 0.0f);
+    glVertex3f(0.0f, 0.0f, 0.0f);
     glEnd();
 }
 //----------------------------------------------------------------------------
@@ -613,7 +683,7 @@ bool PlanetManager::draw()
 
     // draw lines
     const GLfloat tabh = 60.0f;
-    const GLfloat tabw[] = { 300.0f, 300.0f, 300.0f };
+    const GLfloat tabw[] = { 270.0f, 300.0f, 200.0f };
     const GLfloat tabspace = 5.0f;
     glColor3f(0.2f, 0.8f, 0.0f);    // green color
     glBegin(GL_LINE_STRIP);
@@ -636,13 +706,13 @@ bool PlanetManager::draw()
 
     // render other tabs
     left = 20;  // reset
-    for (int i=0; i<3; ++i)
+    for (unsigned int i=0; i < sizeof(tabw)/sizeof(GLfloat); ++i)
     {
         left += tabw[i];
-        if (i == (int)_screenType)
+        if (i == (unsigned int)_screenType)
             continue;
         glBegin(GL_LINE_STRIP);
-        if (i < (int)_screenType)
+        if (i < (unsigned int)_screenType)
         {
             glVertex2f( left - tabw[i],  740.0f - tabh + tabspace);
             glVertex2f( left - tabw[i],  740.0f);
@@ -656,6 +726,12 @@ bool PlanetManager::draw()
         }
         glEnd();
     }
+
+    // draw line separating info line from the rest of tab contents
+    glBegin(GL_LINE_STRIP);
+    glVertex2f(  20.0f, 50.0f );
+    glVertex2f( 980.0f, 50.0f );
+    glEnd();
 
     // tab selectors are selectables
     for (list<Selectable*>::iterator i = _activeSelectables.begin();
@@ -733,7 +809,7 @@ void PlanetManager::input(const Trigger &trigger, const bool &isDown)
         }
     }
 
-    //put the absolute mouse position in to trigger
+    //put the absolute mouse position into trigger
     t.fData1 = _mouseX;
     t.fData2 = _mouseY;
 
@@ -764,6 +840,15 @@ void PlanetManager::input(const Trigger &trigger, const bool &isDown)
     }
 }
 //----------------------------------------------------------------------------
+void PlanetManager::reload()
+{
+    for (PlanetTexList::iterator it = _planetTex.begin();
+        it != _planetTex.end(); ++it)
+    {
+        (*it)->reload();
+    }
+}
+//----------------------------------------------------------------------------
 PlanetManager::~PlanetManager()
 {
     XTRACE();
@@ -776,11 +861,19 @@ PlanetManager::~PlanetManager()
     _activeSelectables.clear();
     Selectable::reset();
     SelectableFactory::cleanup();
+    for (PlanetTexList::iterator it = _planetTex.begin();
+        it != _planetTex.end(); ++it)
+    {
+        delete (*it);
+    }
 }
 //----------------------------------------------------------------------------
 PlanetManager::PlanetManager():
     _mouseX(200.0),
-    _mouseY(650.0)
+    _mouseY(650.0),
+    _angle(0.0),
+    _prevAngle(0.0),
+    _planetTex(0)
 {
     _screenType = stMap;
 }

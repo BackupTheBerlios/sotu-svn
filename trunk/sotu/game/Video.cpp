@@ -99,6 +99,7 @@ void Video::reload( void)
 
     ModelManagerS::instance()->reload();
     MenuManagerS::instance()->reload();
+    PlanetManagerS::instance()->reload();
 }
 //----------------------------------------------------------------------------
 void Video::grabAndWarpMouse()
@@ -135,6 +136,15 @@ bool Video::init( void)
     }
 
     ConfigS::instance()->getBoolean( "fullscreen", _isFullscreen);
+
+    LOG_INFO << "Setting program icon" << endl;
+    SDL_Surface *icon = SDL_LoadBMP("icon.bmp");
+    if (!icon)
+    {
+        LOG_ERROR << "Unable to load Icon" << endl;
+        return false;
+    }
+    SDL_WM_SetIcon(icon, NULL);
 
     if( !setVideoMode())
     {
@@ -174,39 +184,12 @@ bool Video::init( void)
     }
     _boardIndex = _board->getIndex( "CritterBoard");
 
-    LOG_INFO << "Setting program icon" << endl;
-    SDL_Surface *icon = SDL_LoadBMP("icon.bmp");
-    if (!icon)
-    {
-        LOG_ERROR << "Unable to load Icon" << endl;
-        SDL_QuitSubSystem( SDL_INIT_VIDEO);
+    _titleA = ResourceManagerS::instance()->getTexture("bitmaps/titleA.png");
+    if (!_titleA)
         return false;
-    }
-    SDL_WM_SetIcon(icon, NULL);
-
-    if( !ResourceManagerS::instance()->selectResource(
-      string("bitmaps/titleA.png")))
-    {
-        LOG_WARNING << "titleA.png not found." << endl;
+    _titleB = ResourceManagerS::instance()->getTexture("bitmaps/titleB.png");
+    if (!_titleB)
         return false;
-    }
-    ziStream &bminfile1 = ResourceManagerS::instance()->getInputStream();
-    SDL_RWops *src = RWops_from_ziStream( bminfile1);
-    SDL_Surface *img1 = IMG_LoadPNG_RW( src);
-    SDL_RWclose( src);
-    _titleA = new GLTexture( GL_TEXTURE_2D, img1, false);
-
-    if( !ResourceManagerS::instance()->selectResource(
-      string("bitmaps/titleB.png")))
-    {
-        LOG_WARNING << "titleB.png not found." << endl;
-        return false;
-    }
-    ziStream &bminfile2 = ResourceManagerS::instance()->getInputStream();
-    src = RWops_from_ziStream( bminfile2);
-    SDL_Surface *img2 = IMG_LoadPNG_RW( src);
-    SDL_RWclose( src);
-    _titleB = new GLTexture( GL_TEXTURE_2D, img2, false);
 
     grabAndWarpMouse();
 

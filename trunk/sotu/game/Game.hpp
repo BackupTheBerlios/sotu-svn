@@ -46,6 +46,27 @@ public:
     void clearCargo();
 };
 //----------------------------------------------------------------------------
+class Planet
+{
+public:
+    Cargo _marketplace;
+    int _techLevel;         // 1 - 9
+    int _rebelSentiment;    // 0 - 100
+    int _alienActivity;     // 0 - 100
+    std::string _name;
+    float _x;
+    float _y;
+};
+//----------------------------------------------------------------------------
+class Map
+{
+public:
+    typedef std::vector<Planet> PlanetList;
+    PlanetList _planets;
+
+    Planet* createGalaxy();     // returns pointer to Xen (starting planet)
+};
+//----------------------------------------------------------------------------
 class Game
 {
 friend class Singleton<Game>;
@@ -66,8 +87,8 @@ private:
     void updateOtherLogic( void);
     void updateInGameLogic( void);
 
-    Cargo _cargo;
-    // Planet *_currentPlanet;
+    Cargo _cargo;   // Player's cargo
+    Map _galaxy;       // Galaxy
 };
 typedef Singleton<Game> GameS;
 //----------------------------------------------------------------------------

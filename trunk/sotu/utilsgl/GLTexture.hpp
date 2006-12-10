@@ -15,7 +15,7 @@
 #ifndef _GLTexture_hpp_
 #define _GLTexture_hpp_
 
-#include <gl++.hpp>
+#include <utilsgl/gl++.hpp>
 #include <SDL/SDL_image.h>
 
 class GLTextureI
@@ -42,7 +42,7 @@ public:
     void reload( void);
 
     void setEnvMode( GLint mode)
-    { 
+    {
 	glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, mode);
     }
 
