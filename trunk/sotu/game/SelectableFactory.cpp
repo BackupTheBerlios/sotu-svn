@@ -14,9 +14,9 @@
 //
 #include <SelectableFactory.hpp>
 
-hash_map< 
-    const string, 
-    SelectableFactory*, 
+hash_map<
+    const string,
+    SelectableFactory*,
     hash<const string>, equal_to<const string> > SelectableFactory::_sfMap;
 
 bool SelectableFactory::_initialized = false;
@@ -26,29 +26,29 @@ SelectableFactory *SelectableFactory::getFactory( const string &name)
     XTRACE();
     if( ! _initialized)
     {
-	_initialized = true;
+        _initialized = true;
 
-	new ActionItemFactory();
-	new MenuItemFactory();
-	new TextItemFactory();
-	new BoolFactory();
-	new EnumFactory();
-	new FloatFactory();
-	new LeaderBoardFactory();
-	new ResolutionFactory();
+        new ActionItemFactory();
+        new MenuItemFactory();
+        new TextItemFactory();
+        new BoolFactory();
+        new EnumFactory();
+        new FloatFactory();
+        new LeaderBoardFactory();
+        new ResolutionFactory();
     }
     return findHash( name, _sfMap);
 }
 
 void SelectableFactory::cleanup( void)
 {
-    hash_map< const string, 
-              SelectableFactory*, 
-	      hash<const string> >::const_iterator ci;
+    hash_map< const string,
+              SelectableFactory*,
+              hash<const string> >::const_iterator ci;
     for( ci=_sfMap.begin(); ci!=_sfMap.end(); ci++)
     {
-	SelectableFactory *sf = ci->second;
-	delete sf;
+        SelectableFactory *sf = ci->second;
+        delete sf;
     }
     _sfMap.clear();
 
@@ -59,9 +59,9 @@ void SelectableFactory::posToPoint2D( const string &pos, Point2D &point)
 {
     if( pos == "")
     {
-	point.x = 100;
-	point.y = 100;
-	return;
+        point.x = 100;
+        point.y = 100;
+        return;
     }
 
     Tokenizer t(pos);
@@ -74,14 +74,14 @@ string SelectableFactory::getAttribute( const TiXmlElement* elem, string attr)
     const string *attrVal = elem->Attribute( attr);
     if( attrVal)
     {
-	return *attrVal;
+        return *attrVal;
     }
 
     return( string(""));
 }
 
-void SelectableFactory::getBasics( 
-    TiXmlElement* elem, 
+void SelectableFactory::getBasics(
+    TiXmlElement* elem,
     Point2D &pos,
     string &text,
     string &info)
@@ -98,7 +98,7 @@ ActionItemFactory::ActionItemFactory( void)
     _sfMap[ "ActionItem"] = this;
 }
 
-ActionItemFactory::~ActionItemFactory() 
+ActionItemFactory::~ActionItemFactory()
 {
 }
 
@@ -125,7 +125,7 @@ MenuItemFactory::MenuItemFactory( void)
     _sfMap[ "Menu"] = this;
 }
 
-MenuItemFactory::~MenuItemFactory() 
+MenuItemFactory::~MenuItemFactory()
 {
 }
 
@@ -148,7 +148,7 @@ TextItemFactory::TextItemFactory( void)
     _sfMap[ "TextItem"] = this;
 }
 
-TextItemFactory::~TextItemFactory() 
+TextItemFactory::~TextItemFactory()
 {
 }
 
@@ -165,7 +165,7 @@ Selectable *TextItemFactory::createSelectable( TiXmlNode *node)
     float fSize = 0.65f;
     if( size != "")
     {
-	fSize = (float)atof( size.c_str());
+        fSize = (float)atof( size.c_str());
     }
 
     return new TextOnlySelectable( r, text, info, true, fSize, 1.0,1.0,1.0);
@@ -178,7 +178,7 @@ BoolFactory::BoolFactory( void)
     _sfMap[ "Bool"] = this;
 }
 
-BoolFactory::~BoolFactory() 
+BoolFactory::~BoolFactory()
 {
 }
 
@@ -203,7 +203,7 @@ EnumFactory::EnumFactory( void)
     _sfMap[ "Enum"] = this;
 }
 
-EnumFactory::~EnumFactory() 
+EnumFactory::~EnumFactory()
 {
 }
 
@@ -229,7 +229,7 @@ FloatFactory::FloatFactory( void)
     _sfMap[ "Float"] = this;
 }
 
-FloatFactory::~FloatFactory() 
+FloatFactory::~FloatFactory()
 {
 }
 
@@ -256,7 +256,7 @@ LeaderBoardFactory::LeaderBoardFactory( void)
     _sfMap[ "LeaderBoard"] = this;
 }
 
-LeaderBoardFactory::~LeaderBoardFactory() 
+LeaderBoardFactory::~LeaderBoardFactory()
 {
 }
 
@@ -279,7 +279,7 @@ ResolutionFactory::ResolutionFactory( void)
     _sfMap[ "Resolution"] = this;
 }
 
-ResolutionFactory::~ResolutionFactory() 
+ResolutionFactory::~ResolutionFactory()
 {
 }
 

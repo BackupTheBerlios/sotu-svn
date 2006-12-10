@@ -117,6 +117,7 @@ void Video::grabAndWarpMouse()
 bool Video::init( void)
 {
     XTRACE();
+
     LOG_INFO << "Initializing Video..." << endl;
 
     if( SDL_InitSubSystem( SDL_INIT_VIDEO) < 0 )
@@ -169,9 +170,19 @@ bool Video::init( void)
     {
         LOG_ERROR << "Unable to load CritterBoard" << endl;
         SDL_QuitSubSystem( SDL_INIT_VIDEO);
-            return false;
+        return false;
     }
     _boardIndex = _board->getIndex( "CritterBoard");
+
+    LOG_INFO << "Setting program icon" << endl;
+    SDL_Surface *icon = SDL_LoadBMP("icon.bmp");
+    if (!icon)
+    {
+        LOG_ERROR << "Unable to load Icon" << endl;
+        SDL_QuitSubSystem( SDL_INIT_VIDEO);
+        return false;
+    }
+    SDL_WM_SetIcon(icon, NULL);
 
     if( !ResourceManagerS::instance()->selectResource(
       string("bitmaps/titleA.png")))
@@ -444,11 +455,12 @@ bool Video::update( void)
     glDisable(GL_LIGHTING);
 
     glColor4f(1.0,1.0,1.0,1.0);
-    bool showFPS = false;
-    ConfigS::instance()->getBoolean( "showFPS", showFPS);
-    if (showFPS)
+    if (GameState::context != Context::ePlanetMenu)
     {
-        smallFont.DrawString( FPS::GetFPSString(), 0, 0,  0.6f, 0.6f);
+        bool showFPS = false;
+        ConfigS::instance()->getBoolean( "showFPS", showFPS);
+        if (showFPS)
+            smallFont.DrawString( FPS::GetFPSString(), 0, 0,  0.6f, 0.6f);
     }
 
     if (GameState::context == Context::eInGame

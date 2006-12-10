@@ -440,24 +440,20 @@ void MenuManager::Up( void)
     (*_currentSelectable)->activate();
 }
 //----------------------------------------------------------------------------
-void MenuManager::Goto( Selectable *s)
+void MenuManager::Goto(Selectable *s)
 {
     list<Selectable*>::iterator i;
-    for( i=_activeSelectables.begin(); i!=_activeSelectables.end(); i++)
-    {
-        if( (*i) == s)
-    {
-//      LOG_INFO << "Goto found match" << endl;
-        break;
-    }
-    }
+    for (i=_activeSelectables.begin(); i!=_activeSelectables.end(); i++)
+        if ((*i) == s)
+            break;
     _currentSelectable = i;
 }
 //----------------------------------------------------------------------------
 void MenuManager::Enter( void)
 {
     XTRACE();
-    (*_currentSelectable)->select();
+    if (_currentSelectable != _activeSelectables.end())
+        (*_currentSelectable)->select();
 }
 //----------------------------------------------------------------------------
 bool MenuManager::Exit( bool delayed)
@@ -495,15 +491,37 @@ bool PlanetManager::init()
     }
     _pointer = icons->getIndex("Pointer");
 
-    GLBitmapCollection *menuBoard =
-        BitmapManagerS::instance()->getBitmap( "bitmaps/menuBoard");
-    if( !menuBoard)
-    {
-        LOG_ERROR << "Unable to load menuBoard." << endl;
-        return false;
-    }
-    _board = menuBoard->getIndex( "MenuBoard");
+    // create clickable stuff available in all tabs
+    const GLfloat tabh = 60.0f;
+    const GLfloat tabw[] = { 300.0f, 300.0f, 300.0f };
+
+    BoundingBox r;
+    //r.min = Point2D(20.0f,           740.0f);
+    //r.max = Point2D(20.0f + tabw[0], 740.0f - tabh);
+    r.min = Point2D(20.0f + 0.5f * tabw[0], 740.0f - tabh + 5.0f);
+    _activeSelectables.insert( _activeSelectables.end(),
+        new ActionSelectable(r, "ShowMap", "Galactic Map", "Shows the map"));
+    r.min = Point2D(20.0f + tabw[0] + 0.5f * tabw[1], 740.0f - tabh + 5.0f);
+    _activeSelectables.insert( _activeSelectables.end(),
+        new ActionSelectable(r, "ShowCargo", "Cargo & Trade", "Buy and sell goods and equipment"));
+    r.min = Point2D(20.0f + tabw[0] + tabw[1] + 0.5f * tabw[2], 740.0f - tabh + 5.0f);
+    _activeSelectables.insert( _activeSelectables.end(),
+        new ActionSelectable(r, "ShowQuests", "Quests", "Shows the major and minor quests"));
+
+    _currentSelectable = _activeSelectables.begin();
+    /*
+    if( _currentSelectable != _activeSelectables.end())
+        (*_currentSelectable)->activate();
+    */
     return true;
+}
+//----------------------------------------------------------------------------
+void PlanetManager::setActiveScreen(ScreenType newone)
+{
+    if (_currentSelectable != _activeSelectables.end())
+        (*_currentSelectable)->deactivate();
+    _currentSelectable = _activeSelectables.end();
+    _screenType = newone;
 }
 //----------------------------------------------------------------------------
 bool PlanetManager::update()
@@ -520,6 +538,9 @@ void PlanetManager::enable(bool doEnable)
 {
     if (doEnable)
     {
+        // remove ptr to active node
+        Selectable::reset();
+
         _prevContext = GameState::context;
         GameState::context = Context::ePlanetMenu;
         InputS::instance()->enableInterceptor(this);
@@ -544,6 +565,22 @@ void PlanetManager::enable(bool doEnable)
     }
 }
 //----------------------------------------------------------------------------
+void PlanetManager::Goto(Selectable *s)
+{
+    list<Selectable*>::iterator i;
+    for (i=_activeSelectables.begin(); i!=_activeSelectables.end(); i++)
+        if ((*i) == s)
+            break;
+    _currentSelectable = i;
+}
+//----------------------------------------------------------------------------
+void PlanetManager::Enter( void)
+{
+    XTRACE();
+    if (_currentSelectable != _activeSelectables.end())
+        (*_currentSelectable)->select();
+}
+//----------------------------------------------------------------------------
 void PlanetManager::drawCargo()
 {
     //if (_currentPlanet == 0)
@@ -552,6 +589,10 @@ void PlanetManager::drawCargo()
 //----------------------------------------------------------------------------
 void PlanetManager::drawMap()
 {
+    // to draw planets use this:
+    glBegin(GL_POINTS);    // Specify point drawing
+      glVertex3f(0.0f, 0.0f, 0.0f);
+    glEnd();
 }
 //----------------------------------------------------------------------------
 void PlanetManager::drawQuests()
@@ -560,23 +601,69 @@ void PlanetManager::drawQuests()
 //----------------------------------------------------------------------------
 bool PlanetManager::draw()
 {
-    // render background
-    GLBitmapCollection *menuBoard =
-        BitmapManagerS::instance()->getBitmap( "bitmaps/menuBoard");
-    menuBoard->bind();
-    glColor4f(1.0, 1.0, 1.0, 0.7f);
-    glEnable(GL_TEXTURE_2D);
-    menuBoard->Draw( _board, 0.0, 0.0, 1000.0/256.0, 750.0/256.0);
-    glDisable(GL_TEXTURE_2D);
+    // set minimal line size to 2pixels
+    GLfloat sizes[2];  // Store supported line width range
+    GLfloat step;     // Store supported line width increments
+    glGetFloatv(GL_LINE_WIDTH_RANGE,sizes);
+    glGetFloatv(GL_LINE_WIDTH_GRANULARITY,&step);
+    GLfloat size = sizes[0];
+    while (size < 2.0f && size + step <= sizes[1] && step > 0)
+        size += step;
+    glLineWidth(size);
 
-    /*
-    list<Selectable*>::iterator i;
-    for( i=_activeSelectables.begin(); i!=_activeSelectables.end(); i++)
+    // draw lines
+    const GLfloat tabh = 60.0f;
+    const GLfloat tabw[] = { 300.0f, 300.0f, 300.0f };
+    const GLfloat tabspace = 5.0f;
+    glColor3f(0.2f, 0.8f, 0.0f);    // green color
+    glBegin(GL_LINE_STRIP);
+    glVertex2f( 10.0f, 740.0f - tabh);
+    glVertex2f( 10.0f,  10.0f);
+    glVertex2f(990.0f,  10.0f);
+    glVertex2f(990.0f, 740.0f - tabh);
+
+    // selected tab - calculate right edge
+    GLfloat left = 20;  // offset (10 screen + 10 first tab)
+    int nextTab=0;
+    for (; nextTab != (int)_screenType; ++nextTab)
+        left += tabw[nextTab];
+    glVertex2f( left + tabw[nextTab], 740.0f - tabh);
+    glVertex2f( left + tabw[nextTab], 740.0f       );
+    glVertex2f( left,                 740.0f       );
+    glVertex2f( left,                 740.0f - tabh);
+    glVertex2f( 10.0f, 740.0f - tabh);
+    glEnd();
+
+    // render other tabs
+    left = 20;  // reset
+    for (int i=0; i<3; ++i)
     {
-        (*i)->draw();
-    }*/
+        left += tabw[i];
+        if (i == (int)_screenType)
+            continue;
+        glBegin(GL_LINE_STRIP);
+        if (i < (int)_screenType)
+        {
+            glVertex2f( left - tabw[i],  740.0f - tabh + tabspace);
+            glVertex2f( left - tabw[i],  740.0f);
+            glVertex2f( left - tabspace, 740.0f);
+        }
+        else
+        {
+            glVertex2f( left - tabw[i] + tabspace, 740.0f);
+            glVertex2f( left,                      740.0f);
+            glVertex2f( left,                      740.0f - tabh + tabspace);
+        }
+        glEnd();
+    }
 
-    // render Map/Cargo&trade/Quests text
+    // tab selectors are selectables
+    for (list<Selectable*>::iterator i = _activeSelectables.begin();
+        i != _activeSelectables.end(); i++)
+    {
+        //LOG_INFO << "Drawing " << (*i) << endl;
+        (*i)->draw();
+    }
 
     // render the active page
     if (_screenType == stMap)

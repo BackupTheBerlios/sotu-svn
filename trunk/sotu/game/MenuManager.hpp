@@ -99,6 +99,16 @@ public:
     bool draw();
     void enable(bool doEnable=true);
 
+    void Up();
+    void Down();
+    void Left();
+    void Right();
+    void Enter();
+    void Goto(Selectable *s);
+
+    typedef enum { stMap=0, stTrade, stQuests } ScreenType;
+    void setActiveScreen(ScreenType newone);
+
     virtual void input( const Trigger &trigger, const bool &isDown);
 
 private:
@@ -109,17 +119,12 @@ private:
 
     list<Selectable*> _activeSelectables;
     list<Selectable*>::iterator _currentSelectable;
-    void Up();
-    void Down();
-    void Left();
-    void Right();
 
     int _pointer;
-    int _board;
+    //int _board;
     float _mouseX, _mouseY;
     Context::ContextEnum _prevContext;
 
-    typedef enum { stMap, stTrade, stQuests } ScreenType;
     ScreenType _screenType;
     void drawCargo();
     void drawMap();
