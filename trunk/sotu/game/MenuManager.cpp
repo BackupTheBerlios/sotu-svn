@@ -609,7 +609,8 @@ void PlanetManager::drawCargo()
 void PlanetManager::drawPlanet(float x, float y, float radius, int tex)
 {
     GLUquadricObj *qobj = gluNewQuadric();
-    gluQuadricNormals(qobj, GL_SMOOTH);
+    //gluQuadricNormals(qobj, GL_SMOOTH);
+    gluQuadricNormals(qobj, GL_NONE);
     gluQuadricTexture(qobj, GL_TRUE);
     _planetTex[tex]->bind();
 
@@ -626,7 +627,9 @@ void PlanetManager::drawPlanet(float x, float y, float radius, int tex)
             float ang = _prevAngle+(_angle-_prevAngle)*GameState::frameFractionOther;
             glRotatef(50.0f, 1.0f, 0.0f, 0.0f);   // 50deg. X-axis
             glRotatef(ang, 0.0f, 0.0f, -1.0f);     // rotate Z axis all the time
+            glEnable(GL_POLYGON_SMOOTH);
             gluSphere(qobj, radius, 48, 16);       // 60 = radius
+            glDisable(GL_POLYGON_SMOOTH);
         glPopMatrix();
     }
 }
