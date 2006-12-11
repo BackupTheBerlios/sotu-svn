@@ -1,13 +1,17 @@
 Optimizing Linux system for Firebird
 
 
-1. Choose the appropriate filesystem + forced writes or not
-2. Disable unneeded filesystem features (atime)
-3. Configure disks with hdparm
-4. Partition disks properly
-5. RAM disk (/tmp, tmpfs, filesystem cache, etc.)
-6. Setup networking
-7. (x)inetd and Classic considerations
+ 1. Choose the appropriate filesystem + forced writes or not
+ 2. Disable unneeded filesystem features (atime)
+ 3. Configure disks with hdparm
+ 4. Partition disks properly
+ 5. RAM disk (/tmp, tmpfs, filesystem cache, etc.)
+   /usr/src/linux/Documentation/sysctl/vm.txt
+ 6. Setup networking
+ 7. (x)inetd and Classic considerations
+ 8. DNS resolutions
+ 9. Classic and max number of open files
+10. Limit of processes per user
 
 ------------------------------------------------------------------------------------------
 1. Choose the appropriate filesystem
@@ -203,4 +207,94 @@ You must restart your network for the change to take effect. The command to manu
 
 
 5. Classic server and (x)inetd.conf
+
+------------------------------------------------------------------------------------------
+
+9.
+
+The file-max parameter
+
+The file-max file /proc/sys/fs/file-max sets the maximum number of file-handles that the
+Linux kernel will allocate. We generally tune this file to improve the number of
+open files by increasing the value of /proc/sys/fs/file-max to something reasonable
+like 256 for every 4M of RAM we have: i.e. for a machine with 128 MB of RAM, set
+it to 8192 - 128/4=32 32*256=8192.
+
+
+ The default setup for the file-max parameter under Red Hat Linux is:  "4096"  To adjust the value of file-max to 128 MB of RAM, type the following on your terminal:
+
+Version 6.1 only
+
+          [root@deep] /# echo "8192" >/proc/sys/fs/file-max
+
+
+Add the above commands to the /etc/rc.d/rc.local script file and you'll not have to type it again the next time your server reboots.
+
+Version 6.2 only
+Edit the /etc/sysctl.conf file and add the following line:
+
+          # Improve the number of open files
+          fs.file-max = 8192
+
+
+You must restart your network for the change to take effect. The command to manually restart the network is the following:
+
+          [root@deep] /# /etc/rc.d/init.d/network restart
+
+
+10.
+
+ Linux itself has a Max Processes per user limit. This feature allows us to control the number of processes an existing user on the server may be authorized to have. To improve performance, we can safely set the limit of processes for the super-user root to be unlimited. Edit the .bashrc file vi /root/.bashrc and add the following line:
+
+          ulimit -u unlimited
+
+
+You must exit and re-login from your terminal for the change to take effect.
+
+          [root@deep] /# ulimit -a
+
+
+          core file size (blocks)   1000000
+          data seg size (kbytes)    unlimited
+          file size (blocks)            unlimited
+          max memory size (kbytes)  unlimited
+          stack size (kbytes)           8192
+          cpu time (seconds)            unlimited
+          max user processes            unlimited  (1)
+          pipe size (512 bytes)         8
+          open files                    1024
+          virtual memory (kbytes)   2105343
+
+
+(1)
+    Make sure that when you type as root the command ulimit -a on your terminal, it shows unlimited next to max user processes.
+
+    Tip: You may also do ulimit -u unlimited at the command prompt instead of adding it to the /root/.bashrc file.
+
+Increases the system limit on open files for instance a process on Red Hat 6.0 with kernel 2.2.5 could open at least 31000 file descriptors this way and a process on kernel 2.2.12 can open at least 90000 file descriptors this way. The upper bound seems to be available memory. To increases the number of open files to 90000 for the root account do the following: Edit the .bashrc file vi /root/.bashrc and add the following line:
+
+          ulimit -n 90000
+
+
+You must exit from your terminal and re-login for the change to take effect.
+
+          [root@deep] /# ulimit -a
+
+
+          core file size (blocks)   1000000
+          data seg size (kbytes)    unlimited
+          file size (blocks)            unlimited
+          max memory size (kbytes)  unlimited
+          stack size (kbytes)           8192
+          cpu time (seconds)            unlimited
+          max user processes            unlimited
+          pipe size (512 bytes)         8
+          open files                    90000   (1)
+          virtual memory (kbytes)   2105343
+
+
+(1)
+    Make sure that when you type as root the command ulimit -a on your terminal, it shows 90000 next to open files.
+
+    Note: In older 2.2 kernels, though, the number of open files per process is still limited to 1024, even with the above changes.
 
