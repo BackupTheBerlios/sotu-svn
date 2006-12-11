@@ -37,6 +37,7 @@ const string EFFECTS_GROUP2                = "Effects2";
 const string EFFECTS_GROUP3                = "Effects3";
 
 const int MAX_PARTICLES_PER_GROUP=2048;
+const int PLANET_TEXTURES=7;
 
 const float GAME_STEP_SIZE = 1.0f/30.0f; //run logic 30 times per second
 const int MAX_GAME_STEPS = 10; //max number of logic runs per frame

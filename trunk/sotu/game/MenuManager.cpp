@@ -492,7 +492,7 @@ bool PlanetManager::init()
     }
     _pointer = icons->getIndex("Pointer");
 
-    for (int i=0; i<7; ++i)
+    for (int i=0; i<PLANET_TEXTURES; ++i)
     {
         char fn[30];
         sprintf(fn, "bitmaps/planet%d.png", i);
@@ -606,19 +606,15 @@ void PlanetManager::drawCargo()
     //    hide trade buttons and prices
 }
 //----------------------------------------------------------------------------
-void PlanetManager::drawPlanet(float x, float y, float radius, int tex)
+void PlanetManager::drawPlanet(float x, float y, Planet *pl)
 {
+    if (!pl)
+        return;
     GLUquadricObj *qobj = gluNewQuadric();
     //gluQuadricNormals(qobj, GL_SMOOTH);
     gluQuadricNormals(qobj, GL_NONE);
     gluQuadricTexture(qobj, GL_TRUE);
-    _planetTex[tex]->bind();
-
-    /* wireframe model
-    gluQuadricDrawStyle(qobj, GLU_SILHOUETTE);
-    glLineWidth(1.0f);
-    glColor3f(1.0f, 0.5f, 0.0f);          // orange
-    */
+    _planetTex[pl->_textureIndex]->bind();
 
     if (qobj)
     {
@@ -628,44 +624,99 @@ void PlanetManager::drawPlanet(float x, float y, float radius, int tex)
             glRotatef(50.0f, 1.0f, 0.0f, 0.0f);   // 50deg. X-axis
             glRotatef(ang, 0.0f, 0.0f, -1.0f);     // rotate Z axis all the time
             glEnable(GL_POLYGON_SMOOTH);
-            gluSphere(qobj, radius, 48, 16);       // 60 = radius
+            gluSphere(qobj, pl->_radius, 48, 16);       // 60 = radius
+            if (pl->_hasRing)
+            {
+                //gluDisk(qobj,
+            }
             glDisable(GL_POLYGON_SMOOTH);
         glPopMatrix();
     }
+    gluDeleteQuadric(qobj);
+}
+//----------------------------------------------------------------------------
+void setMinLineSize(float desiredSize)
+{
+    // set minimal line size to 2pixels
+    GLfloat sizes[2];  // Store supported line width range
+    GLfloat step;     // Store supported line width increments
+    glGetFloatv(GL_LINE_WIDTH_RANGE,sizes);
+    glGetFloatv(GL_LINE_WIDTH_GRANULARITY,&step);
+    GLfloat size = sizes[0];
+    while (size < desiredSize && size + step <= sizes[1] && step > 0)
+        size += step;
+    glLineWidth(size);
 }
 //----------------------------------------------------------------------------
 void PlanetManager::drawMap()
 {
-    const GLfloat tabh = 60.0f;
-
     // draw rectangle around galaxy
     glColor3f(0.0f, 0.7f, 0.0f);    // darker green color
-    glBegin(GL_LINE_STRIP);
+    glBegin(GL_LINE_LOOP);
         glVertex2f( 980.0f,  60.0f);
-        glVertex2f( 980.0f, 740.0f - tabh - 10.0f);
-        glVertex2f( 210.0f, 740.0f - tabh - 10.0f);
+        glVertex2f( 980.0f, 670.0f);
+        glVertex2f( 210.0f, 670.0f);
         glVertex2f( 210.0f,  60.0f);
-        glVertex2f( 980.0f,  60.0f);
+        //glVertex2f( 980.0f,  60.0f);
     glEnd();
 
     GLBitmapFont &fontWhite =
       *(FontManagerS::instance()->getFont( "bitmaps/menuWhite"));
     glColor4f(1.0, 1.0, 1.0, 1.0);
     float w = fontWhite.GetWidth("CURRENT PLANET", 0.6f);
-    fontWhite.DrawString("CURRENT PLANET", 10.0f + (200.0f-w)*0.5f, 700.0f - tabh, 0.6f, 0.6f);
+    fontWhite.DrawString("CURRENT PLANET", 10.0f + (200.0f-w)*0.5f, 640.0f, 0.6f, 0.6f);
     w = fontWhite.GetWidth("TARGET PLANET", 0.6f);
     fontWhite.DrawString("TARGET PLANET", 10.0f + (200.0f-w)*0.5f, 400.0f, 0.6f, 0.6f);
 
-    // draw target planet
+    Planet* _currentPlanet = GameS::instance()->_galaxy.getPlanetAt(30, 30);
     glEnable(GL_TEXTURE_2D);
-    drawPlanet(110.0f, 320.0f, 60.0f, 6);
-    drawPlanet(110.0f, 560.0f, 60.0f, 3);
+    drawPlanet(110.0f, 320.0f, _currentPlanet);
+    //drawPlanet(110.0f, 560.0f, _targetPlanet);
     glDisable(GL_TEXTURE_2D);
 
-    // to draw planets use this:
-    glBegin(GL_POINTS);    // Specify point drawing
-    glVertex3f(0.0f, 0.0f, 0.0f);
-    glEnd();
+    Map& galaxy = GameS::instance()->_galaxy;
+    const float gxoffset = 215.0f;
+    const float gyoffset = 65.0f;
+    galaxy.draw(gxoffset, gyoffset);
+
+    // if mouse is inside, draw special cursor
+    if (_mouseX >= 210 && _mouseX <= 980 && _mouseY >= 60 && _mouseY <= 670)
+    {
+        // if mouse is over some planet, center it
+        float tmpx = _mouseX;
+        float tmpy = _mouseY;
+        //Planet *pl = galaxy.getPlanetAt(_mouseX - gxoffset, _mouseY - gyoffset);
+        Planet *pl = galaxy.getNearest(_mouseX - gxoffset, _mouseY - gyoffset);
+        if (pl)
+        {
+            tmpx = gxoffset + pl->_x;
+            tmpy = gyoffset + pl->_y;
+        }
+
+        glColor3f(0.0f, 1.0f, 0.0f);
+        setMinLineSize(3.0f);
+        const float ptrSize = 15;
+        // around
+        glBegin(GL_LINE_LOOP);
+            glVertex2f( tmpx - ptrSize, tmpy - ptrSize);
+            glVertex2f( tmpx - ptrSize, tmpy + ptrSize);
+            glVertex2f( tmpx + ptrSize, tmpy + ptrSize);
+            glVertex2f( tmpx + ptrSize, tmpy - ptrSize);
+        glEnd();
+
+        const float ptrLen = 10;
+        // +
+        glBegin(GL_LINES);
+            glVertex2f( tmpx - ptrSize - ptrLen, tmpy);
+            glVertex2f( tmpx - ptrSize + ptrLen, tmpy);
+            glVertex2f( tmpx + ptrSize - ptrLen, tmpy);
+            glVertex2f( tmpx + ptrSize + ptrLen, tmpy);
+            glVertex2f( tmpx, tmpy - ptrSize - ptrLen);
+            glVertex2f( tmpx, tmpy - ptrSize + ptrLen);
+            glVertex2f( tmpx, tmpy + ptrSize - ptrLen);
+            glVertex2f( tmpx, tmpy + ptrSize + ptrLen);
+        glEnd();
+    }
 }
 //----------------------------------------------------------------------------
 void PlanetManager::drawQuests()
@@ -674,37 +725,28 @@ void PlanetManager::drawQuests()
 //----------------------------------------------------------------------------
 bool PlanetManager::draw()
 {
-    // set minimal line size to 2pixels
-    GLfloat sizes[2];  // Store supported line width range
-    GLfloat step;     // Store supported line width increments
-    glGetFloatv(GL_LINE_WIDTH_RANGE,sizes);
-    glGetFloatv(GL_LINE_WIDTH_GRANULARITY,&step);
-    GLfloat size = sizes[0];
-    while (size < 2.0f && size + step <= sizes[1] && step > 0)
-        size += step;
-    glLineWidth(size);
-
+    setMinLineSize(2.0f);
     // draw lines
     const GLfloat tabh = 60.0f;
     const GLfloat tabw[] = { 270.0f, 300.0f, 200.0f };
     const GLfloat tabspace = 5.0f;
     glColor3f(0.2f, 0.8f, 0.0f);    // green color
     glBegin(GL_LINE_STRIP);
-    glVertex2f( 10.0f, 740.0f - tabh);
-    glVertex2f( 10.0f,  10.0f);
-    glVertex2f(990.0f,  10.0f);
-    glVertex2f(990.0f, 740.0f - tabh);
+        glVertex2f( 10.0f, 740.0f - tabh);
+        glVertex2f( 10.0f,  10.0f);
+        glVertex2f(990.0f,  10.0f);
+        glVertex2f(990.0f, 740.0f - tabh);
 
-    // selected tab - calculate right edge
-    GLfloat left = 20;  // offset (10 screen + 10 first tab)
-    int nextTab=0;
-    for (; nextTab != (int)_screenType; ++nextTab)
-        left += tabw[nextTab];
-    glVertex2f( left + tabw[nextTab], 740.0f - tabh);
-    glVertex2f( left + tabw[nextTab], 740.0f       );
-    glVertex2f( left,                 740.0f       );
-    glVertex2f( left,                 740.0f - tabh);
-    glVertex2f( 10.0f, 740.0f - tabh);
+        // selected tab - calculate right edge
+        GLfloat left = 20;  // offset (10 screen + 10 first tab)
+        int nextTab=0;
+        for (; nextTab != (int)_screenType; ++nextTab)
+            left += tabw[nextTab];
+        glVertex2f( left + tabw[nextTab], 740.0f - tabh);
+        glVertex2f( left + tabw[nextTab], 740.0f       );
+        glVertex2f( left,                 740.0f       );
+        glVertex2f( left,                 740.0f - tabh);
+        glVertex2f( 10.0f, 740.0f - tabh);
     glEnd();
 
     // render other tabs
@@ -753,13 +795,17 @@ bool PlanetManager::draw()
         drawQuests();
 
     // render mouse pointer
-    glEnable(GL_TEXTURE_2D);
-    GLBitmapCollection *icons =
-        BitmapManagerS::instance()->getBitmap( "bitmaps/menuIcons");
-    icons->bind();
-    glColor4f(1.0, 1.0, 1.0, 1.0);
-    icons->Draw( _pointer, _mouseX, _mouseY, 0.5, 0.5);
-    glDisable(GL_TEXTURE_2D);
+    if (_screenType != stMap ||
+        _mouseX < 210 || _mouseX > 980 || _mouseY < 60 || _mouseY > 670)
+    {
+        glEnable(GL_TEXTURE_2D);
+        GLBitmapCollection *icons =
+            BitmapManagerS::instance()->getBitmap( "bitmaps/menuIcons");
+        icons->bind();
+        glColor4f(1.0, 1.0, 1.0, 1.0);
+        icons->Draw( _pointer, _mouseX, _mouseY, 0.5, 0.5);
+        glDisable(GL_TEXTURE_2D);
+    }
     return true;
 }
 //----------------------------------------------------------------------------

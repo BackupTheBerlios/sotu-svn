@@ -29,6 +29,7 @@
 
 class Selectable;
 class GLTexture;
+class Planet;
 // class GLTextureCubeMap;
 //----------------------------------------------------------------------------
 class MenuManager: public InterceptorI
@@ -136,7 +137,7 @@ private:
     void drawCargo();
     void drawMap();
     void drawQuests();
-    void drawPlanet(float x, float y, float radius, int tex);
+    void drawPlanet(float x, float y, Planet *);
 };
 
 typedef Singleton<PlanetManager> PlanetManagerS;

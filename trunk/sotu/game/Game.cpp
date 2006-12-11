@@ -14,6 +14,7 @@
 // FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details
 //
 #include <Trace.hpp>
+#include "utils/Random.hpp"
 
 #include <Game.hpp>
 #include <GameState.hpp>
@@ -167,44 +168,6 @@ void Game::startNewGame( void)
     HeroS::instance()->allowVerticalMovement(allowVerticalMovement);
 }
 //----------------------------------------------------------------------------
-void Cargo::addItem(std::string groupName, const CargoItem& c)
-{
-    _items.insert(std::pair<std::string,CargoItem>(groupName, c));
-}
-//----------------------------------------------------------------------------
-void Cargo::clearCargo()
-{
-    _items.clear();
-
-    // create empty cargo list (used for trading as well)
-    // when player visits planet for first time, the list is built
-
-    // Limited by cargo space (0 - total)
-    addItem("Goods", CargoItem("Food"));
-    addItem("Goods", CargoItem("Electronics"));
-    addItem("Goods", CargoItem("Clothing"));
-    addItem("Goods", CargoItem("Alien artifacts"));
-    addItem("Goods", CargoItem("Jewelry"));
-    addItem("Goods", CargoItem("Firearms"));   // * illegal with empire
-    addItem("Goods", CargoItem("Narcotics"));  // * illegal everywhere
-    addItem("Goods", CargoItem("Slaves"));     // * illegal with rebels
-
-    // Don't take cargo space, Min = 0, Max = 1
-    addItem("Equipment", CargoItem("Rocket launcher"));
-    addItem("Equipment", CargoItem("Neutron gun"));
-    addItem("Equipment", CargoItem("Neutron gun enhancer"));
-    addItem("Equipment", CargoItem("Proton flank burst"));
-    addItem("Equipment", CargoItem("Proton enhancer"));
-    addItem("Equipment", CargoItem("Wave emitter"));
-    addItem("Equipment", CargoItem("Smart bomb"));
-    addItem("Equipment", CargoItem("Vertical thrusters"));
-    // special case, Min = 0, Max = 9
-    addItem("Equipment", CargoItem("Fuel"));
-
-    // special case
-    addItem("Other", CargoItem("Save game"));
-}
-//----------------------------------------------------------------------------
 void Game::startNewCampaign()
 {
     _cargo.clearCargo();
@@ -345,5 +308,243 @@ void Game::run( void)
         audio.update();
         video.update();
     }
+}
+//----------------------------------------------------------------------------
+// CARGO *********************************************************************
+//----------------------------------------------------------------------------
+void Cargo::addItem(std::string groupName, const CargoItem& c)
+{
+    _items.insert(std::pair<std::string,CargoItem>(groupName, c));
+}
+//----------------------------------------------------------------------------
+void Cargo::clearCargo()
+{
+    _items.clear();
+
+    // create empty cargo list (used for trading as well)
+    // when player visits planet for first time, the list is built
+
+    // Limited by cargo space (0 - total)
+    addItem("Goods", CargoItem("Food"));
+    addItem("Goods", CargoItem("Electronics"));
+    addItem("Goods", CargoItem("Clothing"));
+    addItem("Goods", CargoItem("Alien artifacts"));
+    addItem("Goods", CargoItem("Jewelry"));
+    addItem("Goods", CargoItem("Firearms"));   // * illegal with empire
+    addItem("Goods", CargoItem("Narcotics"));  // * illegal everywhere
+    addItem("Goods", CargoItem("Slaves"));     // * illegal with rebels
+
+    // Don't take cargo space, Min = 0, Max = 1
+    addItem("Equipment", CargoItem("Rocket launcher"));
+    addItem("Equipment", CargoItem("Neutron gun"));
+    addItem("Equipment", CargoItem("Neutron gun enhancer"));
+    addItem("Equipment", CargoItem("Proton flank burst"));
+    addItem("Equipment", CargoItem("Proton enhancer"));
+    addItem("Equipment", CargoItem("Wave emitter"));
+    addItem("Equipment", CargoItem("Smart bomb"));
+    addItem("Equipment", CargoItem("Vertical thrusters"));
+    // special case, Min = 0, Max = 9
+    addItem("Equipment", CargoItem("Fuel"));
+
+    // special case
+    addItem("Other", CargoItem("Save game"));
+}
+//----------------------------------------------------------------------------
+// PLANET ********************************************************************
+//----------------------------------------------------------------------------
+Planet::Planet(float x, float y, const std::string& name)
+    :_x(x), _y(y)
+{
+    int rnd = Random::integer(10);
+    if (rnd < 8)
+        _radius = 50 + 2 * rnd;
+    else if (rnd == 8)
+        _radius = 45;
+    else
+        _radius = 75;
+    _hasRing = (Random::integer(15) == 1);
+    _textureIndex = Random::integer(PLANET_TEXTURES);
+    _techLevel = 1+Random::integer(9);
+    const float mapWidth = 760.0f;
+    const float mapHeight = 600.0f;
+    if (x < mapWidth*0.3 && y < mapHeight * 0.2)
+        _rebelSentiment = _alienActivity = 0;
+    else if (x > mapWidth*0.7 && y > mapHeight * 0.2)
+        _rebelSentiment = _alienActivity = 100;
+    else    // in between
+    {
+        float base = 40.0f * (x/mapWidth + y/mapHeight);
+        _rebelSentiment = (int)base + Random::integer(20);
+        _alienActivity = (int)base + Random::integer(20);
+    }
+    if (name != "")
+        _name = name;
+    else    // generate random name
+    {
+        char one[] = "BCDFGJKLMNPRSTZ";
+        char two[] = "AEIOU";
+        std::string three[] = { "TH", "R", "ST", "S", "T", "RAM", "N", "NT", "NIR" };
+        char name[10];
+        name[0] = one[Random::integer(sizeof(one)/sizeof(char) - 1)];   // -1 because of string terminator char
+        name[1] = two[Random::integer(sizeof(two)/sizeof(char) - 1)];
+        name[2] = one[Random::integer(sizeof(one)/sizeof(char) - 1)];
+        name[3] = two[Random::integer(sizeof(two)/sizeof(char) - 1)];
+        name[4] = '\0';
+        _name = name;
+        if (Random::integer(10) > 5)
+            _name += three[Random::integer(sizeof(three)/sizeof(std::string))];
+    }
+
+    // TODO: generate starting marketplace
+    //LOG_INFO << "CREATED PLANET (" << _name.c_str() << ") x = " << x << ", y = " << y << endl;
+}
+//----------------------------------------------------------------------------
+float Planet::distance(float x, float y)
+{
+    // x^2+y^2
+    return (x-_x)*(x-_x) + (y-_y)*(y-_y);
+}
+//----------------------------------------------------------------------------
+bool Planet::isAt(float x, float y)                // allow few pixels miss
+{
+    const float range = 3;
+    return (x >= _x-range) && (x <= _x + range)
+        && (y >= _y-range) && (y <= _y + range);
+}
+//----------------------------------------------------------------------------
+float Planet::getPrice(const std::string& itemName)
+{
+    //return _marketplace._items[itemName]._price;
+    return 0;
+}
+//----------------------------------------------------------------------------
+// called once each 5 turns or so
+void Planet::update()
+{
+    // always rs=0, tl=9, aa=0
+    if (_name == "XEN")
+        return;
+    int rs_before = _rebelSentiment;
+    if (_rebelSentiment > 20)
+        _rebelSentiment += -5 + Random::integer(11);
+    if (_rebelSentiment == 50)
+        _rebelSentiment = rs_before;
+    if (_rebelSentiment > 100)
+        _rebelSentiment = 100;
+    if (_rebelSentiment < 0)
+        _rebelSentiment = 0;
+    if (rs_before < 50 && _rebelSentiment > 50) // civil war - rebels take over
+    {
+        _rebelSentiment = 70;
+        // TODO: NewsManagerS::instance()->addItem("Civil war in " + _name + ". Rebels take over the planet.");
+        if (_techLevel > 1)
+        {
+            _techLevel -= 4;
+            // TODO: NewsManagerS::instance()->addItem("Civil war in " + _name + ". Technology level reduced.");
+        }
+    }
+    if (rs_before > 50 && _rebelSentiment < 50)
+    {
+        _rebelSentiment = 40;
+        _techLevel -= 2;
+        // TODO: NewsManagerS::instance()->addItem("Empire has taken " + _name + " into their power.");
+    }
+    if (_techLevel < 1)
+        _techLevel = 1;
+    if (_techLevel < 9 && _rebelSentiment > 70 || _rebelSentiment < 30)   // planet of stable government
+    {
+        _techLevel += 0.1f;
+        //if ((float)((int)_techLevel) == _techLevel)
+        //    NewsManagerS::instance()->addItem("Tech. level of " + _name + " has increased.");
+
+        if (_techLevel > 9)
+            _techLevel = 9;
+    }
+
+    // TODO: update prices
+}
+//----------------------------------------------------------------------------
+// PLANET ********************************************************************
+//----------------------------------------------------------------------------
+Map::Map()  // creates galaxy of planets
+{
+    LOG_INFO << "CREATING PLANETS" << endl;
+    const int mapWidth = 760;
+    const int mapHeight = 600;
+    const int stepSize = 20;
+    for (int x = 0; x < mapWidth; x += stepSize)
+    {
+        for (int y = 0; y < mapHeight; y += stepSize)
+        {
+            Planet *p;
+            if (x == stepSize && y == stepSize)   // XEN
+                p = new Planet(1.5*(float)stepSize, 1.5*(float)stepSize, "XEN");
+            else
+            {
+                if ((x+y)%50 == 0 && Random::integer(5) == 0)
+                    continue;
+                p = new Planet( x + 2 + Random::integer(stepSize-4),
+                                y + 2 + Random::integer(stepSize-4));
+            }
+            _planets.push_back(p);
+        }
+    }
+}
+//----------------------------------------------------------------------------
+Map::~Map()
+{
+    LOG_INFO << "DESTROYING PLANETS" << endl;
+    for (PlanetList::iterator it = _planets.begin(); it != _planets.end(); ++it)
+        delete (*it);
+}
+//----------------------------------------------------------------------------
+// renders galaxy as set of points
+void Map::draw(float x, float y)
+{
+    glPointSize(2.0f);
+    glEnable(GL_POINT_SMOOTH);
+    glBegin(GL_POINTS);    // Specify point drawing
+    for (PlanetList::iterator it = _planets.begin(); it != _planets.end(); ++it)
+    {
+        switch ((*it)->_textureIndex)
+        {
+            case 0: case 5:
+                glColor3f(1.0, 1.0, 0.0); break;
+            case 3: case 6:
+                glColor3f(0.0, 0.8, 1.0); break;
+            case 2: case 4:
+                glColor3f(1.0, 0.4, 0.3); break;
+            case 1: default:
+                glColor3f(1.0, 1.0, 1.0); break;
+        };
+        //if ((*it)->isSpecial())
+        // bigger or whaever
+        glVertex3f(x+(*it)->_x, y+(*it)->_y, 0.0f);
+    }
+    glEnd();
+}
+//----------------------------------------------------------------------------
+Planet* Map::getPlanetAt(float x, float y)
+{
+    for (PlanetList::iterator it = _planets.begin(); it != _planets.end(); ++it)
+        if ((*it)->isAt(x, y))
+            return (*it);
+    return 0;
+}
+//----------------------------------------------------------------------------
+Planet* Map::getNearest(float x, float y)
+{
+    float mindist = 0.0f;
+    Planet *retval = 0;
+    for (PlanetList::iterator it = _planets.begin(); it != _planets.end(); ++it)
+    {
+        float d = (*it)->distance(x, y);
+        if (d < mindist || it == _planets.begin())
+        {
+            mindist = d;
+            retval = (*it);
+        }
+    }
+    return retval;
 }
 //----------------------------------------------------------------------------

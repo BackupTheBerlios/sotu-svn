@@ -17,6 +17,7 @@
 
 #include <Singleton.hpp>
 #include <map>
+#include <vector>
 //----------------------------------------------------------------------------
 class CargoItem
 {
@@ -48,29 +49,52 @@ public:
 //----------------------------------------------------------------------------
 class Planet
 {
+//private:
 public:
+    float _radius;          // 45 - 80
+    bool _hasRing;
+    int _textureIndex;
     Cargo _marketplace;
-    int _techLevel;         // 1 - 9
+    float _techLevel;         // 1 - 9
     int _rebelSentiment;    // 0 - 100
     int _alienActivity;     // 0 - 100
     std::string _name;
     float _x;
     float _y;
+
+public:
+    Planet(float x, float y, const std::string& name = "");
+    bool isAt(float x, float y);                // allow few pixels miss
+    float distance(float x, float y);
+
+    void drawRotating(float x, float y, float angle);   // draw big planet
+    float getPrice(const std::string& itemName);
+    void update();
 };
 //----------------------------------------------------------------------------
 class Map
 {
 public:
-    typedef std::vector<Planet> PlanetList;
+    Map();  // creates galaxy of planets
+    ~Map(); // destroy planets
+    typedef std::vector<Planet *> PlanetList;
     PlanetList _planets;
 
-    Planet* createGalaxy();     // returns pointer to Xen (starting planet)
+    // x, y offset
+    void draw(float x, float y);                // renders galaxy as set of points
+    Planet* getPlanetAt(float x, float y);
+    Planet* getNearest(float x, float y);
+
+private:
+    Planet* _currentPlanet;
 };
 //----------------------------------------------------------------------------
 class Game
 {
 friend class Singleton<Game>;
 public:
+    Map _galaxy;       // Galaxy
+    Cargo _cargo;       // Player's cargo
     bool init( void);
     void run( void);
     void reset( void);
@@ -86,9 +110,6 @@ private:
 
     void updateOtherLogic( void);
     void updateInGameLogic( void);
-
-    Cargo _cargo;   // Player's cargo
-    Map _galaxy;       // Galaxy
 };
 typedef Singleton<Game> GameS;
 //----------------------------------------------------------------------------
