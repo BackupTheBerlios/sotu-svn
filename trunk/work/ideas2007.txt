@@ -1,0 +1,206 @@
+Optimizing Linux system for Firebird
+
+
+1. Choose the appropriate filesystem + forced writes or not
+2. Disable unneeded filesystem features (atime)
+3. Configure disks with hdparm
+4. Partition disks properly
+5. RAM disk (/tmp, tmpfs, filesystem cache, etc.)
+6. Setup networking
+7. (x)inetd and Classic considerations
+
+------------------------------------------------------------------------------------------
+1. Choose the appropriate filesystem
+
+- forced writes on/off
+- reiserfs problems
+- benchmark (ext2, ext3, reiserfs, jfs, xfs)
+- different database sizes
+- different operations
+
+Benchmark w/ 2:
+
+2. http://www.faqs.org/docs/securing/chap6sec73.html
+
+
+The atime and noatime attribute
+
+Linux records information about when files were created and last modified as well as when it was last accessed. There is a cost associated with recording the last access time. The ext2 file system of Linux has an attribute that allows the super-user to mark individual files such that their last access time is not recorded. This may lead to significant performance improvements on often accessed frequently changing files such as the contents of the /var/spool/news directory.
+
+ To set the attribute to a file, use:
+
+           [root@deep] /#chattr +A filename  (1)
+
+ For a whole directory tree, do something like:
+
+           [root@deep /root]#chattr -R +A  /var/spool/    (1)
+           [root@deep /root]#chattr -R +A  /cache/        (2)
+           [root@deep /root]#chattr -R +A /home/httpd/ona/   (3)
+
+ Linux has a special mount option for file systems called noatime that can be added to each line that addresses one file system in the /etc/fstab file. If a file system has been mounted with this option, reading accesses to the file system will no longer result in an update to the atime information associated with the file like we have explained above. The importance of the noatime setting is that it eliminates the need by the system to make writes to the file system for files which are simply being read. Since writes can be somewhat expensive, this can result in measurable performance gains. Note that the write time information to a file will continue to be updated anytime the file is written to. In our example below, we will set the noatime option to our /chroot file system.
+
+Edit the fstab file vi /etc/fstab and add in the line that refer to /chrootfile system the noatime option after the defaults option as show below:
+
+            /dev/sda7          /chroot          ext2          defaults,noatime          1  2
+
+
+You need not reboot your system for the change to take effect, just make the Linux system aware about the modification you have made to the /etc/fstab file. This can be accomplished with the following commands:
+
+           [root@deep] /#mount -oremount /chroot/
+
+
+Then test your results with the flowing command:
+
+           [root@deep]# cat /proc/mounts
+
+
+/dev/root / ext2 rw 0 0 /proc /proc proc rw 0 0 /dev/sda1 /boot ext2 rw 0 0 /dev/sda8 /cache ext2 rw 0 0 /dev/sda7 /chroot ext2 rw,noatime 0 0 /dev/sda6 /home ext2 rw 0 0 /dev/sda11 /tmp ext2 rw 0 0 /dev/sda5 /usr ext2 rw 0 0 /dev/sda9 /var ext2 rw 0 0 none /dev/pts devpts rw 0 0
+If you see something like: /dev/sda7 /chroot ext2 rw,noatime 0 0, congratulations!
+
+
+-------------------------------------------------------------------------------------------------
+
+
+3. 6.12. Tuning IDE Hard Disk Performance
+
+Putting your swap partitions near the beginning of your drive, see
+may give you some acceptable improvement.
+The beginning of the drive is physically located on the outer portion
+of the cylinder, and the read/write head can cover much more ground
+per revolution. We typically see partitions placed at the end of the drive
+work 3MB/s slower using the hdparm -t command.
+
+Performance increases have been reported on massive disk I/O operations
+by setting the IDE drivers to use DMA, 32-bit transfers and multiple
+sector modes. The kernel seems to use more conservative settings unless
+told otherwise. The magic command to change the setting of your drive is
+hdparm. To enable 32-bit I/O over the PCI buses, use the command:
+
+[root@deep] /# /sbin/hdparm -c1 /dev/hda or hdb, hdc etc.
+
+
+This will usually, depending on your IDE Disk Drive model, cut the timing
+buffered disk reads time by 2. The hdparm(8) manpage says that you may
+need to use -c 3 for some chipsets. All (E)IDE drives still have only a
+16-bit connection over the ribbon cable from the interface card.
+To enable DMA, use the command:
+
+[root@deep] /# /sbin/hdparm -d1 /dev/hda or hdb, hdc etc.
+
+This may depend on support for your motherboard chipset being compiled
+into your kernel. Also, this command will enable DMA support for your
+hard drive, it will cut the timing buffered disk reads time and will
+improve the performance by 2. To enable multiword DMA mode 2 transfers,
+use the command:
+
+[root@deep] /#/sbin/hdparm -d1 -X34 /dev/hda or hdb, hdc etc.
+
+
+This sets the IDE transfer mode for newer (E)IDE/ATA2 drives. check
+your hardware manual to see if you have it. To enable UltraDMA
+mode2 transfers, use the command:
+
+[root@deep] /# /sbin/hdparm -d1 -X66 /dev/hda or hdb, hdc etc.
+
+
+You'll need to prepare the chipset for UltraDMA beforehand. Also,
+see your manual page about hdparm for more information. Use this with
+extreme caution! To set multiple sector mode I/O, use the command:
+
+[root@deep] /#/sbin/hdparm -m XX /dev/hda or hdb, hdc etc.
+
+
+Where XX is the maximum setting supported by your drive. The -i flag
+can be used to find the maximum setting supported by an installed
+drive: look for MaxMultSect in the output.
+
+[root@deep] /#/sbin/hdparm -i /dev/hda or hdb, hdc etc.
+
+ /dev/hda:
+
+ Model=Maxtor 7540 AV, FwRev=GA7X4647, SerialNo=L1007YZS
+ Config={ HardSect NotMFM HdSw>15uSec Fixed DTR>5Mbs FmtGapReq }
+ RawCHS=1046/16/63, TrkSize=0, SectSize=0, ECCbytes=11
+ BuffType=3(DualPortCache), BuffSize=32kB, MaxMultSect=8, MultSect=8
+ DblWordIO=yes, maxPIO=2(fast), DMA=yes, maxDMA=1(medium)
+ CurCHS=523/32/63, CurSects=379584528, LBA=yes, LBA=yes, LBAsects=1054368
+ tDMA={min:150,rec:150}, DMA modes: sword0 sword1 *sword2 *mword0
+ IORDY=on/off, tPIO={min:240,w/IORDY:180}, PIO modes: mode3
+
+
+
+Multiple sector mode aka IDE Block Mode, is a feature of most modern IDE
+hard drives, permitting the transfer of multiple sectors per I/O
+interrupt, rather than the usual one sector per interrupt. When this
+feature is enabled, it typically reduces operating system overhead for
+disk I/O by 30-50%. On many systems it also provides increased data
+throughput of anywhere from 5% to 50%. You can test the results of your
+changes by running hdparm in performance test mode:
+
+ [root@deep] /#/sbin/hdparm -t /dev/hda or hdb, hdc etc.
+
+
+Tip: Once you have a set of hdparm options, you can put the commands
+in your /etc/rc.d/rc.local file to run it every time you reboot the machine.
+
+-------------------------------------------------------------------------------------------------
+
+
+4. Optimize the network
+
+6.13. Better manage your TCP/IP resources
+
+This hack just make the time default values for TCP/IP connection lower so that more connections can be handled by time on your TCP/IP protocol. The following will decrease the amount of time your Linux box will try take to finish closing a connection and the amount of time before it will kill a stale connection. This will also turn off some IP extensions that aren't needed. The default setup for the TCP/IP parameters we'll change under Red Hat Linux are:
+
+    *
+
+      For the tcp_fin_timeout 180
+    *
+
+      For the tcp_keepalive_time 7200
+    *
+
+      For the tcp_window_scaling 1
+    *
+
+      For the tcp_sack 1
+    *
+
+      For the tcp_timestamps 1
+
+To adjust the new TCP/IP values, type the following commands on your terminal:
+
+             [root@deep] /#echo 30 >/proc/sys/net/ipv4/tcp_fin_timeout
+             [root@deep] /#echo 1800 >/proc/sys/net/ipv4/tcp_keepalive_time
+             [root@deep] /#echo 0  >/proc/sys/net/ipv4/tcp_window_scaling
+             [root@deep] /#echo 0  >/proc/sys/net/ipv4/tcp_sack
+             [root@deep] /#echo 0  >/proc/sys/net/ipv4/tcp_timestamps
+
+
+Execute the above commands and put them in your /etc/rc.d/rc.local file so you don't need to type them again each time your system reboots.
+
+Version 6.2 only
+Edit the /etc/sysctl.conf file and add the following lines:
+
+             # Decrease the time default value for tcp_fin_timeout connection
+             net.ipv4.tcp_fin_timeout = 30
+             # Decrease the time default value for tcp_keepalive_time connection
+             net.ipv4.tcp_keepalive_time = 1800
+             # Turn off the tcp_window_scaling
+             net.ipv4.tcp_window_scaling = 0
+             # Turn off the tcp_sack
+             net.ipv4.tcp_sack = 0
+             # Turn off the tcp_timestamps
+             net.ipv4.tcp_timestamps = 0
+
+
+You must restart your network for the change to take effect. The command to manually restart the network is the following:
+
+             [root@deep] /# /etc/rc.d/init.d/network restart
+
+
+-------------------------------------------------------------------------------------------------
+
+
+5. Classic server and (x)inetd.conf
+
