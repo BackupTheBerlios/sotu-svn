@@ -355,27 +355,44 @@ void Cargo::clearCargo()
 Planet::Planet(float x, float y, const std::string& name)
     :_x(x), _y(y)
 {
+    if (name == "XEN")
+    {
+        _name = name;
+        _radius = 60;
+        _hasRing = false;
+        _techLevel = 9;
+        _rebelSentiment = 0;
+        _alienActivity = 5;
+        _textureIndex = 0;  // TODO: bice special
+        return;
+    }
     int rnd = Random::integer(10);
     if (rnd < 8)
         _radius = 50 + 2 * rnd;
     else if (rnd == 8)
         _radius = 45;
     else
-        _radius = 75;
+        _radius = 70;
     _hasRing = (Random::integer(15) == 1);
     _textureIndex = Random::integer(PLANET_TEXTURES);
     _techLevel = 1+Random::integer(9);
     const float mapWidth = 760.0f;
     const float mapHeight = 600.0f;
     if (x < mapWidth*0.3 && y < mapHeight * 0.2)
-        _rebelSentiment = _alienActivity = 0;
+    {
+        _rebelSentiment = 0;
+        _alienActivity = 10 + Random::integer(10);
+    }
     else if (x > mapWidth*0.7 && y > mapHeight * 0.2)
-        _rebelSentiment = _alienActivity = 100;
+    {
+        _rebelSentiment = 80 + Random::integer(20);
+        _alienActivity = 95 + Random::integer(5);
+    }
     else    // in between
     {
         float base = 40.0f * (x/mapWidth + y/mapHeight);
         _rebelSentiment = (int)base + Random::integer(20);
-        _alienActivity = (int)base + Random::integer(20);
+        _alienActivity = 10 + (int)base + Random::integer(10);
     }
     if (name != "")
         _name = name;
@@ -518,7 +535,7 @@ void Map::draw(float x, float y)
                 glColor3f(1.0, 1.0, 1.0); break;
         };
         //if ((*it)->isSpecial())
-        // bigger or whaever
+        // bigger or flashing or whaever
         glVertex3f(x+(*it)->_x, y+(*it)->_y, 0.0f);
     }
     glEnd();

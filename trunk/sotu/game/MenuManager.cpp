@@ -602,16 +602,79 @@ void PlanetManager::Enter( void)
 //----------------------------------------------------------------------------
 void PlanetManager::drawCargo()
 {
-    //if (_currentPlanet == 0)
+    Planet* _currentPlanet  = GameS::instance()->_galaxy.getPlanetAt(30, 30);
+    drawPlanet(10.0f, 590.0f, _currentPlanet, "CURRENT PLANET");
+
+    //if (in orbit)
+    //{
     //    hide trade buttons and prices
+    //    show text "IN ORBIT" under planet
+    //}
+    //else
+    //{
+    //    show text "DOCKED IN SPACESTATION"
+    //}
 }
 //----------------------------------------------------------------------------
-void PlanetManager::drawPlanet(float x, float y, Planet *pl)
+void setMinLineSize(float desiredSize)
+{
+    GLfloat sizes[2];   // Store supported line width range
+    GLfloat step;       // Store supported line width increments
+    glGetFloatv(GL_LINE_WIDTH_RANGE,sizes);
+    glGetFloatv(GL_LINE_WIDTH_GRANULARITY,&step);
+    GLfloat size = sizes[0];
+    while (size < desiredSize && size + step <= sizes[1] && step > 0)
+        size += step;
+    glLineWidth(size);
+}
+//----------------------------------------------------------------------------
+void gauge(const std::string& label, float x, float y,
+    float w, float h, float value, float maxvalue)
+{
+    const float labeloffset = 1.0f;
+    // draw label
+    glColor3f(1.0f, 1.0f, 1.0f);
+    GLBitmapFont &fontWhite = *(FontManagerS::instance()->getFont( "bitmaps/menuWhite"));
+    fontWhite.DrawString(label.c_str(), x, y, 0.5f, 0.5f);
+
+    // fill in the gauge
+    glBegin(GL_POLYGON);
+        glColor3f(0.0f, 1.0f, 0.0f);
+        glVertex2f( x,                  y-h-labeloffset );
+        glVertex2f( x,                  y  -labeloffset );
+        glColor3f(1.0f, 0.0f, 0.0f);
+        glVertex2f( x+w*value/maxvalue, y  -labeloffset );
+        glVertex2f( x+w*value/maxvalue, y-h-labeloffset );
+    glEnd();
+
+    char buff[50];
+    if (maxvalue == 100.0f) // percentages
+        sprintf(buff, "%0.0f%%", value);
+    else
+        sprintf(buff, "%0.0f", value);
+    float width = fontWhite.GetWidth(buff, 0.5f);
+    glColor3f(1.0f, 1.0f, 1.0f);
+    fontWhite.DrawString(buff, x+w-width, y, 0.5f, 0.5f);
+
+    // draw surrounding rectangle
+    setMinLineSize(2.0f);
+    glColor3f(1.0f, 8.0f, 0.0f);
+    glBegin(GL_LINE_LOOP);
+        glVertex2f( x,   y  -labeloffset );
+        glVertex2f( x+w, y  -labeloffset );
+        glVertex2f( x+w, y-h-labeloffset );
+        glVertex2f( x,   y-h-labeloffset );
+    glEnd();
+}
+//----------------------------------------------------------------------------
+void PlanetManager::drawPlanet(float x, float y, Planet *pl,
+    const std::string& title)
 {
     if (!pl)
         return;
+    glColor3f(1.0f, 1.0f, 1.0f);
+    glEnable(GL_TEXTURE_2D);
     GLUquadricObj *qobj = gluNewQuadric();
-    //gluQuadricNormals(qobj, GL_SMOOTH);
     gluQuadricNormals(qobj, GL_NONE);
     gluQuadricTexture(qobj, GL_TRUE);
     _planetTex[pl->_textureIndex]->bind();
@@ -619,7 +682,7 @@ void PlanetManager::drawPlanet(float x, float y, Planet *pl)
     if (qobj)
     {
         glPushMatrix();
-            glTranslatef(x, y, 0.0f);   // move
+            glTranslatef(x + 100.0f, y, 0.0f);   // move
             float ang = _prevAngle+(_angle-_prevAngle)*GameState::frameFractionOther;
             glRotatef(50.0f, 1.0f, 0.0f, 0.0f);   // 50deg. X-axis
             glRotatef(ang, 0.0f, 0.0f, -1.0f);     // rotate Z axis all the time
@@ -633,23 +696,30 @@ void PlanetManager::drawPlanet(float x, float y, Planet *pl)
         glPopMatrix();
     }
     gluDeleteQuadric(qobj);
-}
-//----------------------------------------------------------------------------
-void setMinLineSize(float desiredSize)
-{
-    // set minimal line size to 2pixels
-    GLfloat sizes[2];  // Store supported line width range
-    GLfloat step;     // Store supported line width increments
-    glGetFloatv(GL_LINE_WIDTH_RANGE,sizes);
-    glGetFloatv(GL_LINE_WIDTH_GRANULARITY,&step);
-    GLfloat size = sizes[0];
-    while (size < desiredSize && size + step <= sizes[1] && step > 0)
-        size += step;
-    glLineWidth(size);
+    glDisable(GL_TEXTURE_2D);
+
+    // title and planet name
+    GLBitmapFont &fontWhite = *(FontManagerS::instance()->getFont( "bitmaps/menuWhite"));
+    glColor4f(1.0f, 1.0f, 0.7f, 0.7f);
+    fontWhite.DrawString(title.c_str(), x+10.0f, y+60.0f, 0.4f, 0.4f);
+    float w = fontWhite.GetWidth(pl->_name.c_str(), 0.6f);
+    fontWhite.DrawString(pl->_name.c_str(), 200.0f - w, y - pl->_radius - 10.0f, 0.6f, 0.6f);
+
+    // draw stats
+    gauge("Tech level",      25.0f, y-100, 170, 15, pl->_techLevel, 9);
+    gauge("Rebel sentiment", 25.0f, y-145, 170, 15, pl->_rebelSentiment, 100);
+    gauge("Alien activity",  25.0f, y-190, 170, 15, pl->_alienActivity, 100);
+
+    //gauge("Tech level", 25.0f, y-90, 170, 20, pl->_techLevel, 9);
+    // DISTANCE: xxx.x LY - maybe in bottom left corner of planet's image
 }
 //----------------------------------------------------------------------------
 void PlanetManager::drawMap()
 {
+    // galaxy offset on screen
+    const float gxoffset = 215.0f;
+    const float gyoffset = 65.0f;
+
     // draw rectangle around galaxy
     glColor3f(0.0f, 0.7f, 0.0f);    // darker green color
     glBegin(GL_LINE_LOOP);
@@ -657,26 +727,14 @@ void PlanetManager::drawMap()
         glVertex2f( 980.0f, 670.0f);
         glVertex2f( 210.0f, 670.0f);
         glVertex2f( 210.0f,  60.0f);
-        //glVertex2f( 980.0f,  60.0f);
     glEnd();
 
-    GLBitmapFont &fontWhite =
-      *(FontManagerS::instance()->getFont( "bitmaps/menuWhite"));
-    glColor4f(1.0, 1.0, 1.0, 1.0);
-    float w = fontWhite.GetWidth("CURRENT PLANET", 0.6f);
-    fontWhite.DrawString("CURRENT PLANET", 10.0f + (200.0f-w)*0.5f, 640.0f, 0.6f, 0.6f);
-    w = fontWhite.GetWidth("TARGET PLANET", 0.6f);
-    fontWhite.DrawString("TARGET PLANET", 10.0f + (200.0f-w)*0.5f, 400.0f, 0.6f, 0.6f);
-
-    Planet* _currentPlanet = GameS::instance()->_galaxy.getPlanetAt(30, 30);
-    glEnable(GL_TEXTURE_2D);
-    drawPlanet(110.0f, 320.0f, _currentPlanet);
-    //drawPlanet(110.0f, 560.0f, _targetPlanet);
-    glDisable(GL_TEXTURE_2D);
+    Planet* _currentPlanet = GameS::instance()->_galaxy.getNearest(_mouseX - gxoffset, _mouseY - gyoffset);
+    Planet* _targetPlanet  = GameS::instance()->_galaxy.getPlanetAt(30, 30);
+    drawPlanet(10.0f, 590.0f, _currentPlanet, "CURRENT SELECTION");
+    drawPlanet(10.0f, 270.0f, _targetPlanet, "HYPERSPACE TARGET");
 
     Map& galaxy = GameS::instance()->_galaxy;
-    const float gxoffset = 215.0f;
-    const float gyoffset = 65.0f;
     galaxy.draw(gxoffset, gyoffset);
 
     // if mouse is inside, draw special cursor
@@ -685,28 +743,33 @@ void PlanetManager::drawMap()
         // if mouse is over some planet, center it
         float tmpx = _mouseX;
         float tmpy = _mouseY;
-        //Planet *pl = galaxy.getPlanetAt(_mouseX - gxoffset, _mouseY - gyoffset);
         Planet *pl = galaxy.getNearest(_mouseX - gxoffset, _mouseY - gyoffset);
         if (pl)
         {
-            tmpx = gxoffset + pl->_x;
-            tmpy = gyoffset + pl->_y;
+            tmpx = gxoffset + pl->_x - 1.0f;
+            tmpy = gyoffset + pl->_y + 1.0f;
         }
 
-        glColor3f(0.0f, 1.0f, 0.0f);
+        // plusing cursor (needs reworking so machine speed doesn't affect it)
+        static float trans = 0.4f;
+        static float dir = 0.005f;
+        trans += dir;
+        if (trans > 0.8f || trans < 0.4f)
+            dir = -dir;
+        glColor4f(0.0f, 1.0f, 0.0f, trans);
+
         setMinLineSize(3.0f);
-        const float ptrSize = 15;
-        // around
-        glBegin(GL_LINE_LOOP);
+        glEnable(GL_LINE_SMOOTH);
+        #if 0
+        const float ptrSize = 15.0f;
+        const float ptrLen = 10.0f;
+        glBegin(GL_LINE_LOOP);  // around
             glVertex2f( tmpx - ptrSize, tmpy - ptrSize);
             glVertex2f( tmpx - ptrSize, tmpy + ptrSize);
             glVertex2f( tmpx + ptrSize, tmpy + ptrSize);
             glVertex2f( tmpx + ptrSize, tmpy - ptrSize);
         glEnd();
-
-        const float ptrLen = 10;
-        // +
-        glBegin(GL_LINES);
+        glBegin(GL_LINES);      // +
             glVertex2f( tmpx - ptrSize - ptrLen, tmpy);
             glVertex2f( tmpx - ptrSize + ptrLen, tmpy);
             glVertex2f( tmpx + ptrSize - ptrLen, tmpy);
@@ -716,6 +779,31 @@ void PlanetManager::drawMap()
             glVertex2f( tmpx, tmpy + ptrSize - ptrLen);
             glVertex2f( tmpx, tmpy + ptrSize + ptrLen);
         glEnd();
+        #else
+        const float offs = 5.0f;
+        const float len = 10.0f;
+        glBegin(GL_LINE_STRIP);      // J
+            glVertex2f( tmpx - offs - len, tmpy + offs);
+            glVertex2f( tmpx - offs      , tmpy + offs);
+            glVertex2f( tmpx - offs      , tmpy + offs + len);
+        glEnd();
+        glBegin(GL_LINE_STRIP);     // L
+            glVertex2f( tmpx + offs + len, tmpy + offs);
+            glVertex2f( tmpx + offs      , tmpy + offs);
+            glVertex2f( tmpx + offs      , tmpy + offs + len);
+        glEnd();
+        glBegin(GL_LINE_STRIP);     // 7
+            glVertex2f( tmpx - offs - len, tmpy - offs);
+            glVertex2f( tmpx - offs      , tmpy - offs);
+            glVertex2f( tmpx - offs      , tmpy - offs - len);
+        glEnd();
+        glBegin(GL_LINE_STRIP);     // F
+            glVertex2f( tmpx + offs + len, tmpy - offs);
+            glVertex2f( tmpx + offs      , tmpy - offs);
+            glVertex2f( tmpx + offs      , tmpy - offs - len);
+        glEnd();
+        #endif
+        glDisable(GL_LINE_SMOOTH);
     }
 }
 //----------------------------------------------------------------------------
@@ -794,7 +882,7 @@ bool PlanetManager::draw()
     if (_screenType == stQuests)
         drawQuests();
 
-    // render mouse pointer
+    // render mouse pointer unless in galaxy map
     if (_screenType != stMap ||
         _mouseX < 210 || _mouseX > 980 || _mouseY < 60 || _mouseY > 670)
     {

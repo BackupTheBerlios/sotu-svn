@@ -137,7 +137,7 @@ private:
     void drawCargo();
     void drawMap();
     void drawQuests();
-    void drawPlanet(float x, float y, Planet *);
+    void drawPlanet(float x, float y, Planet *, const std::string& title);
 };
 
 typedef Singleton<PlanetManager> PlanetManagerS;

@@ -2,6 +2,7 @@
 //   High level infrastructure for game.
 //
 // Copyright (C) 2001 Frank Becker
+// Copyright (C) 2006 Milan Babuskov
 //
 // This program is free software; you can redistribute it and/or modify it under
 // the terms of the GNU General Public License as published by the Free Software
@@ -67,7 +68,6 @@ public:
     bool isAt(float x, float y);                // allow few pixels miss
     float distance(float x, float y);
 
-    void drawRotating(float x, float y, float angle);   // draw big planet
     float getPrice(const std::string& itemName);
     void update();
 };
