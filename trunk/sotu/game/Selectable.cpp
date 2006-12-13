@@ -47,6 +47,8 @@ Selectable::Selectable( const BoundingBox &r, const string &info):
 Selectable::~Selectable()
 {
     XTRACE();
+    if (Selectable::_active == this)
+        Selectable::reset();
 }
 //------------------------------------------------------------------------------
 void Selectable::draw( void)

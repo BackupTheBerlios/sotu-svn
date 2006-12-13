@@ -483,6 +483,8 @@ bool MenuManager::Exit( bool delayed)
 // load graphics and stuff
 bool PlanetManager::init()
 {
+    LOG_INFO << "PlanetManager::init()" << endl;
+
     GLBitmapCollection *icons =
         BitmapManagerS::instance()->getBitmap( "bitmaps/menuIcons");
     if( !icons)
@@ -523,12 +525,6 @@ bool PlanetManager::init()
         _activeSelectables.insert( _activeSelectables.end(), s);
         loffset += tabw[i];
     }
-
-    _currentSelectable = _activeSelectables.begin();
-    /*
-    if( _currentSelectable != _activeSelectables.end())
-        (*_currentSelectable)->activate();
-    */
     return true;
 }
 //----------------------------------------------------------------------------
@@ -991,13 +987,16 @@ PlanetManager::~PlanetManager()
 {
     XTRACE();
 
+    Selectable::reset();
+    LOG_INFO << "DELETING SELECTABLES" << endl;
     for(list<Selectable*>::iterator i = _activeSelectables.begin();
         i != _activeSelectables.end(); ++i)
     {
         delete (*i);
     }
     _activeSelectables.clear();
-    Selectable::reset();
+
+    LOG_INFO << "DELETING PLANETS" << endl;
     SelectableFactory::cleanup();
     for (PlanetTexList::iterator it = _planetTex.begin();
         it != _planetTex.end(); ++it)
@@ -1010,8 +1009,7 @@ PlanetManager::PlanetManager():
     _mouseX(200.0),
     _mouseY(650.0),
     _angle(0.0),
-    _prevAngle(0.0),
-    _planetTex(0)
+    _prevAngle(0.0)
 {
     _screenType = stMap;
 }

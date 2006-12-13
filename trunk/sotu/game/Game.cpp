@@ -172,7 +172,6 @@ void Game::startNewCampaign()
 {
     _cargo.clearCargo();
 
-    // currentPlanet = MapS::instance->createUniverse();
     // reset player stats (kills, empStatus, rebelStatus)
     // reset campaign data, Chapter = 0
     // reset quests
