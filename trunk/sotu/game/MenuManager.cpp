@@ -672,26 +672,27 @@ void PlanetManager::drawPlanet(float x, float y, Planet *pl,
 {
     if (!pl)
         return;
-    glColor3f(1.0f, 1.0f, 1.0f);
+    glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
     glEnable(GL_TEXTURE_2D);
     GLUquadricObj *qobj = gluNewQuadric();
-    gluQuadricNormals(qobj, GL_NONE);
+    //gluQuadricNormals(qobj, GL_NONE);
     gluQuadricTexture(qobj, GL_TRUE);
-    _planetTex[pl->_textureIndex]->bind();
 
     if (qobj)
     {
         glPushMatrix();
+            glEnable(GL_POLYGON_SMOOTH);
             glTranslatef(x + 100.0f, y, 0.0f);   // move
             float ang = _prevAngle+(_angle-_prevAngle)*GameState::frameFractionOther;
             glRotatef(50.0f, 1.0f, 0.0f, 0.0f);   // 50deg. X-axis
+            //if (pl->_hasRing)
+            //{
+            //    _planetTex[2]->bind();
+            //    gluDisk(qobj, 45, 70, 48, 1);
+            //}
             glRotatef(ang, 0.0f, 0.0f, -1.0f);     // rotate Z axis all the time
-            glEnable(GL_POLYGON_SMOOTH);
+            _planetTex[pl->_textureIndex]->bind();
             gluSphere(qobj, pl->_radius, 48, 16);       // 60 = radius
-            if (pl->_hasRing)
-            {
-                //gluDisk(qobj,
-            }
             glDisable(GL_POLYGON_SMOOTH);
         glPopMatrix();
     }

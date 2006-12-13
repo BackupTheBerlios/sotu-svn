@@ -359,11 +359,11 @@ Planet::Planet(float x, float y, const std::string& name)
     {
         _name = name;
         _radius = 60;
-        _hasRing = false;
+        //_hasRing = false;
         _techLevel = 9;
         _rebelSentiment = 0;
         _alienActivity = 5;
-        _textureIndex = 0;  // TODO: bice special
+        _textureIndex = 3;
         return;
     }
     int rnd = Random::integer(10);
@@ -373,7 +373,6 @@ Planet::Planet(float x, float y, const std::string& name)
         _radius = 45;
     else
         _radius = 70;
-    _hasRing = (Random::integer(15) == 1);
     _textureIndex = Random::integer(PLANET_TEXTURES);
     _techLevel = 1+Random::integer(9);
     const float mapWidth = 760.0f;

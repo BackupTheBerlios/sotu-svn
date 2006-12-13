@@ -53,7 +53,6 @@ class Planet
 //private:
 public:
     float _radius;          // 45 - 80
-    bool _hasRing;
     int _textureIndex;
     Cargo _marketplace;
     float _techLevel;         // 1 - 9
