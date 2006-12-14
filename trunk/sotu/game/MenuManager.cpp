@@ -844,9 +844,9 @@ PlanetManager::~PlanetManager()
         delete (*i);
     }
     _activeSelectables.clear();
-
-    LOG_INFO << "DELETING PLANETS" << endl;
     SelectableFactory::cleanup();
+
+    LOG_INFO << "Deleting planet textures..." << endl;
     for (PlanetTexList::iterator it = _planetTex.begin();
         it != _planetTex.end(); ++it)
     {
