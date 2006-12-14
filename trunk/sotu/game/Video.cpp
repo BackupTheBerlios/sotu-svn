@@ -23,6 +23,7 @@
 #include <Random.hpp>
 #include <Config.hpp>
 #include <GameState.hpp>
+#include <Game.hpp>
 #include <Constants.hpp>
 
 #include <Hero.hpp>
@@ -98,7 +99,6 @@ void Video::reload( void)
     _titleB->reload();
 
     ModelManagerS::instance()->reload();
-    MenuManagerS::instance()->reload();
     PlanetManagerS::instance()->reload();
 }
 //----------------------------------------------------------------------------
@@ -411,11 +411,11 @@ bool Video::update( void)
     }
 
     // stars are not shown in planet menu
-    if (GameState::context != Context::ePlanetMenu)
+    ContextEnum context = GameS::instance()->getContext();
+    if (context != ePlanetMenu)
         StarfieldS::instance()->draw( _showStarfield, _showNebulas);
 
-    if (GameState::context == Context::eInGame
-        || GameState::context == Context::ePaused)
+    if (context == eInGame || context == ePaused)
     {
         if (HeroS::instance()->alive())
         {
@@ -438,7 +438,7 @@ bool Video::update( void)
     glDisable(GL_LIGHTING);
 
     glColor4f(1.0,1.0,1.0,1.0);
-    if (GameState::context != Context::ePlanetMenu)
+    if (context != ePlanetMenu)
     {
         bool showFPS = false;
         ConfigS::instance()->getBoolean( "showFPS", showFPS);
@@ -446,8 +446,7 @@ bool Video::update( void)
             smallFont.DrawString( FPS::GetFPSString(), 0, 0,  0.6f, 0.6f);
     }
 
-    if (GameState::context == Context::eInGame
-        || GameState::context == Context::ePaused)
+    if (context == eInGame || context == ePaused)
     {
         if (!HeroS::instance()->alive())
         {
@@ -478,7 +477,7 @@ bool Video::update( void)
             }*/
             //else
             //{
-                string escmsg = "Press ESC to go back to main menu";
+                string escmsg = "Press ESC to exit";
                 glColor4f(1.0f,0.852f,0.0f,1.0f);
                 smallFont.DrawString(escmsg.c_str() , 215, 140, 1.0f, 1.0f);
             //}
@@ -501,7 +500,7 @@ bool Video::update( void)
         smallFont.DrawString( buff, 0, 40, 1.0, 1.0);
     }
 
-    if( GameState::context == Context::eMenu)
+    if (context == eMenu)
     {
         glEnable(GL_TEXTURE_2D);
         float z=-1.0;
@@ -531,7 +530,7 @@ bool Video::update( void)
         float width = smallFont.GetWidth( gVersion.c_str(), 0.6f);
         smallFont.DrawString( gVersion.c_str() , 995.0f-width, 5.0f, 0.6f, 0.4f);
     }
-    else if (GameState::context == Context::ePlanetMenu)
+    else if (context == ePlanetMenu)
     {
         PlanetManagerS::instance()->draw();
     }

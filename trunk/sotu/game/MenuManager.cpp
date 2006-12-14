@@ -32,8 +32,6 @@
 #include <gl++.hpp>
 #include <GL/glu.h>
 
-//#include <GLExtensionTextureCubeMap.hpp>
-//#include <GLTextureCubeMap.hpp>
 #include <ResourceManager.hpp>
 #include <zrwops.hpp>
 //----------------------------------------------------------------------------
@@ -43,17 +41,11 @@ MenuManager::MenuManager():
     _currentMenu(0),
     _mouseX(200.0),
     _mouseY(650.0),
-    _prevContext(Context::eUnknown),
-    _delayedExit(false),
+    //_delayedExit(false),
     _angle(0.0),
-    _prevAngle(0.0),
-    _showSparks(false),
-    _burst( "SparkBurst", 1000) //,
-    //_nextGenShippyCubeMap(0)
+    _prevAngle(0.0)
 {
     XTRACE();
-
-    updateSettings();
 }
 //----------------------------------------------------------------------------
 MenuManager::~MenuManager()
@@ -61,13 +53,10 @@ MenuManager::~MenuManager()
     XTRACE();
 
     clearActiveSelectables();
-
     SelectableFactory::cleanup();
 
     delete _menu;
     _menu = 0;
-
-    //delete _nextGenShippyCubeMap;
 }
 //----------------------------------------------------------------------------
 bool MenuManager::init( void)
@@ -116,56 +105,16 @@ bool MenuManager::init( void)
         LOG_ERROR << "Unable to sphere."<< endl;
         return false;
     }
-
-    /*
-    GLExtensionTextureCubeMap _nextGenShippyExt;
-    if( _nextGenShippyExt.isSupported())
-    {
-        SDL_Surface *images[6];
-        for( int i=0; i<6; i++)
-        {
-            char buf[128];
-            sprintf( buf, "bitmaps/cubemap_%d.png", i);
-            string fileName = buf;
-            if( ResourceManagerS::instance()->selectResource( fileName))
-            {
-                ziStream &bminfile1 = ResourceManagerS::instance()->getInputStream();
-                SDL_RWops *src = RWops_from_ziStream( bminfile1);
-                images[i] = IMG_LoadPNG_RW( src);
-                SDL_RWclose( src);
-            }
-            else
-            {
-                LOG_ERROR << "Could not load cubemap image\n";
-                images[i] = 0;
-            }
-        }
-        _nextGenShippyCubeMap = new GLTextureCubeMap( images);
-    }
-    else
-    {
-        LOG_WARNING << "ARB_texture_cube_map not supported\n";
-    }*/
-
-    //_burst.init();
     return true;
-}
-//----------------------------------------------------------------------------
-void MenuManager::updateSettings( void)
-{
-    ConfigS::instance()->getBoolean( "showSparks", _showSparks);
 }
 //----------------------------------------------------------------------------
 void MenuManager::clearActiveSelectables( void)
 {
+    Selectable::reset();
     list<Selectable*>::iterator i;
     for( i=_activeSelectables.begin(); i!=_activeSelectables.end(); i++)
-    {
         delete (*i);
-    }
     _activeSelectables.clear();
-
-    Selectable::reset();
 }
 //----------------------------------------------------------------------------
 void MenuManager::loadMenuLevel( void)
@@ -204,11 +153,8 @@ void MenuManager::loadMenuLevel( void)
         _activeSelectables.insert( _activeSelectables.end(), sel);
     }
 
-    _currentSelectable = _activeSelectables.begin();
-    if( _currentSelectable != _activeSelectables.end())
-    {
-        (*_currentSelectable)->activate();
-    }
+    if (_activeSelectables.begin() != _activeSelectables.end())
+        (*(_activeSelectables.begin()))->activate();
 }
 //----------------------------------------------------------------------------
 void MenuManager::makeMenu( TiXmlNode *_node)
@@ -222,26 +168,16 @@ bool MenuManager::update( void)
     static float nextTime = Timer::getTime()+0.5f;
     float thisTime = Timer::getTime();
     if( thisTime > nextTime)
-    {
-        updateSettings();
-        nextTime = thisTime+0.5f;
-    }
+        nextTime = thisTime + 0.5f;
 
     _onlineUpdateDisplay.update();
     _prevAngle = _angle;
     _angle += 10.0f;
 
-    if( _delayedExit)
+    for (list<Selectable*>::iterator i = _activeSelectables.begin();
+        i != _activeSelectables.end(); i++)
     {
-        if( !Exit())
-        {
-            turnMenuOff();
-        }
-        _delayedExit = false;
-    }
-    list<Selectable*>::iterator i;
-    for( i=_activeSelectables.begin(); i!=_activeSelectables.end(); i++)
-    {
+        // grow or shrink text selectables
         (*i)->update();
     }
     return true;
@@ -255,22 +191,18 @@ bool MenuManager::draw( void)
     GLfloat light_position[] = { 820.0, 620.0, 500.0, 0.0 };
     glLightfv(GL_LIGHT0, GL_POSITION, light_position);
 
+    float iAngle = _prevAngle+(_angle-_prevAngle)*GameState::frameFractionOther;
     glPushMatrix();
     glTranslatef( 820.0, 620.0, 0.0);
-    float iAngle = _prevAngle+(_angle-_prevAngle)*GameState::frameFractionOther;
     glRotatef(iAngle/7.0, 2.0, 3.0, 5.0);
     _mapleLeaf->draw();
     glPopMatrix();
 
-    //if( _nextGenShippyCubeMap)
-    //{
-        glPushMatrix();
-        glTranslatef( 200.0, 620.0, 0.0);
-        iAngle = _prevAngle+(_angle-_prevAngle)*GameState::frameFractionOther;
-        glRotatef(-iAngle/10.0, 2.0,3.0,5.0);
-        _nextGenShippy->draw();
-        glPopMatrix();
-    //}
+    glPushMatrix();
+    glTranslatef( 200.0, 620.0, 0.0);
+    glRotatef(-iAngle/10.0, 2.0,3.0,5.0);
+    _nextGenShippy->draw();
+    glPopMatrix();
 
     glDisable( GL_DEPTH_TEST);
     glDisable( GL_LIGHTING);
@@ -287,7 +219,7 @@ bool MenuManager::draw( void)
 
     TiXmlElement* elem = _currentMenu->ToElement();
     const string* val = elem->Attribute("Text");
-    if( val)
+    if (val)
     {
         GLBitmapFont &fontWhite =
           *(FontManagerS::instance()->getFont( "bitmaps/menuWhite"));
@@ -295,8 +227,8 @@ bool MenuManager::draw( void)
         fontWhite.DrawString( (*val).c_str(), 122, 527, 0.5, 0.5);
     }
 
-    list<Selectable*>::iterator i;
-    for( i=_activeSelectables.begin(); i!=_activeSelectables.end(); i++)
+    for (list<Selectable*>::iterator i = _activeSelectables.begin();
+        i != _activeSelectables.end(); ++i)
     {
         (*i)->draw();
     }
@@ -311,61 +243,21 @@ bool MenuManager::draw( void)
     return true;
 }
 //----------------------------------------------------------------------------
-void MenuManager::reload( void)
-{
-    //_nextGenShippyCubeMap->reload();
-}
-//----------------------------------------------------------------------------
-void MenuManager::turnMenuOn( void)
-{
-    AudioS::instance()->playSample( "sounds/humm.wav");
-    _prevContext = GameState::context;
-    GameState::context = Context::eMenu;
-
-    //ask input system to forward all input to us
-    InputS::instance()->enableInterceptor( this);
-    GameState::stopwatch.pause();
-
-    // just in case we were in pause mode in game
-    SDL_ShowCursor(SDL_DISABLE);
-    SDL_WM_GrabInput(SDL_GRAB_ON);
-}
-//----------------------------------------------------------------------------
-void MenuManager::turnMenuOff( void)
-{
-    if( _prevContext == Context::eUnknown)
-        return;
-
-    AudioS::instance()->playSample( "sounds/humm.wav");
-    GameState::context = _prevContext;
-
-    //don't want anymore input
-    InputS::instance()->disableInterceptor();
-
-    if( GameState::context == Context::eInGame)
-    {
-        GameState::stopwatch.start();
-    }
-}
-//----------------------------------------------------------------------------
 void MenuManager::input( const Trigger &trigger, const bool &isDown)
 {
     Trigger t = trigger;
-    if( isDown)
+    if (isDown)
     {
         switch( trigger.type)
         {
             case eKeyTrigger:
                 switch( trigger.data1)
                 {
-                    case SDLK_RETURN:   Enter();    break;
-                    case SDLK_ESCAPE:
-                        if( !Exit())
-                            turnMenuOff();
-                        break;
-                    case SDLK_UP:       Up();       break;
-                    case SDLK_DOWN:     Down();     break;
-                    case SDLK_F12:      VideoS::instance()->takeSnapshot(); break;
+                    case SDLK_RETURN:   Enter();    return;
+                    case SDLK_ESCAPE:   exitMenu(); return;
+                    case SDLK_UP:       Up();       return;
+                    case SDLK_DOWN:     Down();     return;
+                    case SDLK_F12:      VideoS::instance()->takeSnapshot(); return;
                     default:            break;
                 }
                 break;
@@ -377,8 +269,8 @@ void MenuManager::input( const Trigger &trigger, const bool &isDown)
                 _mouseX += (trigger.fData1*10.0f);
                 _mouseY += (trigger.fData2*10.0f);
 
-                Clamp( _mouseX, 0.0f, 1000.0f);
-                Clamp( _mouseY, 0.0f, 750.0f);
+                Clamp (_mouseX, 0.0f, 1000.0f);
+                Clamp (_mouseY, 0.0f, 750.0f);
                 break;
 
             default:
@@ -394,18 +286,17 @@ void MenuManager::input( const Trigger &trigger, const bool &isDown)
     list<Selectable*>::iterator check = _activeSelectables.begin();
     for( i=_activeSelectables.begin(); i!=_activeSelectables.end(); i++)
     {
-        Selectable *sel = *i;
-        if( !sel)
+        if (!(*i))
         {
             LOG_ERROR << "Selectable is 0 !!!" << endl;
             continue;
         }
-        const BoundingBox &r = sel->getInputBox();
+        const BoundingBox &r = (*i)->getInputBox();
 
         if( (_mouseX >= r.min.x) && (_mouseX <= r.max.x) &&
             (_mouseY >= r.min.y) && (_mouseY <= r.max.y))
         {
-            sel->input( t, isDown);
+            (*i)->input(t, isDown);
             //one of the selectables may trigger a loadMenuLevel and our
             //iterator will be invalid. Drop out of this loop!
             if( check != _activeSelectables.begin())
@@ -417,65 +308,64 @@ void MenuManager::input( const Trigger &trigger, const bool &isDown)
     }
 }
 //----------------------------------------------------------------------------
-void MenuManager::Down( void)
+void MenuManager::Down(void)
 {
     XTRACE();
-    if( _currentSelectable == _activeSelectables.end())
-        return;
-
-    _currentSelectable++;
-    if( _currentSelectable == _activeSelectables.end())
-        _currentSelectable = _activeSelectables.begin();
-    (*_currentSelectable)->activate();
+    for(list<Selectable*>::iterator i = _activeSelectables.begin();
+        i!=_activeSelectables.end(); i++)
+    {
+        if ((*i)->isActive())
+        {
+            i++;
+            if (i == _activeSelectables.end())
+                i = _activeSelectables.begin();
+            (*i)->activate();
+            return;
+        }
+    }
 }
 //----------------------------------------------------------------------------
 void MenuManager::Up( void)
 {
     XTRACE();
-    if( _currentSelectable == _activeSelectables.end())
-        return;
-
-    if( _currentSelectable == _activeSelectables.begin())
-        _currentSelectable = _activeSelectables.end();
-    _currentSelectable--;
-    (*_currentSelectable)->activate();
-}
-//----------------------------------------------------------------------------
-void MenuManager::Goto(Selectable *s)
-{
-    list<Selectable*>::iterator i;
-    for (i=_activeSelectables.begin(); i!=_activeSelectables.end(); i++)
-        if ((*i) == s)
-            break;
-    _currentSelectable = i;
+    for(list<Selectable*>::iterator i = _activeSelectables.begin();
+        i!=_activeSelectables.end(); i++)
+    {
+        if ((*i)->isActive())
+        {
+            if (i == _activeSelectables.begin())
+                i = _activeSelectables.end();
+            --i;
+            (*i)->activate();
+            return;
+        }
+    }
 }
 //----------------------------------------------------------------------------
 void MenuManager::Enter( void)
 {
     XTRACE();
-    if (_currentSelectable != _activeSelectables.end())
-        (*_currentSelectable)->select();
+    for (list<Selectable*>::iterator i = _activeSelectables.begin();
+        i!=_activeSelectables.end(); i++)
+    {
+        if ((*i)->isActive())
+        {
+            (*i)->select();
+            return;
+        }
+    }
 }
 //----------------------------------------------------------------------------
-bool MenuManager::Exit( bool delayed)
+// returns true if we should exit
+void MenuManager::exitMenu()
 {
     XTRACE();
-    if( delayed)
-    {
-        //while iterating over the selectables we dont want to loadMenuLevel
-        _delayedExit = true;
-        return true;
-    }
-    if( _currentMenu != _topMenu)
+    if( _currentMenu != _topMenu)   // if not top level menu
     {
         _currentMenu = _currentMenu->Parent();
         loadMenuLevel();
         AudioS::instance()->playSample( "sounds/humm.wav");
-        return true;
     }
-
-    //at the top level menu
-    return false;
 }
 //----------------------------------------------------------------------------
 // PLANET MANAGER ************************************************************
@@ -506,13 +396,14 @@ bool PlanetManager::init()
 
     // create clickable stuff available in all tabs
     const GLfloat tabh = 60.0f;
-    const GLfloat tabw[] = { 270.0f, 300.0f, 200.0f };
-    const char *actions[] = { "ShowMap", "ShowCargo", "ShowQuests" };
-    const char *labels[] = { "Galactic Map", "Cargo & Trade", "Quests" };
+    const GLfloat tabw[] = { 270.0f, 300.0f, 180.0f, 170.0f };
+    const char *actions[] = { "ShowMap", "ShowCargo", "ShowQuests", "MainMenu" };
+    const char *labels[] = { "Galactic Map", "Cargo & Trade", "Quests", "Quit" };
     const char *infos[] = {
         "Display map and navigate planets",
         "Buy and sell goods and equipment",
-        "Places to see and things to do"
+        "Places to see and things to do",
+        "Go back to main menu"
     };
     GLfloat loffset = 20.0f;
     for (unsigned int i=0; i < sizeof(tabw)/sizeof(GLfloat); ++i)
@@ -530,9 +421,7 @@ bool PlanetManager::init()
 //----------------------------------------------------------------------------
 void PlanetManager::setActiveScreen(ScreenType newone)
 {
-    if (_currentSelectable != _activeSelectables.end())
-        (*_currentSelectable)->deactivate();
-    _currentSelectable = _activeSelectables.end();
+    Selectable::reset();
     _screenType = newone;
 }
 //----------------------------------------------------------------------------
@@ -549,51 +438,18 @@ bool PlanetManager::update()
     return true;
 }
 //----------------------------------------------------------------------------
-void PlanetManager::enable(bool doEnable)
-{
-    if (doEnable)
-    {
-        // remove ptr to active node
-        Selectable::reset();
-
-        _prevContext = GameState::context;
-        GameState::context = Context::ePlanetMenu;
-        InputS::instance()->enableInterceptor(this);
-        GameState::stopwatch.pause();
-
-        // just in case we were in pause mode in game
-        SDL_ShowCursor(SDL_DISABLE);
-        SDL_WM_GrabInput(SDL_GRAB_ON);
-    }
-    else
-    {
-        if(_prevContext == Context::eUnknown)
-            return;
-
-        AudioS::instance()->playSample( "sounds/humm.wav");
-        GameState::context = _prevContext;
-        InputS::instance()->disableInterceptor();
-        if (GameState::context == Context::eInGame)
-            GameState::stopwatch.start();
-        if (GameState::context == Context::eMenu)
-            MenuManagerS::instance()->turnMenuOn();
-    }
-}
-//----------------------------------------------------------------------------
-void PlanetManager::Goto(Selectable *s)
-{
-    list<Selectable*>::iterator i;
-    for (i=_activeSelectables.begin(); i!=_activeSelectables.end(); i++)
-        if ((*i) == s)
-            break;
-    _currentSelectable = i;
-}
-//----------------------------------------------------------------------------
 void PlanetManager::Enter( void)
 {
     XTRACE();
-    if (_currentSelectable != _activeSelectables.end())
-        (*_currentSelectable)->select();
+    for (list<Selectable*>::iterator i = _activeSelectables.begin();
+        i!=_activeSelectables.end(); i++)
+    {
+        if ((*i)->isActive())
+        {
+            (*i)->select();
+            return;
+        }
+    }
 }
 //----------------------------------------------------------------------------
 void PlanetManager::drawCargo()
@@ -813,8 +669,8 @@ bool PlanetManager::draw()
     setMinLineSize(2.0f);
     // draw lines
     const GLfloat tabh = 60.0f;
-    const GLfloat tabw[] = { 270.0f, 300.0f, 200.0f };
-    const GLfloat tabspace = 5.0f;
+	const GLfloat tabw[] = { 270.0f, 300.0f, 180.0f, 170.0f };
+	const GLfloat tabspace = 5.0f;
     glColor3f(0.2f, 0.8f, 0.0f);    // green color
     glBegin(GL_LINE_STRIP);
         glVertex2f( 10.0f, 740.0f - tabh);
@@ -921,12 +777,12 @@ void PlanetManager::input(const Trigger &trigger, const bool &isDown)
             case eKeyTrigger:
                 switch( trigger.data1)
                 {
-                    case SDLK_ESCAPE:   enable(false);  return;
+                    case SDLK_ESCAPE:   GameS::instance()->previousContext();  return;
                     case SDLK_UP:       Up();           break;
                     case SDLK_DOWN:     Down();         break;
                     case SDLK_LEFT:     Left();         break;
                     case SDLK_RIGHT:    Right();        break;
-                    case SDLK_F12: VideoS::instance()->takeSnapshot();  break;
+                    case SDLK_F12:      VideoS::instance()->takeSnapshot();  break;
                     default:                break;
                 }
                 break;

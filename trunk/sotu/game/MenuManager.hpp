@@ -41,18 +41,14 @@ public:
     bool draw( void);
 
     virtual void input( const Trigger &trigger, const bool &isDown);
-    void turnMenuOn( void);
-    void turnMenuOff( void);
     void makeMenu( TiXmlNode *_node);
 
     //Menu navigation
     void Down( void);
     void Up( void);
     void Enter( void);
-    bool Exit( bool delayed=false);
-    void Goto( Selectable *s);
+    void exitMenu();
 
-    void reload( void);
 private:
     virtual ~MenuManager();
     MenuManager( void);
@@ -61,7 +57,6 @@ private:
 
     void loadMenuLevel( void);
     void clearActiveSelectables( void);
-    void updateSettings( void);
 
     TiXmlDocument *_menu;
 
@@ -69,7 +64,6 @@ private:
     TiXmlNode *_currentMenu;
 
     list<Selectable*> _activeSelectables;
-    list<Selectable*>::iterator _currentSelectable;
 
     int _board;
     int _pointer;
@@ -77,18 +71,14 @@ private:
     float _mouseX;
     float _mouseY;
 
-    Context::ContextEnum _prevContext;
-    bool _delayedExit;
+    //bool _delayedExit;
 
     Model *_nextGenShippy;
     Model *_mapleLeaf;
     float _angle;
     float _prevAngle;
 
-    bool _showSparks;
-    ParticleGroup _burst;
     OnlineUpdateDisplay _onlineUpdateDisplay;
-    // GLTextureCubeMap *_nextGenShippyCubeMap;
 };
 typedef Singleton<MenuManager> MenuManagerS;
 //----------------------------------------------------------------------------
@@ -99,7 +89,6 @@ public:
     bool init();
     bool update();
     bool draw();
-    void enable(bool doEnable=true);
     void reload();
 
     void Up();
@@ -107,7 +96,6 @@ public:
     void Left();
     void Right();
     void Enter();
-    void Goto(Selectable *s);
 
     typedef enum { stMap=0, stTrade, stQuests } ScreenType;
     void setActiveScreen(ScreenType newone);
@@ -121,13 +109,11 @@ private:
     PlanetManager &operator=(const PlanetManager&);
 
     list<Selectable*> _activeSelectables;
-    list<Selectable*>::iterator _currentSelectable;
 
     int _pointer;
     //int _board;
     float _mouseX, _mouseY;
     float _angle, _prevAngle;
-    Context::ContextEnum _prevContext;
 
     // there will be more, this is just a test
     typedef std::vector<GLTexture *> PlanetTexList;

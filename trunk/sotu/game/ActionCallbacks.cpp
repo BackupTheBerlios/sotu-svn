@@ -20,198 +20,106 @@
 #include <Input.hpp>
 #include <Video.hpp>
 #include <Hero.hpp>
+#include <Game.hpp>
 #include <Direction.hpp>
 #include <Camera.hpp>
 #include <MenuManager.hpp>
 #include <ActionCallbacks.hpp>
 #include <Audio.hpp>
-
+//----------------------------------------------------------------------------
 void MotionAction::performAction( Trigger &trigger, bool /*isDown*/)
 {
-//    XTRACE();
-    switch( GameState::context)
-    {
-        case Context::eInGame:
-            HeroS::instance()->move( trigger.fData1, trigger.fData2);
-            break;
-        case Context::eCameraFlyby:
-            CameraS::instance()->mouseLook( trigger.fData1, trigger.fData2);
-            break;
-        default:
-            break;
-    }
+    //    XTRACE();
+    if (GameS::instance()->getContext() == eInGame)
+        HeroS::instance()->move( trigger.fData1, trigger.fData2);
 }
-
+//----------------------------------------------------------------------------
 void MotionLeftAction::performAction( Trigger &, bool isDown)
 {
-//    XTRACE();
-    switch( GameState::context)
-    {
-        case Context::eInGame:
-            HeroS::instance()->move( Direction::eLeft, isDown);
-            break;
-        case Context::eCameraFlyby:
-            CameraS::instance()->move( Direction::eLeft, isDown);
-            break;
-        default:
-            break;
-    }
+    //    XTRACE();
+    if (GameS::instance()->getContext() == eInGame)
+        HeroS::instance()->move( Direction::eLeft, isDown);
 }
-
-
+//----------------------------------------------------------------------------
 void MotionRightAction::performAction( Trigger &, bool isDown)
 {
-//    XTRACE();
-    switch( GameState::context)
-    {
-        case Context::eInGame:
-            HeroS::instance()->move( Direction::eRight, isDown);
-            break;
-        case Context::eCameraFlyby:
-            CameraS::instance()->move( Direction::eRight, isDown);
-            break;
-        default:
-            break;
-    }
+    //    XTRACE();
+    if (GameS::instance()->getContext() == eInGame)
+        HeroS::instance()->move( Direction::eRight, isDown);
 }
-
+//----------------------------------------------------------------------------
 void MotionUpAction::performAction( Trigger &, bool isDown)
 {
-//    XTRACE();
-    switch( GameState::context)
-    {
-        case Context::eInGame:
-            HeroS::instance()->move( Direction::eUp, isDown);
-            break;
-        case Context::eCameraFlyby:
-            CameraS::instance()->move( Direction::eUp, isDown);
-            break;
-        default:
-            break;
-    }
+    //    XTRACE();
+    if (GameS::instance()->getContext() == eInGame)
+        HeroS::instance()->move( Direction::eUp, isDown);
 }
-
+//----------------------------------------------------------------------------
 void MotionDownAction::performAction( Trigger &, bool isDown)
 {
-//    XTRACE();
-    switch( GameState::context)
-    {
-        case Context::eInGame:
-            HeroS::instance()->move( Direction::eDown, isDown);
-            break;
-        case Context::eCameraFlyby:
-            CameraS::instance()->move( Direction::eDown, isDown);
-            break;
-        default:
-            break;
-    }
+    //    XTRACE();
+    if (GameS::instance()->getContext() == eInGame)
+        HeroS::instance()->move( Direction::eDown, isDown);
 }
-
+//----------------------------------------------------------------------------
 void WeaponFireAction::performAction( Trigger &, bool isDown)
 {
-//    XTRACE();
-    switch( GameState::context)
-    {
-        case Context::eInGame:
-            HeroS::instance()->weaponFire( isDown, _numWeap);
-            break;
-        case Context::eCameraFlyby:
-            HeroS::instance()->weaponFire( isDown, _numWeap);
-            break;
-        default:
-            break;
-    }
+    //    XTRACE();
+    if (GameS::instance()->getContext() == eInGame)
+        HeroS::instance()->weaponFire( isDown, _numWeap);
 }
-
+//----------------------------------------------------------------------------
 void SnapshotAction::performAction( Trigger &, bool isDown)
 {
-//    XTRACE();
-    if( !isDown) return;
+    //    XTRACE();
+    if( !isDown)
+        return;
 
     VideoS::instance()->takeSnapshot();
 }
-
+//----------------------------------------------------------------------------
 void ConfirmAction::performAction( Trigger &, bool isDown)
 {
-//    XTRACE();
-    if( !isDown) return;
+    //    XTRACE();
+    if( !isDown)
+        return;
 
     LOG_INFO << "Yes Sir!" << endl;
-
-#if 0
-    switch( GameState::context)
-    {
-        default:
-            break;
-    }
-#endif
 }
-
-void ChangeContext::performAction( Trigger &, bool isDown)
-{
-//    XTRACE();
-    if( !isDown) return;
-
-    if( GameState::context == Context::eInGame)
-    {
-        LOG_INFO << "eCameraFlyby..." << endl;
-        GameState::context = Context::eCameraFlyby;
-        GameState::stopwatch.pause();
-    }
-    else if( GameState::context == Context::eCameraFlyby)
-    {
-        LOG_INFO << "eInGame..." << endl;
-        GameState::context = Context::eInGame;
-        GameState::stopwatch.start();
-    }
-}
-
+//----------------------------------------------------------------------------
 void CritterBoard::performAction( Trigger &, bool isDown)
 {
-//    XTRACE();
-    if( !isDown) return;
+    //    XTRACE();
+    if( !isDown)
+        return;
 
-//    LOG_INFO << "toggle CritterBoard..." << endl;
+    //    LOG_INFO << "toggle CritterBoard..." << endl;
     VideoS::instance()->toggleCritterBoard();
 }
-
+//----------------------------------------------------------------------------
 void PauseGame::performAction( Trigger &, bool isDown)
 {
-//    XTRACE();
-    if( !isDown) return;
+    //    XTRACE();
+    if (!isDown)
+        return;
 
-    if( GameState::context == Context::ePaused)
-    {
-        LOG_INFO << "un-pausing..." << endl;
-        GameState::context = _prevContext;
-        GameState::stopwatch.start();
-        SDL_ShowCursor(SDL_DISABLE);
-        SDL_WM_GrabInput(SDL_GRAB_ON);
-    }
+    if (GameS::instance()->getContext() == ePaused)
+        GameS::instance()->switchContext(eInGame);
     else
     {
-        LOG_INFO << "pausing..." << endl;
-        _prevContext = GameState::context;
-        GameState::context = Context::ePaused;
-        GameState::stopwatch.pause();
+        GameS::instance()->switchContext(ePaused);
         SDL_ShowCursor(SDL_ENABLE);
         SDL_WM_GrabInput(SDL_GRAB_OFF);
     }
 }
-
+//----------------------------------------------------------------------------
 void EscapeAction::performAction( Trigger &, bool isDown)
 {
-//    XTRACE();
-    if( !isDown) return;
+    //    XTRACE();
+    if( !isDown)
+        return;
 
-    switch( GameState::context)
-    {
-        case Context::eMenu:
-            break;
-
-        default:
-//            LOG_INFO << "Menu mode..." << endl;
-            MenuManagerS::instance()->turnMenuOn();
-            break;
-    }
+    // TRY IT!
+    GameS::instance()->switchContext(ePlanetMenu);
 }
+//----------------------------------------------------------------------------

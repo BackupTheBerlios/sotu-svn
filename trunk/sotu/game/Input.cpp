@@ -28,7 +28,7 @@
 #include <FPS.hpp>
 
 #include "SDL.h"
-
+//----------------------------------------------------------------------------
 Input::Input( void):
     _bindMode( false),
     _callback(0),
@@ -42,19 +42,19 @@ Input::Input( void):
 {
     XTRACE();
 }
-
+//----------------------------------------------------------------------------
 Input::~Input()
 {
     XTRACE();
     _callbackMap.clear();
 }
-
+//----------------------------------------------------------------------------
 Input*  Input::preinit( void)
 {
     _callbackManager.init();
     return this;
 }
-
+//----------------------------------------------------------------------------
 bool Input::init( void)
 {
     XTRACE();
@@ -69,7 +69,7 @@ bool Input::init( void)
     LOG_INFO << "Input OK." << endl;
     return true;
 }
-
+//----------------------------------------------------------------------------
 void Input::updateMouseSettings( void)
 {
     ConfigS::instance()->getFloat( "mouseSmooth", _dampVal);
@@ -84,7 +84,7 @@ void Input::updateMouseSettings( void)
         _sensitivity = 0.1f;
     }
 }
-
+//----------------------------------------------------------------------------
 // Returns false, if there are no more events available.
 bool Input::tryGetTrigger( Trigger &trigger, bool &isDown)
 {
@@ -151,7 +151,7 @@ bool Input::tryGetTrigger( Trigger &trigger, bool &isDown)
 
     return true;
 }
-
+//----------------------------------------------------------------------------
 bool Input::update( void)
 {
 //    XTRACE();
@@ -238,18 +238,19 @@ bool Input::update( void)
     return true;
 }
 
+//----------------------------------------------------------------------------
 void Input::handleLine( const string line)
 {
-//    XTRACE();
+    //    XTRACE();
     Tokenizer  t( line);
     string bindKeyword = t.next();
-    if( bindKeyword != "bind") return;
+    if( bindKeyword != "bind")
+        return;
 
     string action = t.next();
     string keyname = t.next();
-
-//    LOG_INFO << "action [" << action << "], "
-//             << "keyname [" << keyname << "]" << endl;
+    //    LOG_INFO << "action [" << action << "], "
+    //             << "keyname [" << keyname << "]" << endl;
 
     Trigger trigger;
     if( _keys.convertStringToTrigger( keyname, trigger))
@@ -258,7 +259,7 @@ void Input::handleLine( const string line)
         bind( trigger, cb);
     }
 }
-
+//----------------------------------------------------------------------------
 void Input::save( ofstream &outfile)
 {
     XTRACE();
@@ -273,7 +274,7 @@ void Input::save( ofstream &outfile)
                 << endl;
     }
 }
-
+//----------------------------------------------------------------------------
 void Input::bind( Trigger &trigger, Callback *callback)
 {
     XTRACE();
@@ -290,3 +291,4 @@ void Input::bind( Trigger &trigger, Callback *callback)
              << " - " << trigger.type << ":" << trigger.data1 << endl;
     _callbackMap[ trigger] = callback;
 }
+//----------------------------------------------------------------------------

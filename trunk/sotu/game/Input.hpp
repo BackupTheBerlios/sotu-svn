@@ -25,7 +25,7 @@
 #include <InterceptorI.hpp>
 
 class Callback;
-
+//----------------------------------------------------------------------------
 namespace HASH_NAMESPACE
 {
     template<>
@@ -35,7 +35,7 @@ namespace HASH_NAMESPACE
 	int operator()(const Trigger &t) const
 	{
 	    int hashval;
-	    
+
 	    if( t.type == eMotionTrigger)
 	    {
 		hashval = t.type*1000;
@@ -49,7 +49,7 @@ namespace HASH_NAMESPACE
 	}
     };
 }
-
+//----------------------------------------------------------------------------
 class Input: public ConfigHandler
 {
 friend class Singleton<Input>;
@@ -76,17 +76,17 @@ public:
 
     void addCallback( Callback *cb)
     {
-	_callbackManager.addCallback( cb);
+        _callbackManager.addCallback( cb);
     }
 
     void enableInterceptor( InterceptorI *i)
     {
-	_interceptor = i;
+        _interceptor = i;
     }
 
     void disableInterceptor( void)
     {
-	_interceptor = 0;
+        _interceptor = 0;
     }
 
 private:
@@ -114,16 +114,15 @@ private:
     float _dampVal;
     float feedbackFilter( float value, float damp, float &memory)
     {
-	//damp of 0 means no filtering
-	//damp of 1 means input value is filtered out completely
-	return memory = value*(1.0f-damp) + memory*damp;
-    }   
+        //damp of 0 means no filtering
+        //damp of 1 means input value is filtered out completely
+        return memory = value*(1.0f-damp) + memory*damp;
+    }
     float _sensitivity;
 
     //intercept raw input
     InterceptorI *_interceptor;
 };
-
+//----------------------------------------------------------------------------
 typedef Singleton<Input> InputS;
-
 #endif

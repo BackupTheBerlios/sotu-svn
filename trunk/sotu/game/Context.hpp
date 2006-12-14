@@ -15,23 +15,5 @@
 #ifndef _Context_hpp_
 #define _Context_hpp_
 
-#ifdef HAS_NAMESPACE
-namespace
-#else
-struct
-#endif
-Context
-{
-    enum ContextEnum
-    {
-        eUnknown,
-        eMenu,
-        eInGame,
-        ePlanetMenu,
-        ePaused,
-        eCameraFlyby,
-        eLAST
-    };
-};
 
 #endif

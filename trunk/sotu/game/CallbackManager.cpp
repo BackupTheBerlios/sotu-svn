@@ -51,7 +51,7 @@ void CallbackManager::init( void)
     new MotionLeftAction();
     new MotionUpAction();
     new MotionDownAction();
-    new ChangeContext();
+    //new ChangeContext();
     new PauseGame();
     new ConfirmAction();
     new EscapeAction();
@@ -61,7 +61,7 @@ void CallbackManager::init( void)
 void CallbackManager::addCallback( Callback *cb)
 {
     XTRACE();
-    LOG_INFO << "Adding callback for action [" 
+    LOG_INFO << "Adding callback for action ["
              << cb->getActionName() << "]" << endl;
     _actionMap[ cb->getActionName()] = cb;
 }

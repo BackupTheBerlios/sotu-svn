@@ -15,7 +15,6 @@
 #ifndef _GameState_hpp_
 #define _GameState_hpp_
 
-#include <Context.hpp>
 #include <Skill.hpp>
 #include <PausableTimer.hpp>
 
@@ -35,7 +34,6 @@ struct GameState
     static int enemyAttackCount;
 
     static PausableTimer stopwatch;
-    static Context::ContextEnum context;
     static Skill::SkillEnum skill;
 };
 

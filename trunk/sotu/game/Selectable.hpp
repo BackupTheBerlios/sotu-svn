@@ -62,6 +62,11 @@ public:
         _active = 0;
     }
 
+    bool isActive()
+    {
+        return _active == this;
+    }
+
 protected:
     static Selectable *_active;
 

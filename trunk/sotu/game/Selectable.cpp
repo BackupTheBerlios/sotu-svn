@@ -48,7 +48,10 @@ Selectable::~Selectable()
 {
     XTRACE();
     if (Selectable::_active == this)
+    {
+        LOG_INFO << "DELETING SELECTABLE::active (yes)" << endl;
         Selectable::reset();
+    }
 }
 //------------------------------------------------------------------------------
 void Selectable::draw( void)
@@ -95,14 +98,14 @@ EscapeSelectable::EscapeSelectable( const BoundingBox &r, float size):
     }
 }
 //------------------------------------------------------------------------------
-void EscapeSelectable::input( const Trigger &trigger, const bool &isDown)
+void EscapeSelectable::input(const Trigger &trigger, const bool &isDown)
 {
     if( !isDown) return;
 
     switch( trigger.type)
     {
         case eButtonTrigger:
-            MenuManagerS::instance()->Exit( true);
+            MenuManagerS::instance()->exitMenu();
             break;
 
         case eMotionTrigger:
@@ -118,12 +121,9 @@ void EscapeSelectable::activate( void)
 {
     if( (_active != this))
     {
-        if( _active) _active->deactivate();
+        if( _active)
+            _active->deactivate();
         _active = this;
-
-        MenuManagerS::instance()->Goto( this);
-        //      LOG_INFO << "Activate Escape" << endl;
-
         AudioS::instance()->playSample( "sounds/beep.wav");
     }
 }
@@ -192,18 +192,13 @@ void TextOnlySelectable::input( const Trigger &trigger, const bool &/*isDown*/)
     }
 }
 //------------------------------------------------------------------------------
-void TextOnlySelectable::activate( void)
+void TextOnlySelectable::activate(void)
 {
     if( (_active != this))
     {
         if( _active)
             _active->deactivate();
         _active = this;
-
-        if (GameState::context == Context::eMenu)
-            MenuManagerS::instance()->Goto(this);
-        if (GameState::context == Context::ePlanetMenu)
-            PlanetManagerS::instance()->Goto(this);
     }
 }
 //------------------------------------------------------------------------------
@@ -809,7 +804,8 @@ void TextSelectable::input( const Trigger &trigger, const bool &isDown)
             break;
 
         case eMotionTrigger:
-            this->activate();
+            // this->activate();
+            activate();
             break;
 
         default:
@@ -824,15 +820,7 @@ void TextSelectable::activate( void)
         if( _active)
             _active->deactivate();
         _active = this;
-
-        if (GameState::context == Context::eMenu)
-            MenuManagerS::instance()->Goto(this);
-        if (GameState::context == Context::ePlanetMenu)
-            PlanetManagerS::instance()->Goto(this);
-
-        // LOG_INFO << "Activate " << _text << endl;
         _ds = 0.1f;
-
         AudioS::instance()->playSample( "sounds/beep.wav");
     }
 }
@@ -893,30 +881,21 @@ void ActionSelectable::select( void)
     LOG_INFO << "Selecting: " << _action << endl;
     if (_action == "NewGame")
     {
-        //GameS::instance()->startNewGame();
         GameS::instance()->startNewCampaign();
         return;
     }
     else if (_action == "Quit")
-    {
        GameState::isAlive = false;
-    }
     else if (_action == "ShowMap")
-    {
         PlanetManagerS::instance()->setActiveScreen(PlanetManager::stMap);
-    }
     else if (_action == "ShowCargo")
-    {
         PlanetManagerS::instance()->setActiveScreen(PlanetManager::stTrade);
-    }
     else if (_action == "ShowQuests")
-    {
         PlanetManagerS::instance()->setActiveScreen(PlanetManager::stQuests);
-    }
+    else if (_action == "MainMenu")
+        GameS::instance()->switchContext(eMenu);
     else
-    {
         LOG_ERROR << "Unknown action" << _action << "endl";
-    }
     AudioS::instance()->playSample( "sounds/confirm.wav");
 }
 //------------------------------------------------------------------------------

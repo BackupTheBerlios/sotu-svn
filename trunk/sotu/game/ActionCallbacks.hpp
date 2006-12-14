@@ -109,29 +109,23 @@ public:
 class PauseGame: public Callback
 {
 public:
-    PauseGame( void): Callback( "PauseGame"),
-        _prevContext( Context::eUnknown)
+    PauseGame( void): Callback( "PauseGame")
     {
         XTRACE();
     }
     virtual ~PauseGame() { XTRACE(); }
     virtual void performAction( Trigger &, bool isDown);
-private:
-    Context::ContextEnum _prevContext;
 };
 
 class EscapeAction: public Callback
 {
 public:
-    EscapeAction( void): Callback( "EscapeAction"),
-        _prevContext( Context::eUnknown)
+    EscapeAction( void): Callback( "EscapeAction")
     {
         XTRACE();
     }
     virtual ~EscapeAction() { XTRACE(); }
     virtual void performAction( Trigger &, bool isDown);
-private:
-    Context::ContextEnum _prevContext;
 };
 
 #endif

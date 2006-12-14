@@ -16,6 +16,7 @@
 #ifndef _Game_hpp_
 #define _Game_hpp_
 
+#include <Context.hpp>
 #include <Singleton.hpp>
 #include <map>
 #include <vector>
@@ -88,6 +89,9 @@ private:
     Planet* _currentPlanet;
 };
 //----------------------------------------------------------------------------
+typedef enum { eUnknown, eMenu, eInGame, ePlanetMenu, ePaused, eCameraFlyby,
+        eLAST } ContextEnum;
+//----------------------------------------------------------------------------
 class Game
 {
 friend class Singleton<Game>;
@@ -100,6 +104,9 @@ public:
     void startNewGame( void);
 
     void startNewCampaign();
+    ContextEnum getContext();
+    void switchContext(ContextEnum c);
+    void previousContext();
 
 private:
     ~Game();
@@ -109,6 +116,8 @@ private:
 
     void updateOtherLogic( void);
     void updateInGameLogic( void);
+    ContextEnum _context;
+    ContextEnum _previousContext;
 };
 typedef Singleton<Game> GameS;
 //----------------------------------------------------------------------------

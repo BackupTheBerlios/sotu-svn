@@ -25,6 +25,5 @@ float GameState::horsePower = 100.0;
 int GameState::numObjects = 0;
 int GameState::enemyBulletCount = 0;
 int GameState::enemyAttackCount = 0;
-Context::ContextEnum GameState::context = Context::eUnknown;
 PausableTimer GameState::stopwatch;
 Skill::SkillEnum GameState::skill = Skill::eUnknown;

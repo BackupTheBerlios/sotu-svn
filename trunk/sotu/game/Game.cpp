@@ -22,6 +22,7 @@
 #include <Config.hpp>
 #include <PausableTimer.hpp>
 #include <ScoreKeeper.hpp>
+#include <Selectable.hpp>
 
 #include <Audio.hpp>
 #include <Video.hpp>
@@ -39,7 +40,8 @@
 #include <MenuManager.hpp>
 #include <ResourceManager.hpp>
 //----------------------------------------------------------------------------
-Game::Game( void)
+Game::Game(void)
+    :_context(eUnknown), _previousContext(eUnknown)
 {
     XTRACE();
 }
@@ -158,8 +160,8 @@ void Game::reset( void)
 void Game::startNewGame( void)
 {
     GameS::instance()->reset();
-    GameState::context = Context::eInGame;
-    InputS::instance()->disableInterceptor();
+    _context = eInGame;
+    InputS::instance()->disableInterceptor();   // disable planetMenu & menu
     GameState::stopwatch.start();
     AudioS::instance()->playSample( "sounds/voiceGo.wav");
 
@@ -176,7 +178,7 @@ void Game::startNewCampaign()
     // reset campaign data, Chapter = 0
     // reset quests
 
-    PlanetManagerS::instance()->enable();
+    switchContext(ePlanetMenu);
 }
 //----------------------------------------------------------------------------
 void Game::updateOtherLogic( void)
@@ -187,10 +189,10 @@ void Game::updateOtherLogic( void)
     {
         StarfieldS::instance()->update();
 
-        if (GameState::context == Context::eMenu)
+        if (_context == eMenu)
             MenuManagerS::instance()->update();
 
-        if (GameState::context == Context::ePlanetMenu)
+        if (_context == ePlanetMenu)
             PlanetManagerS::instance()->update();
 
         //advance to next start-of-game-step point in time
@@ -274,7 +276,7 @@ void Game::run( void)
     Input &input = *InputS::instance();
 
     //make sure we start of in menu mode
-    MenuManagerS::instance()->turnMenuOn();
+    switchContext(eMenu);
 
     // Here it is: the main loop.
     LOG_INFO << "Entering Main loop." << endl;
@@ -283,22 +285,9 @@ void Game::run( void)
     GameState::startOfGameStep = GameState::stopwatch.getTime();
     while( GameState::isAlive)
     {
-        switch( GameState::context)
-        {
-            case Context::eInGame:
-                //stuff that only needs updating when game is actually running
-                updateInGameLogic();
-            break;
-
-            /* moved to updateOtherLogic()
-            case Context::ePlanetMenu:
-                // TODO: update planet menu logic?
-                break;
-            */
-
-            default:
-            break;
-        }
+        //stuff that only needs updating when game is actually running
+        if (_context == eInGame)
+            updateInGameLogic();
 
         //stuff that should run all the time
         updateOtherLogic();
@@ -307,6 +296,48 @@ void Game::run( void)
         audio.update();
         video.update();
     }
+}
+//----------------------------------------------------------------------------
+ContextEnum Game::getContext()
+{
+    return _context;
+}
+//----------------------------------------------------------------------------
+void Game::switchContext(ContextEnum c)
+{
+    if (_context == c)  // nothing to change
+        return;
+
+    AudioS::instance()->playSample( "sounds/humm.wav");
+
+    if (c == eInGame)               // entering game mode
+        GameState::stopwatch.start();
+    else if (_context == eInGame)   // leaving game mode
+        GameState::stopwatch.pause();
+    else
+        Selectable::reset();
+
+    if (_context == ePaused)
+    {
+        SDL_ShowCursor(SDL_DISABLE);
+        SDL_WM_GrabInput(SDL_GRAB_ON);
+    }
+
+    if (c == ePlanetMenu)
+        InputS::instance()->enableInterceptor(PlanetManagerS::instance());
+    else if (c == eMenu)
+        InputS::instance()->enableInterceptor(MenuManagerS::instance());
+	else
+        InputS::instance()->disableInterceptor();
+
+    _previousContext = _context;
+    _context = c;
+}
+//----------------------------------------------------------------------------
+void Game::previousContext()
+{
+    if (_previousContext != eUnknown)
+        switchContext(_previousContext);
 }
 //----------------------------------------------------------------------------
 // CARGO *********************************************************************
