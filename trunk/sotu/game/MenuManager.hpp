@@ -86,6 +86,7 @@ class PlanetManager: public InterceptorI
 {
 friend class Singleton<PlanetManager>;
 public:
+    Planet* _hyperspaceTarget;
     bool init();
     bool update();
     bool draw();

@@ -539,11 +539,6 @@ void PlanetManager::drawPlanet(float x, float y, Planet *pl,
             glTranslatef(x + 100.0f, y, 0.0f);   // move
             float ang = _prevAngle+(_angle-_prevAngle)*GameState::frameFractionOther;
             glRotatef(50.0f, 1.0f, 0.0f, 0.0f);   // 50deg. X-axis
-            //if (pl->_hasRing)
-            //{
-            //    _planetTex[2]->bind();
-            //    gluDisk(qobj, 45, 70, 48, 1);
-            //}
             glRotatef(ang, 0.0f, 0.0f, -1.0f);     // rotate Z axis all the time
             _planetTex[pl->_textureIndex]->bind();
             gluSphere(qobj, pl->_radius, 48, 16);       // 60 = radius
@@ -565,8 +560,7 @@ void PlanetManager::drawPlanet(float x, float y, Planet *pl,
     gauge("Rebel sentiment", 25.0f, y-145, 170, 15, pl->_rebelSentiment, 100);
     gauge("Alien activity",  25.0f, y-190, 170, 15, pl->_alienActivity, 100);
 
-    //gauge("Tech level", 25.0f, y-90, 170, 20, pl->_techLevel, 9);
-    // DISTANCE: xxx.x LY - maybe in bottom left corner of planet's image
+    // TODO: DISTANCE: xxx.x LY - maybe in bottom left corner of planet's image
 }
 //----------------------------------------------------------------------------
 void PlanetManager::drawMap()
@@ -584,10 +578,7 @@ void PlanetManager::drawMap()
         glVertex2f( 210.0f,  60.0f);
     glEnd();
 
-    Planet* _currentPlanet = GameS::instance()->_galaxy.getNearest(_mouseX - gxoffset, _mouseY - gyoffset);
-    Planet* _targetPlanet  = GameS::instance()->_galaxy.getPlanetAt(30, 30);
-    drawPlanet(10.0f, 590.0f, _currentPlanet, "CURRENT SELECTION");
-    drawPlanet(10.0f, 270.0f, _targetPlanet, "HYPERSPACE TARGET");
+    drawPlanet(10.0f, 270.0f, _hyperspaceTarget, "HYPERSPACE TARGET");
 
     Map& galaxy = GameS::instance()->_galaxy;
     galaxy.draw(gxoffset, gyoffset);
@@ -603,6 +594,7 @@ void PlanetManager::drawMap()
         {
             tmpx = gxoffset + pl->_x - 1.0f;
             tmpy = gyoffset + pl->_y + 1.0f;
+            drawPlanet(10.0f, 590.0f, pl, "CURRENT SELECTION");
         }
 
         // plusing cursor (needs reworking so machine speed doesn't affect it)
@@ -725,7 +717,6 @@ bool PlanetManager::draw()
     for (list<Selectable*>::iterator i = _activeSelectables.begin();
         i != _activeSelectables.end(); i++)
     {
-        //LOG_INFO << "Drawing " << (*i) << endl;
         (*i)->draw();
     }
 

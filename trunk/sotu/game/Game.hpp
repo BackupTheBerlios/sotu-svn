@@ -106,17 +106,17 @@ public:
 class Map
 {
 public:
-    Map();  // creates galaxy of planets
-    ~Map(); // destroy planets
-    typedef std::vector<Planet *> PlanetList;
-    PlanetList _planets;
+    ~Map();     // destroy planets
+    void recreate();    // creates planets
 
-    // x, y offset
     void draw(float x, float y);                // renders galaxy as set of points
     Planet* getPlanetAt(float x, float y);
     Planet* getNearest(float x, float y);
 
 private:
+    void deletePlanets();
+    typedef std::vector<Planet *> PlanetList;
+    PlanetList _planets;
     Planet* _currentPlanet;
 };
 //----------------------------------------------------------------------------
@@ -127,9 +127,10 @@ class Game
 {
 friend class Singleton<Game>;
 public:
-    Map _galaxy;       // Galaxy
-    Cargo _cargo;       // Player's cargo
-    int _money;
+    Map _galaxy;            // Galaxy
+    Planet* _currentPlanet;
+    Cargo _cargo;           // Player's cargo
+    int _money;             // and money
 
     bool init( void);
     void run( void);

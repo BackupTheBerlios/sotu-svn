@@ -41,7 +41,7 @@
 #include <ResourceManager.hpp>
 //----------------------------------------------------------------------------
 Game::Game(void)
-    :_context(eUnknown), _previousContext(eUnknown)
+    :_currentPlanet(0), _context(eUnknown), _previousContext(eUnknown)
 {
     XTRACE();
 }
@@ -172,9 +172,11 @@ void Game::startNewGame( void)
 //----------------------------------------------------------------------------
 void Game::startNewCampaign()
 {
+    _cargo.clear();
     _cargo.create(0);   // create empty cargo bay
     _cargo.findItem("Fuel")->_quantity += 20;
     _money = 500;
+    _galaxy.recreate();
 
     // reset player stats (kills, empStatus, rebelStatus)
     // reset campaign data, Chapter = 0
@@ -548,8 +550,9 @@ void Planet::update()
 //----------------------------------------------------------------------------
 // PLANET ********************************************************************
 //----------------------------------------------------------------------------
-Map::Map()  // creates galaxy of planets
+void Map::recreate()
 {
+    deletePlanets();
     LOG_INFO << "CREATING PLANETS" << endl;
     const int mapWidth = 760;
     const int mapHeight = 600;
@@ -559,8 +562,12 @@ Map::Map()  // creates galaxy of planets
         for (int y = 0; y < mapHeight; y += stepSize)
         {
             Planet *p;
-            if (x == stepSize && y == stepSize)   // XEN
+            if (x == stepSize && y == stepSize)   // XEN (cell=1,1)
+            {
                 p = new Planet(1.5*(float)stepSize, 1.5*(float)stepSize, "XEN");
+                PlanetManagerS::instance()->_hyperspaceTarget = p;
+                GameS::instance()->_currentPlanet = p;
+            }
             else
             {
                 if ((x+y)%50 == 0 && Random::integer(5) == 0)
@@ -573,11 +580,16 @@ Map::Map()  // creates galaxy of planets
     }
 }
 //----------------------------------------------------------------------------
-Map::~Map()
+void Map::deletePlanets()
 {
     LOG_INFO << "DESTROYING PLANETS" << endl;
     for (PlanetList::iterator it = _planets.begin(); it != _planets.end(); ++it)
         delete (*it);
+}
+//----------------------------------------------------------------------------
+Map::~Map()
+{
+    deletePlanets();
 }
 //----------------------------------------------------------------------------
 // renders galaxy as set of points
