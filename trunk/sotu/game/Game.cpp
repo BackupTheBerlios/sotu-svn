@@ -585,6 +585,7 @@ void Map::deletePlanets()
     LOG_INFO << "DESTROYING PLANETS" << endl;
     for (PlanetList::iterator it = _planets.begin(); it != _planets.end(); ++it)
         delete (*it);
+    _planets.clear();
 }
 //----------------------------------------------------------------------------
 Map::~Map()
