@@ -1,7 +1,7 @@
 # This is a generated file. Edit carefully!
-# --- Variable section --- 
-set width = 640
-set height = 480
+# --- Variable section ---
+set width = 800
+set height = 600
 set skill = NORMAL
 set fullscreen = 1
 set showStarfield = 1
@@ -18,7 +18,7 @@ set developer = false
 set debug = false
 set autofireOn = 0
 set resolutions = 1600x1200,1280x960,1152x864,1024x768,800x600,640x480,512x384
-# --- Binding section --- 
+# --- Binding section ---
 bind CritterBoard TAB
 bind Confirm RETURN
 bind EscapeAction ESCAPE

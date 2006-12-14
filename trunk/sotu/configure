@@ -1664,7 +1664,7 @@ fi
 
 
 # Define the identity of the package.
- PACKAGE="Critical_Mass"
+ PACKAGE="SOTU"
  VERSION=1.0.0
 
 

@@ -5,12 +5,12 @@
 %define prefix   /usr
 
 Summary: SDL/OpenGL space shoot'em up game
-Name:		CriticalMass
+Name:		ScumOfTheUniverse
 Version:	%ver
 Release:	%rel
 Copyright:	GPL
 Group:		Amusements/Games
-URL:		http://criticalmass.sourceforge.net
+URL:		http://sotu.berlios.de
 BuildRoot:	/var/tmp/%{name}-%{version}-root
 Prefix:         %{prefix}
 Source:		http://prdownloads.sourceforge.net/criticalmass/CriticalMass-%{ver}.tar.bz2
@@ -19,7 +19,7 @@ Requires: libpng >= 1.0.8
 Requires: zlib >= 1.1.3
 
 %description
-Critical Mass (aka Critter) is an SDL/OpenGL space shoot'em up game.
+Scum of the Universe is an SDL/OpenGL space shoot'em up game.
 
 %prep
 %setup
@@ -45,8 +45,8 @@ install -m 744 critter.png $RPM_BUILD_ROOT/%{prefix}/share/icons/critter.png
 cat > $RPM_BUILD_ROOT/%{prefix}/share/applications/critter.desktop << EOF
 [Desktop Entry]
 Encoding=UTF-8
-Name=Critical Mass
-Exec=%{prefix}/bin/critter
+Name=Scum of the Universe
+Exec=%{prefix}/bin/sotu
 Icon=%{prefix}/share/icons/critter.png
 Type=Application
 Terminal=False
@@ -62,7 +62,7 @@ rm -rf $RPM_BUILD_ROOT
 %doc Readme.html COPYING TODO
 %{prefix}/bin/critter
 %{prefix}/bin/Packer
-%{prefix}/share/Critical_Mass/*
-%{prefix}/man/man6/critter.6.gz
+%{prefix}/share/SOTU/*
+%{prefix}/man/man6/sotu.6.gz
 %{prefix}/share/applications/critter.desktop
 %{prefix}/share/icons/critter.png

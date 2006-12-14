@@ -1,4 +1,4 @@
-# The top-level auto Makefile for Critical Mass
+# The top-level auto Makefile for SOTU
 
 # require automake 1.4
 AUTOMAKE_OPTIONS = 1.4
@@ -12,7 +12,7 @@ SUBDIRS = curl tinyxml utils utilssdl utilsgl tools data game
 ## This only works for subdirectories one level deep.
 DIST_SUBDIRS = $(SUBDIRS)
 
-man_MANS = critter.6
+man_MANS = sotu.6
 EXTRA_DIST = $(man_MANS)
 
 MAINTAINERCLEANFILES = Makefile.bak Makefile.in aclocal.m4 configure install-sh missing mkinstalldirs stamp-h.in config.guess config.sub depcomp defines.h.in~

@@ -1,6 +1,6 @@
-bin_PROGRAMS = critter
+bin_PROGRAMS = sotu
 
-critter_SOURCES = \
+sotu_SOURCES = \
         ActionCallbacks.cpp \
         Audio.cpp \
 	BitmapManager.cpp \
@@ -49,7 +49,7 @@ LDADD = \
 
 if WIN32
 INCLUDES = -I../curl/include -I../tinyxml -I../utils -I../utilssdl -I../utilsgl -DDATA_DIR=\"./\"
-LDADD += critter.res
+LDADD += sotu.res
 else
 
 if APPLE
@@ -61,7 +61,7 @@ endif
 endif
 
 depend:
-	makedepend -I. -I/usr/include/g++-3 $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(AM_CXXFLAGS) $(critter_SOURCES)
+	makedepend -I. -I/usr/include/g++-3 $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(AM_CXXFLAGS) $(sotu_SOURCES)
 
 if WIN32
 else
@@ -70,20 +70,20 @@ pkgdata_DATA = resource.dat
 resource.dat:
 	../tools/Packer ../data/description_file resource.dat
 
-DISTCLEANFILES = resource.dat critter-static
+DISTCLEANFILES = resource.dat sotu-static
 endif
 
 small:
 	strip $(bin_PROGRAMS)
 	upx -9 $(bin_PROGRAMS)
 
-critter-static: $(critter_OBJECTS) $(critter_DEPENDENCIES)
+sotu-static: $(sotu_OBJECTS) $(sotu_DEPENDENCIES)
 	@ln -sf `g++ -print-file-name=libstdc++.a`
-	@rm -f critter-static
-	$(CXXLINK) -static-libgcc -L. $(critter_LDFLAGS) $(critter_OBJECTS) $(critter_LDADD) $(LIBS)
+	@rm -f sotu-static
+	$(CXXLINK) -static-libgcc -L. $(sotu_LDFLAGS) $(sotu_OBJECTS) $(sotu_LDADD) $(LIBS)
 	@rm -f libstdc++.a
-	strip critter-static
-	upx -9 critter-static
+	strip sotu-static
+	upx -9 sotu-static
 
 
 MAINTAINERCLEANFILES = Makefile.bak Makefile.in

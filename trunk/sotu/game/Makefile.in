@@ -15,7 +15,7 @@
 @SET_MAKE@
 
 
-SOURCES = $(critter_SOURCES)
+SOURCES = $(sotu_SOURCES)
 
 srcdir = @srcdir@
 top_srcdir = @top_srcdir@
@@ -40,8 +40,8 @@ POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
 target_triplet = @target@
-bin_PROGRAMS = critter$(EXEEXT)
-@WIN32_TRUE@am__append_1 = critter.res
+bin_PROGRAMS = sotu$(EXEEXT)
+@WIN32_TRUE@am__append_1 = sotu.res
 subdir = game
 DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
@@ -54,7 +54,7 @@ CONFIG_CLEAN_FILES =
 am__installdirs = "$(DESTDIR)$(bindir)" "$(DESTDIR)$(pkgdatadir)"
 binPROGRAMS_INSTALL = $(INSTALL_PROGRAM)
 PROGRAMS = $(bin_PROGRAMS)
-am_critter_OBJECTS = ActionCallbacks.$(OBJEXT) Audio.$(OBJEXT) \
+am_sotu_OBJECTS = ActionCallbacks.$(OBJEXT) Audio.$(OBJEXT) \
 	BitmapManager.$(OBJEXT) Callback.$(OBJEXT) \
 	CallbackManager.$(OBJEXT) Camera.$(OBJEXT) \
 	EnemyFactory.$(OBJEXT) FontManager.$(OBJEXT) Game.$(OBJEXT) \
@@ -70,10 +70,10 @@ am_critter_OBJECTS = ActionCallbacks.$(OBJEXT) Audio.$(OBJEXT) \
 	StageManager.$(OBJEXT) Starfield.$(OBJEXT) TextInput.$(OBJEXT) \
 	Video.$(OBJEXT) Weapon.$(OBJEXT) WeaponDepot.$(OBJEXT) \
 	XMLHelper.$(OBJEXT) main.$(OBJEXT)
-critter_OBJECTS = $(am_critter_OBJECTS)
-critter_LDADD = $(LDADD)
-@WIN32_TRUE@am__DEPENDENCIES_1 = critter.res
-critter_DEPENDENCIES = ../curl/lib/libcurl.a ../utils/libutils.a \
+sotu_OBJECTS = $(am_sotu_OBJECTS)
+sotu_LDADD = $(LDADD)
+@WIN32_TRUE@am__DEPENDENCIES_1 = sotu.res
+sotu_DEPENDENCIES = ../curl/lib/libcurl.a ../utils/libutils.a \
 	../utilssdl/libutilssdl.a ../utilsgl/libutilsgl.a \
 	../tinyxml/libtinyxml.a $(am__DEPENDENCIES_1)
 DEFAULT_INCLUDES = -I. -I$(srcdir) -I$(top_builddir)
@@ -84,8 +84,8 @@ CXXCOMPILE = $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
 CXXLD = $(CXX)
 CXXLINK = $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) $(AM_LDFLAGS) $(LDFLAGS) \
 	-o $@
-SOURCES = $(critter_SOURCES)
-DIST_SOURCES = $(critter_SOURCES)
+SOURCES = $(sotu_SOURCES)
+DIST_SOURCES = $(sotu_SOURCES)
 am__vpath_adj_setup = srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`;
 am__vpath_adj = case $$p in \
     $(srcdir)/*) f=`echo "$$p" | sed "s|^$$srcdirstrip/||"`;; \
@@ -193,7 +193,7 @@ target_alias = @target_alias@
 target_cpu = @target_cpu@
 target_os = @target_os@
 target_vendor = @target_vendor@
-critter_SOURCES = \
+sotu_SOURCES = \
         ActionCallbacks.cpp \
         Audio.cpp \
 	BitmapManager.cpp \
@@ -240,7 +240,7 @@ LDADD = ../curl/lib/libcurl.a ../utils/libutils.a \
 @APPLE_TRUE@@WIN32_FALSE@INCLUDES = -I../curl/include -I../tinyxml -I../utils -I../utilssdl -I../utilsgl -DDATA_DIR=\"/Contents/Resources/\"
 @WIN32_TRUE@INCLUDES = -I../curl/include -I../tinyxml -I../utils -I../utilssdl -I../utilsgl -DDATA_DIR=\"./\"
 @WIN32_FALSE@pkgdata_DATA = resource.dat
-@WIN32_FALSE@DISTCLEANFILES = resource.dat critter-static
+@WIN32_FALSE@DISTCLEANFILES = resource.dat sotu-static
 MAINTAINERCLEANFILES = Makefile.bak Makefile.in
 all: all-am
 
@@ -298,9 +298,9 @@ uninstall-binPROGRAMS:
 
 clean-binPROGRAMS:
 	-test -z "$(bin_PROGRAMS)" || rm -f $(bin_PROGRAMS)
-critter$(EXEEXT): $(critter_OBJECTS) $(critter_DEPENDENCIES) 
-	@rm -f critter$(EXEEXT)
-	$(CXXLINK) $(critter_LDFLAGS) $(critter_OBJECTS) $(critter_LDADD) $(LIBS)
+sotu$(EXEEXT): $(sotu_OBJECTS) $(sotu_DEPENDENCIES)
+	@rm -f sotu$(EXEEXT)
+	$(CXXLINK) $(sotu_LDFLAGS) $(sotu_OBJECTS) $(sotu_LDADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
@@ -502,7 +502,7 @@ uninstall-am: uninstall-binPROGRAMS uninstall-info-am \
 
 
 depend:
-	makedepend -I. -I/usr/include/g++-3 $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(AM_CXXFLAGS) $(critter_SOURCES)
+	makedepend -I. -I/usr/include/g++-3 $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(AM_CXXFLAGS) $(sotu_SOURCES)
 
 @WIN32_FALSE@resource.dat:
 @WIN32_FALSE@	../tools/Packer ../data/description_file resource.dat
@@ -511,13 +511,13 @@ small:
 	strip $(bin_PROGRAMS)
 	upx -9 $(bin_PROGRAMS)
 
-critter-static: $(critter_OBJECTS) $(critter_DEPENDENCIES)
+sotu-static: $(sotu_OBJECTS) $(sotu_DEPENDENCIES)
 	@ln -sf `g++ -print-file-name=libstdc++.a`
-	@rm -f critter-static
-	$(CXXLINK) -static-libgcc -L. $(critter_LDFLAGS) $(critter_OBJECTS) $(critter_LDADD) $(LIBS)
+	@rm -f sotu-static
+	$(CXXLINK) -static-libgcc -L. $(sotu_LDFLAGS) $(sotu_OBJECTS) $(sotu_LDADD) $(LIBS)
 	@rm -f libstdc++.a
-	strip critter-static
-	upx -9 critter-static
+	strip sotu-static
+	upx -9 sotu-static
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
 .NOEXPORT:

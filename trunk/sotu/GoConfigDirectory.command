@@ -1,1 +1,1 @@
-open ~/.critter/ &
+open ~/.sotu/ &

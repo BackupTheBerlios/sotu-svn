@@ -65,7 +65,7 @@ Trace::~Trace()
 
 #ifdef TRACE
 #ifdef WIN32
-ofstream mcout("critterlog.txt");
+ofstream mcout("sotulog.txt");
 #else
 #define mcout cout
 #endif
