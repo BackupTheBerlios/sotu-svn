@@ -253,10 +253,10 @@ void MenuManager::input( const Trigger &trigger, const bool &isDown)
             case eKeyTrigger:
                 switch( trigger.data1)
                 {
-                    case SDLK_RETURN:   Enter();    return;
-                    case SDLK_ESCAPE:   exitMenu(); return;
-                    case SDLK_UP:       Up();       return;
-                    case SDLK_DOWN:     Down();     return;
+                    case SDLK_RETURN:   Enter();            return;
+                    case SDLK_ESCAPE:   exitMenu(false);    return;
+                    case SDLK_UP:       Up();               return;
+                    case SDLK_DOWN:     Down();             return;
                     case SDLK_F12:      VideoS::instance()->takeSnapshot(); return;
                     default:            break;
                 }
@@ -357,7 +357,7 @@ void MenuManager::Enter( void)
 }
 //----------------------------------------------------------------------------
 // returns true if we should exit
-void MenuManager::exitMenu()
+void MenuManager::exitMenu(bool allowQuitGame)
 {
     XTRACE();
     if( _currentMenu != _topMenu)   // if not top level menu
@@ -366,6 +366,8 @@ void MenuManager::exitMenu()
         loadMenuLevel();
         AudioS::instance()->playSample( "sounds/humm.wav");
     }
+    else if (allowQuitGame)
+        GameState::isAlive = false;
 }
 //----------------------------------------------------------------------------
 // PLANET MANAGER ************************************************************

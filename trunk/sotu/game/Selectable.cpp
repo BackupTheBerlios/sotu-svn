@@ -75,7 +75,6 @@ void Selectable::draw( void)
 }
 //------------------------------------------------------------------------------
 EscapeSelectable::EscapeSelectable( const BoundingBox &r, float size):
-
     Selectable(r, "Escape"),
     _size(size)
 {
@@ -105,7 +104,7 @@ void EscapeSelectable::input(const Trigger &trigger, const bool &isDown)
     switch( trigger.type)
     {
         case eButtonTrigger:
-            MenuManagerS::instance()->exitMenu();
+            MenuManagerS::instance()->exitMenu(true);   // true=allowQuitGame
             break;
 
         case eMotionTrigger:

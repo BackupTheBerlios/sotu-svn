@@ -47,7 +47,7 @@ public:
     void Down( void);
     void Up( void);
     void Enter( void);
-    void exitMenu();
+    void exitMenu(bool allowQuitGame);
 
 private:
     virtual ~MenuManager();
