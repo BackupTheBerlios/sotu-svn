@@ -76,6 +76,9 @@ public:
     void create(Planet *p); // give zero to create player's cargo
     CargoItem* findItem(const std::string& itemName);
 };
+// returns false if not possible
+//bool buy(Cargo& from, Cargo& to, int& moneybank);
+//bool sell(Cargo& from, Cargo& to, int& moneybank);
 //----------------------------------------------------------------------------
 class Planet
 {

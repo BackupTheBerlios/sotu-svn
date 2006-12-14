@@ -173,6 +173,7 @@ void Game::startNewGame( void)
 void Game::startNewCampaign()
 {
     _cargo.create(0);   // create empty cargo bay
+    _cargo.findItem("Fuel")->_quantity += 20;
     _money = 500;
 
     // reset player stats (kills, empStatus, rebelStatus)
