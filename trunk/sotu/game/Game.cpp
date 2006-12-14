@@ -172,7 +172,8 @@ void Game::startNewGame( void)
 //----------------------------------------------------------------------------
 void Game::startNewCampaign()
 {
-    _cargo.clearCargo();
+    _cargo.create(0);   // create empty cargo bay
+    _money = 500;
 
     // reset player stats (kills, empStatus, rebelStatus)
     // reset campaign data, Chapter = 0
@@ -342,42 +343,72 @@ void Game::previousContext()
 //----------------------------------------------------------------------------
 // CARGO *********************************************************************
 //----------------------------------------------------------------------------
-void Cargo::addItem(std::string groupName, const CargoItem& c)
+std::vector<CargoItemInfo>* CargoItemInfo::getCargoInfo()
 {
-    _items.insert(std::pair<std::string,CargoItem>(groupName, c));
+    static std::vector<CargoItemInfo> info;
+    if (info.empty())
+    {
+        info.push_back(CargoItemInfo("Goods", "Food",             1,  50, 1, 0, pmProTech));
+        info.push_back(CargoItemInfo("Goods", "Electronics",      5, 200, 1, 0, pmContraTech));
+        info.push_back(CargoItemInfo("Goods", "Clothing",         3, 100));
+        info.push_back(CargoItemInfo("Goods", "Alien artifacts",  1, 250));
+        info.push_back(CargoItemInfo("Goods", "Jewelry",          3, 400));
+        info.push_back(CargoItemInfo("Goods", "Firearms",         4, 300, 1, 0, pmNormal,  lsiRebels));
+        info.push_back(CargoItemInfo("Goods", "Narcotics",        6, 900, 1, 0, pmProTech, lsiBoth));
+        info.push_back(CargoItemInfo("Goods", "Slaves",           1, 200, 1, 0, pmProTech, lsiEmpire));
+
+        info.push_back(CargoItemInfo("Ship equipment", "Proton flank burst", 3,  500, 0,  1, pmContraTech));
+        info.push_back(CargoItemInfo("Ship equipment", "Proton enhancer",    6,  500, 0,  1));
+        info.push_back(CargoItemInfo("Ship equipment", "Wave emitter",       8, 1200, 0,  1));
+        info.push_back(CargoItemInfo("Ship equipment", "Stinger rockets",    3,  500, 0, 20));
+        info.push_back(CargoItemInfo("Ship equipment", "Smart bomb",         8, 3000, 0, 10));
+        info.push_back(CargoItemInfo("Ship equipment", "Fuel",               1,   20, 0, 40));
+    }
+    return &info;
 }
 //----------------------------------------------------------------------------
-void Cargo::clearCargo()
+void Cargo::create(Planet *p)
+{
+    if (!_items.empty())
+        return;
+
+    std::vector<CargoItemInfo>* info = CargoItemInfo::getCargoInfo();
+    for (std::vector<CargoItemInfo>::iterator it = info->begin();
+        it != info->end(); ++it)
+    {
+        float price = (*it)._basePrice + Random::integer(20);
+        if (p)
+        {
+            bool illegal =
+                ((*it)._legalStatus == CargoItemInfo::lsiEmpire && p->_rebelSentiment < 50 ||
+                 (*it)._legalStatus == CargoItemInfo::lsiRebels && p->_rebelSentiment > 50 ||
+                 (*it)._legalStatus == CargoItemInfo::lsiBoth);
+            float multiply = (illegal ? 2.0f : 1.0f);
+            if ((*it)._priceModel == CargoItemInfo::pmProTech)
+                multiply += ((p->_techLevel - 5.0f)*0.1f); // 0.6 - 1.4 of original price
+            if ((*it)._priceModel == CargoItemInfo::pmContraTech)
+                multiply -= ((p->_techLevel - 5.0f)*0.1f); // 0.6 - 1.4 of original price
+            price *= multiply;
+        }
+        _items.push_back(CargoItem((*it)._name, 0, (int)price));
+    }
+}
+//----------------------------------------------------------------------------
+CargoItem *Cargo::findItem(const std::string& itemName)
+{
+    for (std::vector<CargoItem>::iterator it = _items.begin();
+        it != _items.end(); ++it)
+    {
+        if ((*it)._name == itemName)
+            return &(*it);
+    }
+    LOG_WARNING << "CANNOT FIND CARGO ITEM " << itemName.c_str() << endl;
+    return 0;
+}
+//----------------------------------------------------------------------------
+void Cargo::clear()
 {
     _items.clear();
-
-    // create empty cargo list (used for trading as well)
-    // when player visits planet for first time, the list is built
-
-    // Limited by cargo space (0 - total)
-    addItem("Goods", CargoItem("Food"));
-    addItem("Goods", CargoItem("Electronics"));
-    addItem("Goods", CargoItem("Clothing"));
-    addItem("Goods", CargoItem("Alien artifacts"));
-    addItem("Goods", CargoItem("Jewelry"));
-    addItem("Goods", CargoItem("Firearms"));   // * illegal with empire
-    addItem("Goods", CargoItem("Narcotics"));  // * illegal everywhere
-    addItem("Goods", CargoItem("Slaves"));     // * illegal with rebels
-
-    // Don't take cargo space, Min = 0, Max = 1
-    addItem("Equipment", CargoItem("Rocket launcher"));
-    addItem("Equipment", CargoItem("Neutron gun"));
-    addItem("Equipment", CargoItem("Neutron gun enhancer"));
-    addItem("Equipment", CargoItem("Proton flank burst"));
-    addItem("Equipment", CargoItem("Proton enhancer"));
-    addItem("Equipment", CargoItem("Wave emitter"));
-    addItem("Equipment", CargoItem("Smart bomb"));
-    addItem("Equipment", CargoItem("Vertical thrusters"));
-    // special case, Min = 0, Max = 9
-    addItem("Equipment", CargoItem("Fuel"));
-
-    // special case
-    addItem("Other", CargoItem("Save game"));
 }
 //----------------------------------------------------------------------------
 // PLANET ********************************************************************
@@ -441,7 +472,6 @@ Planet::Planet(float x, float y, const std::string& name)
             _name += three[Random::integer(sizeof(three)/sizeof(std::string))];
     }
 
-    // TODO: generate starting marketplace
     //LOG_INFO << "CREATED PLANET (" << _name.c_str() << ") x = " << x << ", y = " << y << endl;
 }
 //----------------------------------------------------------------------------
@@ -460,7 +490,10 @@ bool Planet::isAt(float x, float y)                // allow few pixels miss
 //----------------------------------------------------------------------------
 float Planet::getPrice(const std::string& itemName)
 {
-    //return _marketplace._items[itemName]._price;
+    _marketplace.create(this);
+    CargoItem *c = _marketplace.findItem(itemName);
+    if (c)
+        return c->_price;
     return 0;
 }
 //----------------------------------------------------------------------------
@@ -507,7 +540,9 @@ void Planet::update()
             _techLevel = 9;
     }
 
-    // TODO: update prices
+    // update prices
+    _marketplace.clear();
+    _marketplace.create(this);
 }
 //----------------------------------------------------------------------------
 // PLANET ********************************************************************

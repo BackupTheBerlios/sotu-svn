@@ -21,6 +21,33 @@
 #include <map>
 #include <vector>
 //----------------------------------------------------------------------------
+class CargoItemInfo
+{
+public:
+    typedef enum { pmNormal, pmProTech, pmContraTech } PriceModel;
+    typedef enum { lsLegal, lsiEmpire, lsiRebels, lsiBoth } LegalStatus;
+
+    CargoItemInfo(const std::string& gName, const std::string& name,
+        int tl, int price, int weight = 1, int maxQty = 0,
+        PriceModel pm = pmNormal, LegalStatus ls = lsLegal)
+        :_name(name), _groupName(gName), _techLevelRequired(tl),
+         _priceModel(pm), _basePrice(price), _legalStatus(ls),
+         _weight(weight), _maxQty(maxQty)
+    {
+    };
+
+    std::string _name;
+    std::string _groupName;
+    int _techLevelRequired; // ako je -1 onda to ne moze da se kupi N/A
+    PriceModel _priceModel;
+    int _basePrice;
+    LegalStatus _legalStatus;
+    int _weight; // equipment doesn't take cargo space so it's zero
+    int _maxQty; // 0 = no limit
+
+    static std::vector<CargoItemInfo>* getCargoInfo();
+};
+//----------------------------------------------------------------------------
 class CargoItem
 {
 public:
@@ -39,14 +66,15 @@ public:
     int _price;
 };
 //----------------------------------------------------------------------------
+class Planet;
 class Cargo
 {
+private:
+    std::vector<CargoItem> _items;
 public:
-    // Group, CargoItem(name, qty)
-    std::multimap<std::string, CargoItem> _items;
-
-    void addItem(std::string, const CargoItem&);
-    void clearCargo();
+    void clear();
+    void create(Planet *p); // give zero to create player's cargo
+    CargoItem* findItem(const std::string& itemName);
 };
 //----------------------------------------------------------------------------
 class Planet
@@ -98,6 +126,8 @@ friend class Singleton<Game>;
 public:
     Map _galaxy;       // Galaxy
     Cargo _cargo;       // Player's cargo
+    int _money;
+
     bool init( void);
     void run( void);
     void reset( void);
