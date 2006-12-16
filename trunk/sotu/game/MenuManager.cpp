@@ -35,6 +35,61 @@
 #include <ResourceManager.hpp>
 #include <zrwops.hpp>
 //----------------------------------------------------------------------------
+// Some utility functions ****************************************************
+//----------------------------------------------------------------------------
+void setMinLineSize(float desiredSize)
+{
+    GLfloat sizes[2];   // Store supported line width range
+    GLfloat step;       // Store supported line width increments
+    glGetFloatv(GL_LINE_WIDTH_RANGE,sizes);
+    glGetFloatv(GL_LINE_WIDTH_GRANULARITY,&step);
+    GLfloat size = sizes[0];
+    while (size < desiredSize && size + step <= sizes[1] && step > 0)
+        size += step;
+    glLineWidth(size);
+}
+//----------------------------------------------------------------------------
+void gauge(const std::string& label, float x, float y,
+    float w, float h, float value, float maxvalue)
+{
+    const float labeloffset = 1.0f;
+    // draw label
+    glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+    GLBitmapFont &fontWhite = *(FontManagerS::instance()->getFont( "bitmaps/menuWhite"));
+    fontWhite.DrawString(label.c_str(), x, y, 0.5f, 0.5f);
+
+    // fill in the gauge
+    glBegin(GL_POLYGON);
+        glColor3f(0.0f, 1.0f, 0.0f);
+        glVertex2f( x,                  y-h-labeloffset );
+        glVertex2f( x,                  y  -labeloffset );
+        glColor3f(1.0f, 0.0f, 0.0f);
+        glVertex2f( x+w*value/maxvalue, y  -labeloffset );
+        glVertex2f( x+w*value/maxvalue, y-h-labeloffset );
+    glEnd();
+
+    char buff[50];
+    if (maxvalue == 100.0f) // percentages
+        sprintf(buff, "%0.0f%%", value);
+    else
+        sprintf(buff, "%0.0f", value);
+    float width = fontWhite.GetWidth(buff, 0.5f);
+    glColor3f(1.0f, 1.0f, 1.0f);
+    fontWhite.DrawString(buff, x+w-width, y, 0.5f, 0.5f);
+
+    // draw surrounding rectangle
+    setMinLineSize(2.0f);
+    glColor3f(1.0f, 8.0f, 0.0f);
+    glBegin(GL_LINE_LOOP);
+        glVertex2f( x,   y  -labeloffset );
+        glVertex2f( x+w, y  -labeloffset );
+        glVertex2f( x+w, y-h-labeloffset );
+        glVertex2f( x,   y-h-labeloffset );
+    glEnd();
+}
+//----------------------------------------------------------------------------
+// Menu manager **************************************************************
+//----------------------------------------------------------------------------
 MenuManager::MenuManager():
     _menu(0),
     _topMenu(0),
@@ -398,13 +453,14 @@ bool PlanetManager::init()
 
     // create clickable stuff available in all tabs
     const GLfloat tabh = 60.0f;
-    const GLfloat tabw[] = { 270.0f, 300.0f, 180.0f, 170.0f };
-    const char *actions[] = { "ShowMap", "ShowCargo", "ShowQuests", "MainMenu" };
-    const char *labels[] = { "Galactic Map", "Cargo & Trade", "Quests", "Quit" };
+    const GLfloat tabw[] =  { 240.0f,         290.0f,          140.0f,       150.0f,    110.0f };
+    const char *actions[] = { "ShowMap",      "ShowCargo",     "ShowQuests", "NewGame", "MainMenu" };
+    const char *labels[] =  { "Galactic Map", "Cargo & Trade", "Quest",      "Launch",  "Quit" };
     const char *infos[] = {
         "Display map and navigate planets",
         "Buy and sell goods and equipment",
         "Places to see and things to do",
+        "Exit spacestation and go into planet's orbit",
         "Go back to main menu"
     };
     GLfloat loffset = 20.0f;
@@ -456,74 +512,104 @@ void PlanetManager::Enter( void)
 //----------------------------------------------------------------------------
 void PlanetManager::drawCargo()
 {
-    drawPlanet(10.0f, 590.0f, GameS::instance()->_currentPlanet, "CURRENT PLANET");
+    Planet *pl = GameS::instance()->_currentPlanet;
+    drawPlanet(10.0f, 590.0f, pl, "CURRENT PLANET");
     bool landed = GameS::instance()->_landed;
 
-
-    // draw surrounding graphics
-    // draw cargo
-    // draw rectangle around current item
-    // draw info box
-
-    //{
-    //    hide trade buttons and prices
-    //    show text "IN ORBIT" under planet
-    //}
-    //else
-    //{
-    //    show text "DOCKED IN SPACESTATION"
-    //}
-}
-//----------------------------------------------------------------------------
-void setMinLineSize(float desiredSize)
-{
-    GLfloat sizes[2];   // Store supported line width range
-    GLfloat step;       // Store supported line width increments
-    glGetFloatv(GL_LINE_WIDTH_RANGE,sizes);
-    glGetFloatv(GL_LINE_WIDTH_GRANULARITY,&step);
-    GLfloat size = sizes[0];
-    while (size < desiredSize && size + step <= sizes[1] && step > 0)
-        size += step;
-    glLineWidth(size);
-}
-//----------------------------------------------------------------------------
-void gauge(const std::string& label, float x, float y,
-    float w, float h, float value, float maxvalue)
-{
-    const float labeloffset = 1.0f;
-    // draw label
     glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
     GLBitmapFont &fontWhite = *(FontManagerS::instance()->getFont( "bitmaps/menuWhite"));
-    fontWhite.DrawString(label.c_str(), x, y, 0.5f, 0.5f);
-
-    // fill in the gauge
-    glBegin(GL_POLYGON);
-        glColor3f(0.0f, 1.0f, 0.0f);
-        glVertex2f( x,                  y-h-labeloffset );
-        glVertex2f( x,                  y  -labeloffset );
-        glColor3f(1.0f, 0.0f, 0.0f);
-        glVertex2f( x+w*value/maxvalue, y  -labeloffset );
-        glVertex2f( x+w*value/maxvalue, y-h-labeloffset );
-    glEnd();
-
-    char buff[50];
-    if (maxvalue == 100.0f) // percentages
-        sprintf(buff, "%0.0f%%", value);
+    if (landed)
+    {
+        fontWhite.DrawString("DOCKED IN", 110.0f, 290.0f, 0.5f, 0.5f, GLBitmapFont::alCenter);
+        fontWhite.DrawString("SPACESTATION", 110.0f, 250.0f, 0.5f, 0.5f, GLBitmapFont::alCenter);
+    }
     else
-        sprintf(buff, "%0.0f", value);
-    float width = fontWhite.GetWidth(buff, 0.5f);
-    glColor3f(1.0f, 1.0f, 1.0f);
-    fontWhite.DrawString(buff, x+w-width, y, 0.5f, 0.5f);
+    {
+        fontWhite.DrawString("FLOATING IN", 110.0f, 290.0f, 0.5f, 0.5f, GLBitmapFont::alCenter);
+        fontWhite.DrawString("OUTER ORBIT", 110.0f, 250.0f, 0.5f, 0.5f, GLBitmapFont::alCenter);
+    }
 
-    // draw surrounding rectangle
-    setMinLineSize(2.0f);
-    glColor3f(1.0f, 8.0f, 0.0f);
+    // draw surrounding graphics
+    glColor3f(0.7f, 0.7f, 0.0f);    // darker yellow color
     glBegin(GL_LINE_LOOP);
-        glVertex2f( x,   y  -labeloffset );
-        glVertex2f( x+w, y  -labeloffset );
-        glVertex2f( x+w, y-h-labeloffset );
-        glVertex2f( x,   y-h-labeloffset );
+        glVertex2f( 980.0f,  60.0f);
+        glVertex2f( 980.0f, 670.0f);
+        glVertex2f( 210.0f, 670.0f);
+        glVertex2f( 210.0f,  60.0f);
     glEnd();
+    glBegin(GL_LINE_STRIP);
+        glVertex2f( 970.0f, 620.0f);
+        glVertex2f( 220.0f, 620.0f);
+    glEnd();
+
+    glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+    float columns[] = { 240.0f, 600.0f, 750.0f, 900.0f };
+    float offset = 620.0f;
+    float fsize = 0.65f;
+    fontWhite.DrawString("ITEM NAME", columns[0], offset, fsize, fsize);
+    fontWhite.DrawString("YOU HAVE",  columns[1], offset, fsize, fsize, GLBitmapFont::alRight);
+    fontWhite.DrawString("PRICE",     columns[2], offset, fsize, fsize, GLBitmapFont::alRight);
+    fontWhite.DrawString("TRADE",     columns[3], offset, fsize, fsize, GLBitmapFont::alCenter);
+
+    // draw cargo
+    std::vector<CargoItemInfo>* info = CargoItemInfo::getCargoInfo();
+    Cargo &pc = GameS::instance()->_cargo;
+    Cargo &pn = pl->_marketplace;
+    int total = 0;
+    float current = 0;
+    std::vector<CargoItemInfo>::iterator citem = info->end();
+    glColor4f(0.7f, 0.7f, 1.0f, 1.0f);
+    for (std::vector<CargoItemInfo>::iterator it = info->begin();
+        it != info->end(); ++it)
+    {
+        offset -= 35.0f;
+        fontWhite.DrawString((*it)._name.c_str(), columns[0], offset, fsize, fsize);
+        CargoItem *c = pc.findItem((*it)._name);
+        char buff[30];
+        sprintf(buff, "%d", c->_quantity);
+        fontWhite.DrawString(buff, columns[1], offset, fsize, fsize, GLBitmapFont::alRight);
+        total += c->_quantity;
+
+        c = pn.findItem((*it)._name);
+        sprintf(buff, "%d", c->_price);
+        fontWhite.DrawString(buff, columns[2], offset, fsize, fsize, GLBitmapFont::alRight);
+        fontWhite.DrawString(" cr.", columns[2], offset, fsize, fsize);
+
+        // trade items
+        fontWhite.DrawString("buy  sell", columns[3], offset, fsize, fsize, GLBitmapFont::alCenter);
+
+        if (_mouseX >= 210 && _mouseX <= 980 && _mouseY > offset && _mouseY < offset + 35.0f)
+        {
+            current = offset;
+            citem = it;
+        }
+
+        if ((*it)._name == "Slaves" || (*it)._name == "Fuel")
+        {
+            glColor3f(0.7f, 0.7f, 0.0f);        // darker yellow color
+            glBegin(GL_LINE_STRIP);
+                glVertex2f( 970.0f, offset);
+                glVertex2f( 220.0f, offset);
+            glEnd();
+            glColor4f(1.0f, 0.7f, 0.7f, 1.0f);  // set back the white color
+        }
+    }
+
+    if (current)    // draw rectangle around current item and info stuff
+    {
+        glColor4f(0.0f, 1.0f, 0.0f, 0.3f);
+        glBegin(GL_POLYGON);
+            glVertex2f( 980.0f, current + 35.0f);
+            glVertex2f( 980.0f, current);
+            glVertex2f( 210.0f, current);
+            glVertex2f( 210.0f, current + 35.0f);
+        glEnd();
+        glColor4f(3.0f, 1.0f, 3.0f, 0.8f);
+        fontWhite.DrawString((*citem)._info.c_str(), 595.0f, 75.0f, 0.6f, 0.6f, GLBitmapFont::alCenter);
+
+        // Buy 1 food for 120 credits. BUY/SELL
+        //fontWhite.DrawString((*citem)._info.c_str(), 220.0f, 70.0f, 0.8f, 0.8f);
+    }
 }
 //----------------------------------------------------------------------------
 void PlanetManager::drawPlanet(float x, float y, Planet *pl,
@@ -709,7 +795,7 @@ bool PlanetManager::draw()
     setMinLineSize(2.0f);
     // draw lines
     const GLfloat tabh = 60.0f;
-    const GLfloat tabw[] = { 270.0f, 300.0f, 180.0f, 170.0f };
+    const GLfloat tabw[] =  { 240.0f,         290.0f,          140.0f,       150.0f,    110.0f };
     const GLfloat tabspace = 5.0f;
     glColor3f(0.2f, 0.8f, 0.0f);    // green color
     glBegin(GL_LINE_STRIP);

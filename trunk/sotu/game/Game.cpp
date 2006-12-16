@@ -42,8 +42,7 @@
 #include <ResourceManager.hpp>
 //----------------------------------------------------------------------------
 Game::Game(void)
-    :_currentPlanet(0), _context(eUnknown), _previousContext(eUnknown),
-     _landed(true)
+    :_currentPlanet(0), _context(eUnknown), _previousContext(eUnknown)
 {
     XTRACE();
 }
@@ -333,7 +332,7 @@ void Game::switchContext(ContextEnum c)
         InputS::instance()->enableInterceptor(PlanetManagerS::instance());
     else if (c == eMenu)
         InputS::instance()->enableInterceptor(MenuManagerS::instance());
-	else
+    else
         InputS::instance()->disableInterceptor();
 
     _previousContext = _context;
@@ -419,7 +418,8 @@ CargoItem *Cargo::findItem(const std::string& itemName)
             return &(*it);
     }
     LOG_WARNING << "CANNOT FIND CARGO ITEM " << itemName.c_str() << endl;
-    return 0;
+    static CargoItem dummy("MUNGIE", 10, 1000); // let's not crash
+    return &dummy;
 }
 //----------------------------------------------------------------------------
 void Cargo::clear()

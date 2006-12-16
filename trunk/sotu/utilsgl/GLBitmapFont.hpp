@@ -2,6 +2,7 @@
 //   Just like a Bitmap Collection but tailored for a bitmap font.
 //
 // Copyright (C) 2001 Frank Becker
+// Copyright (C) 2006 Milan Babuskov
 //
 // This program is free software; you can redistribute it and/or modify it under
 // the terms of the GNU General Public License as published by the Free Software
@@ -16,25 +17,26 @@
 #define _GLBitmapFont_hpp_
 
 #include <GLBitmapCollection.hpp>
-
+//----------------------------------------------------------------------------
 class GLBitmapFont: public GLBitmapCollection
 {
 public:
     GLBitmapFont( void):
-        GLBitmapCollection() 
+        GLBitmapCollection()
     {
-	for( int i=0; i<256; i++)
-	{
-	    _charInfo[ i] = ~0;
-	}
-    } 
+        for( int i=0; i<256; i++)
+        {
+            _charInfo[ i] = ~0;
+        }
+    }
     virtual ~GLBitmapFont()
     {
     }
 
-    //Draw a string at (x,y) scaled by [scalex,scaley]
-    void DrawString( 
-        const char *s, float x, float y, float scalex, float scaley);
+    typedef enum { alLeft, alRight, alCenter } TextAlignment;
+    // returns width
+    float DrawString(const char *s, float x, float y, float scalex,
+        float scaley, TextAlignment align = alLeft);
 
     //Determine width of string (doesn't take TABs into account, yet!)
     float GetWidth( const char *s, float scalex);
@@ -51,5 +53,5 @@ private:
     int _totalHeight;
     unsigned int _charInfo[ 256];
 };
-
+//----------------------------------------------------------------------------
 #endif
