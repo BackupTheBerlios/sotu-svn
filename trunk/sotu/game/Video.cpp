@@ -525,10 +525,12 @@ bool Video::update( void)
 
         MenuManagerS::instance()->draw();
 
+        /*
         glColor4f(1.0,1.0,1.0,0.5);
         string gVersion = "v"+GAMEVERSION;
         float width = smallFont.GetWidth( gVersion.c_str(), 0.6f);
         smallFont.DrawString( gVersion.c_str() , 995.0f-width, 5.0f, 0.6f, 0.4f);
+        */
     }
     else if (context == ePlanetMenu)
     {
@@ -572,13 +574,14 @@ bool Video::update( void)
             ty+=tdy;
 
             float he = HeroS::instance()->getEnergy();
-            if( he<0.0) he=0.0;
+            if (he < 0.0f)
+                he = 0.0f;
             glColor4f( 1.0f, 0.1f, 0.1f, 0.5f );
             glBegin(GL_QUADS);
-            glVertex3f( tx        , ty+2, -1);
-            glVertex3f( tx+he*.97f, ty+2, -1);
-            glVertex3f( tx+he*.97f, ty+20, -1);
-            glVertex3f( tx        , ty+20, -1);
+                glVertex3f( tx        , ty+2, -1);
+                glVertex3f( tx+he*.97f, ty+2, -1);
+                glVertex3f( tx+he*.97f, ty+20, -1);
+                glVertex3f( tx        , ty+20, -1);
             glEnd();
             glColor4f(1.0,1.0,1.0,0.5);
 

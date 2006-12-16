@@ -17,7 +17,7 @@
 
 #include <Model.hpp>
 #include <ResourceManager.hpp>
-
+//------------------------------------------------------------------------------
 Model::Model( void):
     _numVerts(0),
     _numColors(0),
@@ -31,7 +31,7 @@ Model::Model( void):
 {
     XTRACE();
 }
-
+//------------------------------------------------------------------------------
 Model::~Model()
 {
     XTRACE();
@@ -40,7 +40,7 @@ Model::~Model()
     delete[] _colors;
     delete[] _faces;
 }
-
+//------------------------------------------------------------------------------
 //Load model from file
 bool Model::load( const char *filename)
 {
@@ -48,7 +48,7 @@ bool Model::load( const char *filename)
 
     if( ! ResourceManagerS::instance()->selectResource( string(filename)))
     {
-	LOG_ERROR << "Unable to open: [" << filename << "]" << endl;
+        LOG_ERROR << "Unable to open: [" << filename << "]" << endl;
         return false;
     }
     ziStream &infile = ResourceManagerS::instance()->getInputStream();
@@ -71,7 +71,7 @@ bool Model::load( const char *filename)
         if( token == "Name")
         {
             _name = t.next();
-//            LOG_INFO << "Name = [" << _name << "]" << endl;
+            //            LOG_INFO << "Name = [" << _name << "]" << endl;
         }
         else if( token == "Scale")
         {
@@ -79,7 +79,7 @@ bool Model::load( const char *filename)
             scale.y = (float)atof( t.next().c_str());
             scale.z = (float)atof( t.next().c_str());
 #if 0
-            LOG_INFO << "Scale = [" 
+            LOG_INFO << "Scale = ["
                      << scale.x << ","
                      << scale.y << ","
                      << scale.z
@@ -92,21 +92,19 @@ bool Model::load( const char *filename)
             _colors = new vec3[ _numColors];
             if( !readColors( infile, linecount))
             {
-		LOG_ERROR << "Error reading colors:" 
-                      << " line:" << linecount << endl;
-		return false;
+                LOG_ERROR << "Error reading colors:"  << " line:" << linecount << endl;
+                return false;
             }
         }
         else if( token == "Vertices")
         {
             int numVerts = atoi( t.next().c_str());
             verifyAndAssign( numVerts, _numVerts);
-	    _verts = new vec3[ _numVerts];
+            _verts = new vec3[ _numVerts];
             if( !readVertices( infile, scale, linecount))
             {
-		LOG_ERROR << "Error reading vertices:" 
-                      << " line:" << linecount << endl;
-		return false;
+                LOG_ERROR << "Error reading vertices:" << " line:" << linecount << endl;
+                return false;
             }
         }
         else if( token == "Normals")
@@ -116,9 +114,8 @@ bool Model::load( const char *filename)
             _norms = new vec3[ _numVerts];
             if( !readNormals( infile, linecount))
             {
-		LOG_ERROR << "Error reading normals:" 
-                      << " line:" << linecount << endl;
-		return false;
+                LOG_ERROR << "Error reading normals:" << " line:" << linecount << endl;
+                return false;
             }
         }
         else if( token == "Faces")
@@ -127,9 +124,9 @@ bool Model::load( const char *filename)
             _faces = new FaceInfo[ _numFaces];
             if( !readFaces( infile, linecount))
             {
-		LOG_ERROR << "Error reading faces:" 
+                LOG_ERROR << "Error reading faces:"
                       << " line:" << linecount << endl;
-		return false;
+                return false;
             }
         }
         else if( token == "Offset")
@@ -138,26 +135,25 @@ bool Model::load( const char *filename)
             _offset.y = (float)atof( t.next().c_str());
             _offset.z = (float)atof( t.next().c_str());
 #if 0
-            LOG_INFO << "Offset = [" 
+            LOG_INFO << "Offset = ["
                      << _offset.x << ","
                      << _offset.y << ","
                      << _offset.z
                      << "]" << endl;
 #endif
-	}
+        }
         else
         {
-            LOG_ERROR << "Syntax error: [" 
+            LOG_ERROR << "Syntax error: ["
                       << token << "] line:" << linecount << endl;
-	    return false;
+            return false;
         }
     }
 
     compile();
-
     return true;
 }
-
+//------------------------------------------------------------------------------
 //read vertices section
 bool Model::readVertices( ziStream &infile, const vec3 &scale, int &linecount)
 {
@@ -165,7 +161,7 @@ bool Model::readVertices( ziStream &infile, const vec3 &scale, int &linecount)
     string line;
     for( int i=0; i<_numVerts; i++)
     {
-	if( getline( infile, line).eof())
+        if( getline( infile, line).eof())
         {
             return false;
         }
@@ -177,36 +173,36 @@ bool Model::readVertices( ziStream &infile, const vec3 &scale, int &linecount)
         _verts[i].y = (float)atof( t.next().c_str()) * scale.y;
         _verts[i].z = (float)atof( t.next().c_str()) * scale.z;
 
-        if( t.tokensReturned() != 3) return false;
+        if( t.tokensReturned() != 3)
+            return false;
 
-	if( i==0)
-	{
-	    _min = _verts[i];
-	    _max = _verts[i];
-	}
-	else
-	{
-	    if( _verts[i].x < _min.x) _min.x = _verts[i].x;
-	    if( _verts[i].y < _min.y) _min.y = _verts[i].y;
-	    if( _verts[i].z < _min.z) _min.z = _verts[i].z;
+        if( i==0)
+        {
+            _min = _verts[i];
+            _max = _verts[i];
+        }
+        else
+        {
+            if( _verts[i].x < _min.x) _min.x = _verts[i].x;
+            if( _verts[i].y < _min.y) _min.y = _verts[i].y;
+            if( _verts[i].z < _min.z) _min.z = _verts[i].z;
 
-	    if( _verts[i].x > _max.x) _max.x = _verts[i].x;
-	    if( _verts[i].y > _max.y) _max.y = _verts[i].y;
-	    if( _verts[i].z > _max.z) _max.z = _verts[i].z;
-	}
+            if( _verts[i].x > _max.x) _max.x = _verts[i].x;
+            if( _verts[i].y > _max.y) _max.y = _verts[i].y;
+            if( _verts[i].z > _max.z) _max.z = _verts[i].z;
+        }
 
 #if 0
-	LOG_INFO << "[" 
-		 << _verts[i].v[0] << ","
-		 << _verts[i].v[1] << ","
-		 << _verts[i].v[2]
-		 << "]" << endl;
+        LOG_INFO << "["
+             << _verts[i].v[0] << ","
+             << _verts[i].v[1] << ","
+             << _verts[i].v[2]
+             << "]" << endl;
 #endif
     }
-
     return true;
 }
-
+//------------------------------------------------------------------------------
 //read normals section
 bool Model::readNormals( ziStream &infile, int &linecount)
 {
@@ -214,7 +210,7 @@ bool Model::readNormals( ziStream &infile, int &linecount)
     string line;
     for( int i=0; i<_numVerts; i++)
     {
-	if( getline( infile, line).eof())
+        if( getline( infile, line).eof())
         {
             return false;
         }
@@ -231,7 +227,7 @@ bool Model::readNormals( ziStream &infile, int &linecount)
 
     return true;
 }
-
+//------------------------------------------------------------------------------
 //read faces section
 bool Model::readFaces( ziStream &infile, int &linecount)
 {
@@ -239,7 +235,7 @@ bool Model::readFaces( ziStream &infile, int &linecount)
     string line;
     for( int i=0; i<_numFaces; i++)
     {
-	if( getline( infile, line).eof())
+        if( getline( infile, line).eof())
         {
             return false;
         }
@@ -259,7 +255,7 @@ bool Model::readFaces( ziStream &infile, int &linecount)
 
     return true;
 }
-
+//------------------------------------------------------------------------------
 //read colors section
 bool Model::readColors( ziStream &infile, int &linecount)
 {
@@ -267,7 +263,7 @@ bool Model::readColors( ziStream &infile, int &linecount)
     string line;
     for( int i=0; i<_numColors; i++)
     {
-	if( getline( infile, line).eof())
+        if( getline( infile, line).eof())
         {
             return false;
         }
@@ -284,27 +280,27 @@ bool Model::readColors( ziStream &infile, int &linecount)
 
     return true;
 }
-
+//------------------------------------------------------------------------------
 //hum
 void Model::verifyAndAssign( const int newVert, int & currVertVal)
 {
     XTRACE();
     if( (currVertVal != 0) && (newVert!=currVertVal))
     {
-	LOG_ERROR << "Vertex count inconsistency!" << endl; 
+        LOG_ERROR << "Vertex count inconsistency!" << endl;
     }
     else
     {
-	currVertVal = newVert;
+        currVertVal = newVert;
     }
 }
-
+//------------------------------------------------------------------------------
 //go draw
 void Model::draw( void)
 {
     glCallList( _compiledList);
 }
-
+//------------------------------------------------------------------------------
 //re-compile model
 void Model::reload( void)
 {
@@ -312,7 +308,7 @@ void Model::reload( void)
 //    glDeleteLists( _compiledList, 1);
     compile();
 }
-
+//------------------------------------------------------------------------------
 //compile model
 void Model::compile( void)
 {
@@ -321,7 +317,7 @@ void Model::compile( void)
     _compiledList =  glGenLists( 1);
     glNewList( _compiledList, GL_COMPILE);
 
-//    if( _numColors) glColor4f( 1.0, 1.0, 1.0, 1.0);
+    //    if( _numColors) glColor4f( 1.0, 1.0, 1.0, 1.0);
 
     glBegin(GL_TRIANGLES);
     for( int i=0; i<_numFaces; i++)
@@ -332,42 +328,42 @@ void Model::compile( void)
 
         if( !_faces[i].smooth)
         {
-	    vec3 avgNormal;
+            vec3 avgNormal;
             avgNormal.x = _norms[ _faces[i].v1].x +
-                          _norms[ _faces[i].v2].x + 
-                          _norms[ _faces[i].v3].x; 
+                          _norms[ _faces[i].v2].x +
+                          _norms[ _faces[i].v3].x;
             avgNormal.y = _norms[ _faces[i].v1].y +
-                          _norms[ _faces[i].v2].y + 
-                          _norms[ _faces[i].v3].y; 
+                          _norms[ _faces[i].v2].y +
+                          _norms[ _faces[i].v3].y;
             avgNormal.z = _norms[ _faces[i].v1].z +
-                          _norms[ _faces[i].v2].z + 
-                          _norms[ _faces[i].v3].z; 
+                          _norms[ _faces[i].v2].z +
+                          _norms[ _faces[i].v3].z;
 
-float dlen = (float)(1.0/sqrt( avgNormal.x*avgNormal.x + avgNormal.y*avgNormal.y + avgNormal.z*avgNormal.z));
-avgNormal.x *= dlen;
-avgNormal.y *= dlen;
-avgNormal.z *= dlen;
+            float dlen = (float)(1.0/sqrt( avgNormal.x*avgNormal.x + avgNormal.y*avgNormal.y + avgNormal.z*avgNormal.z));
+            avgNormal.x *= dlen;
+            avgNormal.y *= dlen;
+            avgNormal.z *= dlen;
 
-	    glNormal3fv( avgNormal.v);
+            glNormal3fv( avgNormal.v);
         }
         else
         {
-	    glNormal3fv( _norms[ _faces[i].v1].v);
+            glNormal3fv( _norms[ _faces[i].v1].v);
         }
         glVertex3fv( _verts[ _faces[i].v1].v);
 
 /*
-LOG_ERROR << "V1: " 
-          << _verts[ _faces[i].v1].v[0] << ", " 
-          << _verts[ _faces[i].v1].v[1] << ", " 
-          << _verts[ _faces[i].v1].v[2] 
-          << endl; 
+LOG_ERROR << "V1: "
+          << _verts[ _faces[i].v1].v[0] << ", "
+          << _verts[ _faces[i].v1].v[1] << ", "
+          << _verts[ _faces[i].v1].v[2]
+          << endl;
 
-LOG_ERROR << "V2: " 
-          << _verts[ _faces[i].v1].x << ", " 
-          << _verts[ _faces[i].v1].y << ", " 
-          << _verts[ _faces[i].v1].z 
-          << endl; 
+LOG_ERROR << "V2: "
+          << _verts[ _faces[i].v1].x << ", "
+          << _verts[ _faces[i].v1].y << ", "
+          << _verts[ _faces[i].v1].z
+          << endl;
 */
 
         if( _faces[i].smooth) glNormal3fv( _norms[ _faces[i].v2].v);
@@ -387,43 +383,47 @@ LOG_ERROR << "V2: "
 
         if( !_faces[i].smooth)
         {
-	    vec3 avgNormal;
+            vec3 avgNormal;
             avgNormal.x = _norms[ _faces[i].v1].x +
-                          _norms[ _faces[i].v2].x + 
-                          _norms[ _faces[i].v3].x + 
-                          _norms[ _faces[i].v4].x; 
+                          _norms[ _faces[i].v2].x +
+                          _norms[ _faces[i].v3].x +
+                          _norms[ _faces[i].v4].x;
             avgNormal.y = _norms[ _faces[i].v1].y +
-                          _norms[ _faces[i].v2].y + 
-                          _norms[ _faces[i].v3].y + 
-                          _norms[ _faces[i].v4].y; 
+                          _norms[ _faces[i].v2].y +
+                          _norms[ _faces[i].v3].y +
+                          _norms[ _faces[i].v4].y;
             avgNormal.z = _norms[ _faces[i].v1].z +
-                          _norms[ _faces[i].v2].z + 
-                          _norms[ _faces[i].v3].z + 
-                          _norms[ _faces[i].v4].z; 
+                          _norms[ _faces[i].v2].z +
+                          _norms[ _faces[i].v3].z +
+                          _norms[ _faces[i].v4].z;
 
-float dlen = (float)(1.0/sqrt( avgNormal.x*avgNormal.x + avgNormal.y*avgNormal.y + avgNormal.z*avgNormal.z));
-avgNormal.x *= dlen;
-avgNormal.y *= dlen;
-avgNormal.z *= dlen;
+            float dlen = (float)(1.0/sqrt( avgNormal.x*avgNormal.x + avgNormal.y*avgNormal.y + avgNormal.z*avgNormal.z));
+            avgNormal.x *= dlen;
+            avgNormal.y *= dlen;
+            avgNormal.z *= dlen;
 
-	    glNormal3fv( avgNormal.v);
+            glNormal3fv( avgNormal.v);
         }
         else
         {
-	    glNormal3fv( _norms[ _faces[i].v1].v);
+            glNormal3fv( _norms[ _faces[i].v1].v);
         }
         glVertex3fv( _verts[ _faces[i].v1].v);
 
-        if( _faces[i].smooth) glNormal3fv( _norms[ _faces[i].v2].v);
+        if( _faces[i].smooth)
+            glNormal3fv( _norms[ _faces[i].v2].v);
         glVertex3fv( _verts[ _faces[i].v2].v);
 
-        if( _faces[i].smooth) glNormal3fv( _norms[ _faces[i].v3].v);
+        if( _faces[i].smooth)
+            glNormal3fv( _norms[ _faces[i].v3].v);
         glVertex3fv( _verts[ _faces[i].v3].v);
 
-        if( _faces[i].smooth) glNormal3fv( _norms[ _faces[i].v4].v);
+        if( _faces[i].smooth)
+            glNormal3fv( _norms[ _faces[i].v4].v);
         glVertex3fv( _verts[ _faces[i].v4].v);
     }
     glEnd();
 
     glEndList();
 }
+//------------------------------------------------------------------------------

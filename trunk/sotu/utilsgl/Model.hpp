@@ -21,7 +21,7 @@
 #include <gl++.hpp>
 
 #include <Point.hpp>
-
+//------------------------------------------------------------------------------
 struct FaceInfo
 {
     int  v1;
@@ -31,7 +31,7 @@ struct FaceInfo
     int  color;
     bool smooth;
 };
-
+//------------------------------------------------------------------------------
 class Model
 {
 public:
@@ -53,13 +53,13 @@ public:
 
     void getBoundingBox( vec3 &min, vec3 &max)
     {
-	min = _min;
-	max = _max;
+        min = _min;
+        max = _max;
     }
 
     const vec3 & getOffset( void)
     {
-	return _offset;
+        return _offset;
     }
 
 private:
@@ -92,5 +92,5 @@ private:
 
     GLuint _compiledList;
 };
-
+//------------------------------------------------------------------------------
 #endif

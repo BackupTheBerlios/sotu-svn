@@ -24,21 +24,22 @@
 class CargoItemInfo
 {
 public:
-    typedef enum { pmNormal, pmProTech, pmContraTech } PriceModel;
+    typedef enum { pmNormal, pmProTech, pmContraTech, pmRandom } PriceModel;
     typedef enum { lsLegal, lsiEmpire, lsiRebels, lsiBoth } LegalStatus;
 
-    CargoItemInfo(const std::string& gName, const std::string& name,
+    CargoItemInfo(float scale, const std::string& mName, const std::string& name,
         int tl, int price, int weight = 1, int maxQty = 0,
         PriceModel pm = pmNormal, const std::string& info = "",
         LegalStatus ls = lsLegal)
-        :_name(name), _groupName(gName), _info(info),
+        :_scale(scale), _name(name), _modelName(mName), _info(info),
          _techLevelRequired(tl), _priceModel(pm), _basePrice(price),
          _legalStatus(ls), _weight(weight), _maxQty(maxQty)
     {
     };
 
+    float _scale;
     std::string _name;
-    std::string _groupName;
+    std::string _modelName;
     std::string _info;
     int _techLevelRequired; // ako je -1 onda to ne moze da se kupi N/A
     PriceModel _priceModel;

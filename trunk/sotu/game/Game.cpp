@@ -352,31 +352,32 @@ std::vector<CargoItemInfo>* CargoItemInfo::getCargoInfo()
     static std::vector<CargoItemInfo> info;
     if (info.empty())
     {
-        info.push_back(CargoItemInfo("Goods", "Food",             1,  50, 1, 0, pmProTech,
+        info.push_back(CargoItemInfo(4.0f, "models/Pumpkin", "Food",                 1,  50, 1, 0, pmProTech,
             "Cheaper on planets with lower tech level"));
-        info.push_back(CargoItemInfo("Goods", "Electronics",      5, 200, 1, 0, pmContraTech,
+        info.push_back(CargoItemInfo(6.0f, "models/ArmorPierce", "Electronics",      5, 190, 1, 0, pmContraTech,
             "Cheaper on planets with higher tech level"));
-        info.push_back(CargoItemInfo("Goods", "Clothing",         3, 100));
-        info.push_back(CargoItemInfo("Goods", "Alien artifacts",  1, 250));
-        info.push_back(CargoItemInfo("Goods", "Jewelry",          3, 400));
-        info.push_back(CargoItemInfo("Goods", "Firearms",         4, 300, 1, 0, pmNormal,
+        info.push_back(CargoItemInfo(5.0f, "models/SuperBonus", "Alien artifacts",   1, 25));
+        info.push_back(CargoItemInfo(6.0f, "models/Bonus1", "Jewelry",               3, 390, 1, 0, pmRandom));
+        info.push_back(CargoItemInfo(1.0f, "", "Firearms",         4, 300, 1, 0, pmNormal,
             "Trading this item is illegal on Empire planets", lsiEmpire));
-        info.push_back(CargoItemInfo("Goods", "Narcotics",        6, 400, 1, 0, pmProTech,
+        info.push_back(CargoItemInfo(1.0f, "models/Boss1_Teeth", "Narcotics",        6, 390, 1, 0, pmProTech,
             "Trading this item is illegal on all planets",    lsiBoth));
-        info.push_back(CargoItemInfo("Goods", "Slaves",           1, 200, 1, 0, pmProTech,
+        info.push_back(CargoItemInfo(1.0f, "models/Boss1_Face", "Slaves",            1, 190, 1, 0, pmProTech,
             "Trading this item is illegal on Rebel planets",  lsiRebels));
 
-        info.push_back(CargoItemInfo("Ship equipment", "Proton flank burst", 3,  500, 0,  1, pmContraTech,
+        info.push_back(CargoItemInfo(1.0f, "models/IceSpray", "Proton flank burst",       3,  490, 0,  1, pmContraTech,
             "Secondary weapon - use right mouse button"));
-        info.push_back(CargoItemInfo("Ship equipment", "Proton enhancer",    6,  500, 0,  1, pmNormal,
+        info.push_back(CargoItemInfo(1.0f, "models/IceSprayPierce", "Proton enhancer",    6,  500, 0,  1, pmNormal,
             "Enhances primary and secondary weapon power"));
-        info.push_back(CargoItemInfo("Ship equipment", "Wave emitter",       8, 1200, 0,  1, pmNormal,
+        info.push_back(CargoItemInfo(0.8f, "models/FlankBurster", "Wave emitter",         8, 1200, 0,  1, pmNormal,
             "Tertiary weapon - use middle mouse button or key S"));
-        info.push_back(CargoItemInfo("Ship equipment", "Stinger rockets",    3,  500, 0, 20, pmNormal,
-            "Special weapon, lost when used - press key F to fire"));
-        info.push_back(CargoItemInfo("Ship equipment", "Smart bomb",         8, 3000, 0, 10, pmNormal,
-            "Special weapon, lost when used - press key D to detonate"));
-        info.push_back(CargoItemInfo("Ship equipment", "Fuel",               1,   20, 0, 40, pmNormal,
+        info.push_back(CargoItemInfo(5.0f, "models/WeaponUpgrade", "Smart bomb",          8, 3000, 0, 10, pmNormal,
+            "Destroys all nearby enemies - press key D to detonate"));
+        info.push_back(CargoItemInfo(1.0f, "models/Stinger", "Stinger rockets",           3,  500, 0, 20, pmNormal,
+            "Ammo for rocket launcher - press key F to fire"));
+        info.push_back(CargoItemInfo(3.0f, "models/ShieldBoost", "Shield upgrade",        7, 2000, 0,  1, pmNormal,
+            "Allows your ship to have 200 shield energy"));
+        info.push_back(CargoItemInfo(1.0f, "", "Fuel",               1,   20, 0, 40, pmNormal,
             "Needed for hyperspace travel between planets"));
     }
     return &info;
@@ -391,7 +392,9 @@ void Cargo::create(Planet *p)
     for (std::vector<CargoItemInfo>::iterator it = info->begin();
         it != info->end(); ++it)
     {
-        float price = (*it)._basePrice + Random::integer(20);
+        float price = (*it)._basePrice;
+        if ((*it)._priceModel != CargoItemInfo::pmNormal)
+            price += Random::integer(20);
         if (p)
         {
             bool illegal =

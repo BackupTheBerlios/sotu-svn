@@ -543,7 +543,7 @@ void PlanetManager::drawCargo()
     glEnd();
 
     glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
-    float columns[] = { 240.0f, 600.0f, 750.0f, 900.0f };
+    float columns[] = { 280.0f, 600.0f, 750.0f, 900.0f };
     float offset = 620.0f;
     float fsize = 0.65f;
     fontWhite.DrawString("ITEM NAME", columns[0], offset, fsize, fsize);
@@ -557,11 +557,12 @@ void PlanetManager::drawCargo()
     int total = 0;
     float current = 0;
     std::vector<CargoItemInfo>::iterator citem = info->end();
-    glColor4f(0.8f, 0.8f, 1.0f, 1.0f);
+
     for (std::vector<CargoItemInfo>::iterator it = info->begin();
         it != info->end(); ++it)
     {
         offset -= 35.0f;
+        glColor4f(0.8f, 0.8f, 1.0f, 1.0f);
         fontWhite.DrawString((*it)._name.c_str(), columns[0], offset, fsize, fsize);
         CargoItem *c = pc.findItem((*it)._name);
         char buff[30];
@@ -582,14 +583,34 @@ void PlanetManager::drawCargo()
             citem = it;
         }
 
-        if ((*it)._name == "Slaves" || (*it)._name == "Fuel")
+        string model = (*it)._modelName;
+        if (model != "")
+        {
+            glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+            Model *m = ModelManagerS::instance()->getModel(model.c_str());
+            glEnable(GL_LIGHTING);
+            glEnable(GL_DEPTH_TEST);
+            GLfloat light_position2[] = { 820.0, 620.0, 500.0, 0.0 };
+            glLightfv(GL_LIGHT0, GL_POSITION, light_position2);
+            glPushMatrix();
+                glTranslatef(240.0, offset + 17.0f, 25.0f);
+                float ang = _prevAngle+(_angle-_prevAngle)*GameState::frameFractionOther;
+                glRotatef(-ang+offset, 0.0, 1.0, 0.0);
+                if ((*it)._scale != 1.0f)
+                    glScalef((*it)._scale, (*it)._scale, (*it)._scale);
+                m->draw();
+            glPopMatrix();
+            glDisable(GL_DEPTH_TEST);
+            glDisable(GL_LIGHTING);
+        }
+
+        if ((*it)._name == "Slaves" || (*it)._name == "Fuel")   // separator
         {
             glColor3f(0.7f, 0.7f, 0.0f);        // darker yellow color
             glBegin(GL_LINE_STRIP);
                 glVertex2f( 970.0f, offset);
                 glVertex2f( 220.0f, offset);
             glEnd();
-            glColor4f(1.0f, 0.8f, 0.8f, 1.0f);  // set back the white color
         }
     }
 
@@ -608,6 +629,7 @@ void PlanetManager::drawCargo()
         // Buy 1 food for 120 credits. BUY/SELL
         //fontWhite.DrawString((*citem)._info.c_str(), 220.0f, 70.0f, 0.8f, 0.8f);
     }
+
 }
 //----------------------------------------------------------------------------
 void PlanetManager::drawPlanet(float x, float y, Planet *pl,
