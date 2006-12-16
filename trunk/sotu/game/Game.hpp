@@ -84,11 +84,11 @@ public:
 //----------------------------------------------------------------------------
 class Planet
 {
-//private:
+private:
+    Cargo _marketplace;
 public:
     float _radius;          // 45 - 80
     int _textureIndex;
-    Cargo _marketplace;
     float _techLevel;         // 1 - 9
     int _rebelSentiment;    // 0 - 100
     int _alienActivity;     // 0 - 100
@@ -96,12 +96,11 @@ public:
     float _x;
     float _y;
 
-public:
     Planet(float x, float y, const std::string& name = "");
     bool isAt(float x, float y);                // allow few pixels miss
     float getDistance(float x, float y);
 
-    float getPrice(const std::string& itemName);
+    int getPrice(const std::string& itemName);
     void update();
 };
 //----------------------------------------------------------------------------

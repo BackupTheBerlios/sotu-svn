@@ -554,11 +554,10 @@ void PlanetManager::drawCargo()
     // draw cargo
     std::vector<CargoItemInfo>* info = CargoItemInfo::getCargoInfo();
     Cargo &pc = GameS::instance()->_cargo;
-    Cargo &pn = pl->_marketplace;
     int total = 0;
     float current = 0;
     std::vector<CargoItemInfo>::iterator citem = info->end();
-    glColor4f(0.7f, 0.7f, 1.0f, 1.0f);
+    glColor4f(0.8f, 0.8f, 1.0f, 1.0f);
     for (std::vector<CargoItemInfo>::iterator it = info->begin();
         it != info->end(); ++it)
     {
@@ -570,8 +569,7 @@ void PlanetManager::drawCargo()
         fontWhite.DrawString(buff, columns[1], offset, fsize, fsize, GLBitmapFont::alRight);
         total += c->_quantity;
 
-        c = pn.findItem((*it)._name);
-        sprintf(buff, "%d", c->_price);
+        sprintf(buff, "%d", pl->getPrice((*it)._name));
         fontWhite.DrawString(buff, columns[2], offset, fsize, fsize, GLBitmapFont::alRight);
         fontWhite.DrawString(" cr.", columns[2], offset, fsize, fsize);
 
@@ -591,7 +589,7 @@ void PlanetManager::drawCargo()
                 glVertex2f( 970.0f, offset);
                 glVertex2f( 220.0f, offset);
             glEnd();
-            glColor4f(1.0f, 0.7f, 0.7f, 1.0f);  // set back the white color
+            glColor4f(1.0f, 0.8f, 0.8f, 1.0f);  // set back the white color
         }
     }
 

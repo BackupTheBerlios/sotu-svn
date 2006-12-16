@@ -361,7 +361,7 @@ std::vector<CargoItemInfo>* CargoItemInfo::getCargoInfo()
         info.push_back(CargoItemInfo("Goods", "Jewelry",          3, 400));
         info.push_back(CargoItemInfo("Goods", "Firearms",         4, 300, 1, 0, pmNormal,
             "Trading this item is illegal on Empire planets", lsiEmpire));
-        info.push_back(CargoItemInfo("Goods", "Narcotics",        6, 900, 1, 0, pmProTech,
+        info.push_back(CargoItemInfo("Goods", "Narcotics",        6, 400, 1, 0, pmProTech,
             "Trading this item is illegal on all planets",    lsiBoth));
         info.push_back(CargoItemInfo("Goods", "Slaves",           1, 200, 1, 0, pmProTech,
             "Trading this item is illegal on Rebel planets",  lsiRebels));
@@ -396,11 +396,11 @@ void Cargo::create(Planet *p)
         {
             bool illegal =
                 ((*it)._legalStatus == CargoItemInfo::lsiEmpire && p->_rebelSentiment < 50 ||
-                 (*it)._legalStatus == CargoItemInfo::lsiRebels && p->_rebelSentiment > 50 ||
-                 (*it)._legalStatus == CargoItemInfo::lsiBoth);
+                 (*it)._legalStatus == CargoItemInfo::lsiRebels && p->_rebelSentiment > 50);
             float multiply = (illegal ? 2.0f : 1.0f);
+            float tleffect = ((*it)._legalStatus == CargoItemInfo::lsiBoth ? 3.0f : 1.0f );
             if ((*it)._priceModel == CargoItemInfo::pmProTech)
-                multiply += ((p->_techLevel - 5.0f)*0.1f); // 0.6 - 1.4 of original price
+                multiply += ((p->_techLevel * tleffect - 5.0f)*0.1f); // 0.6 - 1.4 of original price
             if ((*it)._priceModel == CargoItemInfo::pmContraTech)
                 multiply -= ((p->_techLevel - 5.0f)*0.1f); // 0.6 - 1.4 of original price
             price *= multiply;
@@ -436,7 +436,6 @@ Planet::Planet(float x, float y, const std::string& name)
     {
         _name = name;
         _radius = 60;
-        //_hasRing = false;
         _techLevel = 9;
         _rebelSentiment = 0;
         _alienActivity = 5;
@@ -498,7 +497,7 @@ bool Planet::isAt(float x, float y)                // allow few pixels miss
         && (y >= _y-range) && (y <= _y + range);
 }
 //----------------------------------------------------------------------------
-float Planet::getPrice(const std::string& itemName)
+int Planet::getPrice(const std::string& itemName)
 {
     _marketplace.create(this);
     CargoItem *c = _marketplace.findItem(itemName);
