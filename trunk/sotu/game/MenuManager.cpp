@@ -510,6 +510,51 @@ void PlanetManager::Enter( void)
     }
 }
 //----------------------------------------------------------------------------
+void drawGun()
+{
+    float visina = 10.0f;
+    float sirina = 18.0f;
+    float debljina = 2.0f;
+    float cev = 4.0f;
+    float ng = 2.0f;
+    glColor4f(0.8f, 1.0f, 0.6f, 1.0f);
+    glBegin(GL_QUAD_STRIP);
+        glVertex3f(-sirina,   -visina, -debljina);
+        glVertex3f(-sirina/2, -visina, -debljina);
+        glVertex3f(-sirina + ng,    visina, -debljina);
+        glVertex3f(-sirina/2 + ng,  cev, -debljina);
+        glVertex3f( sirina, visina,        -debljina);
+        glVertex3f( sirina, cev, -debljina);
+
+        glVertex3f( sirina, visina,        debljina);
+        glVertex3f( sirina, cev, debljina);
+        glVertex3f(-sirina + ng,    visina, debljina);
+        glVertex3f(-sirina/2 + ng,  cev, debljina);
+        glVertex3f(-sirina,   -visina, debljina);
+        glVertex3f(-sirina/2, -visina, debljina);
+    glEnd();
+
+    glBegin(GL_QUAD_STRIP);
+        glVertex3f( sirina, visina,        -debljina);
+        glVertex3f( sirina, visina,         debljina);
+
+        glVertex3f(-sirina + ng, visina,        -debljina);
+        glVertex3f(-sirina + ng, visina,         debljina);
+
+        glVertex3f(-sirina, -visina,        -debljina);
+        glVertex3f(-sirina, -visina,         debljina);
+
+        glVertex3f(-sirina/2, -visina,        -debljina);
+        glVertex3f(-sirina/2, -visina,         debljina);
+
+        glVertex3f(-sirina/2 + ng, cev,        -debljina);
+        glVertex3f(-sirina/2 + ng, cev,         debljina);
+
+        glVertex3f( sirina, cev,        -debljina);
+        glVertex3f( sirina, cev,         debljina);
+    glEnd();
+}
+//----------------------------------------------------------------------------
 void PlanetManager::drawCargo()
 {
     Planet *pl = GameS::instance()->_currentPlanet;
@@ -562,7 +607,10 @@ void PlanetManager::drawCargo()
         it != info->end(); ++it)
     {
         offset -= 35.0f;
-        glColor4f(0.8f, 0.8f, 1.0f, 1.0f);
+        if ((*it)._legalStatus == CargoItemInfo::lsLegal)
+            glColor4f(0.8f, 0.8f, 1.0f, 1.0f);
+        else
+            glColor4f(1.0f, 0.8f, 0.8f, 1.0f);
         fontWhite.DrawString((*it)._name.c_str(), columns[0], offset, fsize, fsize);
         CargoItem *c = pc.findItem((*it)._name);
         char buff[30];
@@ -587,18 +635,26 @@ void PlanetManager::drawCargo()
         if (model != "")
         {
             glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
-            Model *m = ModelManagerS::instance()->getModel(model.c_str());
+            Model *m = 0;
+            if (model != "GUN")
+                m = ModelManagerS::instance()->getModel(model.c_str());
             glEnable(GL_LIGHTING);
             glEnable(GL_DEPTH_TEST);
             GLfloat light_position2[] = { 820.0, 620.0, 500.0, 0.0 };
             glLightfv(GL_LIGHT0, GL_POSITION, light_position2);
             glPushMatrix();
-                glTranslatef(240.0, offset + 17.0f, 25.0f);
+                float ypos = offset + 17.0f;
+                if (model == "models/ShieldBoost")
+                    ypos -= 5.0f;
+                glTranslatef(240.0, ypos, 25.0f);
                 float ang = _prevAngle+(_angle-_prevAngle)*GameState::frameFractionOther;
                 glRotatef(-ang+offset, 0.0, 1.0, 0.0);
                 if ((*it)._scale != 1.0f)
                     glScalef((*it)._scale, (*it)._scale, (*it)._scale);
-                m->draw();
+                if (m)
+                    m->draw();
+                else
+                    drawGun();
             glPopMatrix();
             glDisable(GL_DEPTH_TEST);
             glDisable(GL_LIGHTING);
