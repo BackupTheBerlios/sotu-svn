@@ -57,8 +57,10 @@ public:
         return _inputBox;
     }
 
-    static void reset( void)
+    static void reset(bool deactivate = false)
     {
+        if (_active)
+            _active->deactivate();
         _active = 0;
     }
 

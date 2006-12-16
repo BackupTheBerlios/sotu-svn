@@ -456,10 +456,15 @@ void PlanetManager::Enter( void)
 //----------------------------------------------------------------------------
 void PlanetManager::drawCargo()
 {
-    Planet* _currentPlanet  = GameS::instance()->_galaxy.getPlanetAt(30, 30);
-    drawPlanet(10.0f, 590.0f, _currentPlanet, "CURRENT PLANET");
+    drawPlanet(10.0f, 590.0f, GameS::instance()->_currentPlanet, "CURRENT PLANET");
+    bool landed = GameS::instance()->_landed;
 
-    //if (in orbit)
+
+    // draw surrounding graphics
+    // draw cargo
+    // draw rectangle around current item
+    // draw info box
+
     //{
     //    hide trade buttons and prices
     //    show text "IN ORBIT" under planet
@@ -487,7 +492,7 @@ void gauge(const std::string& label, float x, float y,
 {
     const float labeloffset = 1.0f;
     // draw label
-    glColor3f(1.0f, 1.0f, 1.0f);
+    glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
     GLBitmapFont &fontWhite = *(FontManagerS::instance()->getFont( "bitmaps/menuWhite"));
     fontWhite.DrawString(label.c_str(), x, y, 0.5f, 0.5f);
 
@@ -559,8 +564,6 @@ void PlanetManager::drawPlanet(float x, float y, Planet *pl,
     gauge("Tech level",      25.0f, y-100, 170, 15, pl->_techLevel, 9);
     gauge("Rebel sentiment", 25.0f, y-145, 170, 15, pl->_rebelSentiment, 100);
     gauge("Alien activity",  25.0f, y-190, 170, 15, pl->_alienActivity, 100);
-
-    // TODO: DISTANCE: xxx.x LY - maybe in bottom left corner of planet's image
 }
 //----------------------------------------------------------------------------
 void PlanetManager::drawMap()
@@ -578,7 +581,7 @@ void PlanetManager::drawMap()
         glVertex2f( 210.0f,  60.0f);
     glEnd();
 
-    drawPlanet(10.0f, 270.0f, _hyperspaceTarget, "HYPERSPACE TARGET");
+    drawPlanet(10.0f, 590.0f, _hyperspaceTarget, "HYPERSPACE TARGET");
 
     Map& galaxy = GameS::instance()->_galaxy;
     galaxy.draw(gxoffset, gyoffset);
@@ -594,7 +597,50 @@ void PlanetManager::drawMap()
         {
             tmpx = gxoffset + pl->_x - 1.0f;
             tmpy = gyoffset + pl->_y + 1.0f;
-            drawPlanet(10.0f, 590.0f, pl, "CURRENT SELECTION");
+            drawPlanet(10.0f, 270.0f, pl, "CURRENT SELECTION");
+        }
+
+        // Info text: distance from planet
+        Planet *p = GameS::instance()->_currentPlanet;
+        if (p)
+        {
+            Selectable::reset(true);    // deactivate active node
+            GLBitmapFont &fontWhite = *(FontManagerS::instance()->getFont( "bitmaps/menuWhite"));
+            if (p == pl)
+            {
+                glColor4f(1.0f, 1.0f, 1.0f, 0.8f);
+                fontWhite.DrawString(pl->_name.c_str(), 20.0f, 17.0f, 0.7f, 0.65f);
+                glColor4f(1.0f, 1.0f, 1.0f, 0.6f);
+                float w = fontWhite.GetWidth(pl->_name.c_str(), 0.7f);
+                fontWhite.DrawString(" - current planet", w + 20.0f, 17.0f, 0.7f, 0.65f);
+            }
+            else
+            {
+                glColor4f(1.0f, 1.0f, 1.0f, 0.6f);
+                fontWhite.DrawString("Distance: ", 20.0f, 17.0f, 0.7f, 0.65f);
+                float w = fontWhite.GetWidth("Distance: ", 0.7f);
+
+                float dist = pl->getDistance(p->_x, p->_y);
+                CargoItem *c = GameS::instance()->_cargo.findItem("Fuel");
+                if (c->_quantity >= dist)
+                    glColor4f(0.0f, 1.0f, 0.0f, 1.0f);
+                else
+                    glColor4f(1.0f, 0.0f, 0.0f, 1.0f);
+                char buff[300];
+                sprintf(buff, "%0.1f", dist);
+                fontWhite.DrawString(buff, w + 20.0f, 17.0f, 0.7f, 0.65f);
+                w += fontWhite.GetWidth(buff, 0.7f);
+
+                glColor4f(1.0f, 1.0f, 1.0f, 0.6f);
+                fontWhite.DrawString(" light years. ", w + 20.0f, 17.0f, 0.7f, 0.65f);
+                w += fontWhite.GetWidth(" light years. ", 0.7f);
+
+                glColor4f(1.0f, 1.0f, 1.0f, 0.8f);
+                char ok[] = "Click to set as hyperspace target.";
+                char too_far[] = "Planet is out of range.";
+                char *text = (c->_quantity >= dist ? ok : too_far);
+                fontWhite.DrawString(text, w + 20.0f, 17.0f, 0.7f, 0.65f);
+            }
         }
 
         // plusing cursor (needs reworking so machine speed doesn't affect it)
@@ -663,8 +709,8 @@ bool PlanetManager::draw()
     setMinLineSize(2.0f);
     // draw lines
     const GLfloat tabh = 60.0f;
-	const GLfloat tabw[] = { 270.0f, 300.0f, 180.0f, 170.0f };
-	const GLfloat tabspace = 5.0f;
+    const GLfloat tabw[] = { 270.0f, 300.0f, 180.0f, 170.0f };
+    const GLfloat tabspace = 5.0f;
     glColor3f(0.2f, 0.8f, 0.0f);    // green color
     glBegin(GL_LINE_STRIP);
         glVertex2f( 10.0f, 740.0f - tabh);

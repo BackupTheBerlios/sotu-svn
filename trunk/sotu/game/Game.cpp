@@ -13,6 +13,7 @@
 // ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
 // FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details
 //
+#include <math.h> //we need cos(..) and sin(..) and sqrt(..)
 #include <Trace.hpp>
 #include "utils/Random.hpp"
 
@@ -41,7 +42,8 @@
 #include <ResourceManager.hpp>
 //----------------------------------------------------------------------------
 Game::Game(void)
-    :_currentPlanet(0), _context(eUnknown), _previousContext(eUnknown)
+    :_currentPlanet(0), _context(eUnknown), _previousContext(eUnknown),
+     _landed(true)
 {
     XTRACE();
 }
@@ -174,13 +176,13 @@ void Game::startNewCampaign()
 {
     _cargo.clear();
     _cargo.create(0);   // create empty cargo bay
-    _cargo.findItem("Fuel")->_quantity += 20;
+    _cargo.findItem("Fuel")->_quantity += 30;
     _money = 500;
+    _landed = true;
     _galaxy.recreate();
+    _empireStatus = _rebelStatus = _kills = 0;
 
-    // reset player stats (kills, empStatus, rebelStatus)
-    // reset campaign data, Chapter = 0
-    // reset quests
+    // TODO: reset quests
 
     switchContext(ePlanetMenu);
 }
@@ -351,21 +353,32 @@ std::vector<CargoItemInfo>* CargoItemInfo::getCargoInfo()
     static std::vector<CargoItemInfo> info;
     if (info.empty())
     {
-        info.push_back(CargoItemInfo("Goods", "Food",             1,  50, 1, 0, pmProTech));
-        info.push_back(CargoItemInfo("Goods", "Electronics",      5, 200, 1, 0, pmContraTech));
+        info.push_back(CargoItemInfo("Goods", "Food",             1,  50, 1, 0, pmProTech,
+            "Cheaper on planets with lower tech level"));
+        info.push_back(CargoItemInfo("Goods", "Electronics",      5, 200, 1, 0, pmContraTech,
+            "Cheaper on planets with higher tech level"));
         info.push_back(CargoItemInfo("Goods", "Clothing",         3, 100));
         info.push_back(CargoItemInfo("Goods", "Alien artifacts",  1, 250));
         info.push_back(CargoItemInfo("Goods", "Jewelry",          3, 400));
-        info.push_back(CargoItemInfo("Goods", "Firearms",         4, 300, 1, 0, pmNormal,  lsiRebels));
-        info.push_back(CargoItemInfo("Goods", "Narcotics",        6, 900, 1, 0, pmProTech, lsiBoth));
-        info.push_back(CargoItemInfo("Goods", "Slaves",           1, 200, 1, 0, pmProTech, lsiEmpire));
+        info.push_back(CargoItemInfo("Goods", "Firearms",         4, 300, 1, 0, pmNormal,
+            "Trading this item is illegal on Empire planets", lsiEmpire));
+        info.push_back(CargoItemInfo("Goods", "Narcotics",        6, 900, 1, 0, pmProTech,
+            "Trading this item is illegal on all planets",    lsiBoth));
+        info.push_back(CargoItemInfo("Goods", "Slaves",           1, 200, 1, 0, pmProTech,
+            "Trading this item is illegal on Rebel planets",  lsiRebels));
 
-        info.push_back(CargoItemInfo("Ship equipment", "Proton flank burst", 3,  500, 0,  1, pmContraTech));
-        info.push_back(CargoItemInfo("Ship equipment", "Proton enhancer",    6,  500, 0,  1));
-        info.push_back(CargoItemInfo("Ship equipment", "Wave emitter",       8, 1200, 0,  1));
-        info.push_back(CargoItemInfo("Ship equipment", "Stinger rockets",    3,  500, 0, 20));
-        info.push_back(CargoItemInfo("Ship equipment", "Smart bomb",         8, 3000, 0, 10));
-        info.push_back(CargoItemInfo("Ship equipment", "Fuel",               1,   20, 0, 40));
+        info.push_back(CargoItemInfo("Ship equipment", "Proton flank burst", 3,  500, 0,  1, pmContraTech,
+            "Secondary weapon - use right mouse button"));
+        info.push_back(CargoItemInfo("Ship equipment", "Proton enhancer",    6,  500, 0,  1, pmNormal,
+            "Enhances primary and secondary weapon power"));
+        info.push_back(CargoItemInfo("Ship equipment", "Wave emitter",       8, 1200, 0,  1, pmNormal,
+            "Tertiary weapon - use middle mouse button or key S"));
+        info.push_back(CargoItemInfo("Ship equipment", "Stinger rockets",    3,  500, 0, 20, pmNormal,
+            "Special weapon, lost when used - press key F to fire"));
+        info.push_back(CargoItemInfo("Ship equipment", "Smart bomb",         8, 3000, 0, 10, pmNormal,
+            "Special weapon, lost when used - press key D to detonate"));
+        info.push_back(CargoItemInfo("Ship equipment", "Fuel",               1,   20, 0, 40, pmNormal,
+            "Needed for hyperspace travel between planets"));
     }
     return &info;
 }
@@ -478,12 +491,6 @@ Planet::Planet(float x, float y, const std::string& name)
     //LOG_INFO << "CREATED PLANET (" << _name.c_str() << ") x = " << x << ", y = " << y << endl;
 }
 //----------------------------------------------------------------------------
-float Planet::distance(float x, float y)
-{
-    // x^2+y^2
-    return (x-_x)*(x-_x) + (y-_y)*(y-_y);
-}
-//----------------------------------------------------------------------------
 bool Planet::isAt(float x, float y)                // allow few pixels miss
 {
     const float range = 3;
@@ -498,6 +505,11 @@ float Planet::getPrice(const std::string& itemName)
     if (c)
         return c->_price;
     return 0;
+}
+//----------------------------------------------------------------------------
+float Planet::getDistance(float x, float y)
+{
+    return sqrt((x-_x)*(x-_x) + (y-_y)*(y-_y));
 }
 //----------------------------------------------------------------------------
 // called once each 5 turns or so
@@ -617,6 +629,24 @@ void Map::draw(float x, float y)
         glVertex3f(x+(*it)->_x, y+(*it)->_y, 0.0f);
     }
     glEnd();
+    glDisable(GL_POINT_SMOOTH);
+
+    Planet *p = GameS::instance()->_currentPlanet;
+    if (p)
+    {
+        glPointSize(1.0f);
+        glColor4f(0.6f, 1.0f, 0.5f, 0.4f);
+        glBegin(GL_POLYGON);
+        CargoItem *ci = GameS::instance()->_cargo.findItem("Fuel");
+        float radius = ci->_quantity;
+        for (float i = 0.0f; i < 360.0f; i+=5.0f)
+        {
+            float degInRad = i * 0.017453278f;
+            glVertex2f( x + p->_x + cos(degInRad) * radius,
+                        y + p->_y + sin(degInRad) * radius);
+        }
+        glEnd();
+    }
 }
 //----------------------------------------------------------------------------
 Planet* Map::getPlanetAt(float x, float y)
@@ -631,9 +661,10 @@ Planet* Map::getNearest(float x, float y)
 {
     float mindist = 0.0f;
     Planet *retval = 0;
+    // instead of real distance we use simple calc to aviod sqrt
     for (PlanetList::iterator it = _planets.begin(); it != _planets.end(); ++it)
-    {
-        float d = (*it)->distance(x, y);
+    {   // (_x-x)^2 + (_y-y)^2
+        float d = ((*it)->_x-x)*((*it)->_x-x) + ((*it)->_y-y)*((*it)->_y-y);
         if (d < mindist || it == _planets.begin())
         {
             mindist = d;

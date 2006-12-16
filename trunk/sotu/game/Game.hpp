@@ -29,15 +29,17 @@ public:
 
     CargoItemInfo(const std::string& gName, const std::string& name,
         int tl, int price, int weight = 1, int maxQty = 0,
-        PriceModel pm = pmNormal, LegalStatus ls = lsLegal)
-        :_name(name), _groupName(gName), _techLevelRequired(tl),
-         _priceModel(pm), _basePrice(price), _legalStatus(ls),
-         _weight(weight), _maxQty(maxQty)
+        PriceModel pm = pmNormal, const std::string& info = "",
+        LegalStatus ls = lsLegal)
+        :_name(name), _groupName(gName), _info(info),
+         _techLevelRequired(tl), _priceModel(pm), _basePrice(price),
+         _legalStatus(ls), _weight(weight), _maxQty(maxQty)
     {
     };
 
     std::string _name;
     std::string _groupName;
+    std::string _info;
     int _techLevelRequired; // ako je -1 onda to ne moze da se kupi N/A
     PriceModel _priceModel;
     int _basePrice;
@@ -97,7 +99,7 @@ public:
 public:
     Planet(float x, float y, const std::string& name = "");
     bool isAt(float x, float y);                // allow few pixels miss
-    float distance(float x, float y);
+    float getDistance(float x, float y);
 
     float getPrice(const std::string& itemName);
     void update();
@@ -117,7 +119,6 @@ private:
     void deletePlanets();
     typedef std::vector<Planet *> PlanetList;
     PlanetList _planets;
-    Planet* _currentPlanet;
 };
 //----------------------------------------------------------------------------
 typedef enum { eUnknown, eMenu, eInGame, ePlanetMenu, ePaused, eCameraFlyby,
@@ -131,6 +132,11 @@ public:
     Planet* _currentPlanet;
     Cargo _cargo;           // Player's cargo
     int _money;             // and money
+    int _rebelStatus;
+    int _empireStatus;
+    int _kills;
+    bool _landed;
+
 
     bool init( void);
     void run( void);
