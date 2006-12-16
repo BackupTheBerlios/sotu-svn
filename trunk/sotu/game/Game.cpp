@@ -395,7 +395,7 @@ void Cargo::create(Planet *p)
         it != info->end(); ++it)
     {
         float price = (*it)._basePrice;
-        if ((*it)._priceModel != CargoItemInfo::pmRandom)
+        if ((*it)._priceModel == CargoItemInfo::pmRandom)
             price = price*0.6 + Random::integer((int)(price*0.8f));
         else if ((*it)._priceModel != CargoItemInfo::pmNormal)
             price += Random::integer(10);
