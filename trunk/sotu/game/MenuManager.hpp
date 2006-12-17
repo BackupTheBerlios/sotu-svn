@@ -127,6 +127,10 @@ private:
     void drawQuests();
     void drawPlanet(float x, float y, Planet *, const std::string& title);
     void drawItemIcon(CargoItemInfo& info, float offset);
+    void drawPlayer(float yoffset);
+
+    void planetClick();
+    void tradeClick();
 };
 
 typedef Singleton<PlanetManager> PlanetManagerS;

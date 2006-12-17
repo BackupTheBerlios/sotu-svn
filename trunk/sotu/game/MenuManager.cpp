@@ -558,19 +558,20 @@ void drawGun()
 void drawButton(float x, float y, float w, float h, bool highlight)
 {
     if (highlight)
-        glColor4f(0.0f, 0.7f, 0.0f, 1.0f);
-    else
-        glColor4f(0.0f, 0.4f, 0.0f, 1.0f);
-    glBegin(GL_POLYGON);
-        glVertex2f( x,   y+h);
-        glVertex2f( x+w, y+h);
-        glVertex2f( x+w, y);
-        glVertex2f( x,   y);
-    glEnd();
+    {
+        glColor4f(0.0f, 0.0f, 0.6f, 1.0f);
+        glBegin(GL_POLYGON);
+            glVertex2f( x,   y+h);
+            glVertex2f( x+w, y+h);
+            glVertex2f( x+w, y);
+            glVertex2f( x,   y);
+        glEnd();
+    }
     if (highlight)
         glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
     else
-        glColor4f(0.5f, 0.5f, 0.0f, 1.0f);
+        glColor4f(0.7f, 0.7f, 0.0f, 1.0f);
+    setMinLineSize(2.0f);
     glBegin(GL_LINE_LOOP);
         glVertex2f( x,   y+h);
         glVertex2f( x+w, y+h);
@@ -647,6 +648,62 @@ void PlanetManager::drawItemIcon(CargoItemInfo& info, float offset)
     }
 }
 //----------------------------------------------------------------------------
+void PlanetManager::drawPlayer(float yoffset)
+{
+    GLBitmapFont &fontWhite = *(FontManagerS::instance()->getFont( "bitmaps/menuWhite"));
+    glColor4f(1.0f, 1.0f, 0.7f, 0.7f);
+    fontWhite.DrawString("PLAYER INFO", 20.0f, yoffset, 0.4f, 0.4f);
+
+    // spaceship model
+    Model *m = ModelManagerS::instance()->getModel("models/Hero");
+    if (m)
+    {
+        glEnable(GL_LIGHTING);
+        glEnable(GL_DEPTH_TEST);
+        GLfloat light_position2[] = { 820.0, 620.0, 500.0, 0.0 };
+        glLightfv(GL_LIGHT0, GL_POSITION, light_position2);
+        glPushMatrix();
+            glTranslatef(100.0, yoffset - 40.0f, 1.0f);
+            float ang = _prevAngle+(_angle-_prevAngle)*GameState::frameFractionOther;
+            if (ang > 360)
+                ang = (int)ang % 360;
+            if (ang > 270)          // -90..0
+                ang = ang - 360;
+            else if (ang > 90)     //   0..-90
+                ang = 180 - ang;
+            glRotatef(ang, 0.0, 1.0, 0.0);
+            glScalef(6.0f, 6.0f, 6.0f);
+            m->draw();
+        glPopMatrix();
+        glDisable(GL_DEPTH_TEST);
+        glDisable(GL_LIGHTING);
+    }
+
+    // between fighter image and text
+    yoffset -= 100.0f;
+
+    // money     20.f
+    glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+    const float spacing = 30.0f;
+    yoffset -= spacing;
+    fontWhite.DrawString("Money:", 20.0f, yoffset, 0.5f, 0.5f);
+    char buff[30];
+    sprintf(buff, "%d cr.", GameS::instance()->_money);
+    fontWhite.DrawString(buff, 200.0f, yoffset, 0.5f, 0.5f, GLBitmapFont::alRight);
+
+    // military ranking   20.f
+    yoffset -= spacing;
+    fontWhite.DrawString("Military rank: Harmless", 20.0f, yoffset, 0.5f, 0.5f);
+
+    // rebel status
+    yoffset -= spacing;
+    fontWhite.DrawString("Rebel status: Fugitive", 20.0f, yoffset, 0.5f, 0.5f);
+
+    // empire status
+    yoffset -= spacing;
+    fontWhite.DrawString("Empire status: Clean", 20.0f, yoffset, 0.5f, 0.5f);
+}
+//----------------------------------------------------------------------------
 void PlanetManager::drawCargo()
 {
     Planet *pl = GameS::instance()->_currentPlanet;
@@ -658,14 +715,16 @@ void PlanetManager::drawCargo()
     GLBitmapFont &fontWhite = *(FontManagerS::instance()->getFont( "bitmaps/menuWhite"));
     if (landed)
     {
-        fontWhite.DrawString("DOCKED IN", 110.0f, 290.0f, 0.5f, 0.5f, GLBitmapFont::alCenter);
-        fontWhite.DrawString("SPACESTATION", 110.0f, 250.0f, 0.5f, 0.5f, GLBitmapFont::alCenter);
+        fontWhite.DrawString("DOCKED IN", 110.0f, 340.0f, 0.5f, 0.5f, GLBitmapFont::alCenter);
+        fontWhite.DrawString("SPACESTATION", 110.0f, 320.0f, 0.5f, 0.5f, GLBitmapFont::alCenter);
     }
     else
     {
-        fontWhite.DrawString("FLOATING IN", 110.0f, 290.0f, 0.5f, 0.5f, GLBitmapFont::alCenter);
-        fontWhite.DrawString("OUTER ORBIT", 110.0f, 250.0f, 0.5f, 0.5f, GLBitmapFont::alCenter);
+        fontWhite.DrawString("FLOATING IN", 110.0f, 340.0f, 0.5f, 0.5f, GLBitmapFont::alCenter);
+        fontWhite.DrawString("OUTER ORBIT", 110.0f, 320.0f, 0.5f, 0.5f, GLBitmapFont::alCenter);
     }
+
+    drawPlayer(280.0f);
 
     // draw surrounding graphics
     setMinLineSize(2.0f);
@@ -698,7 +757,6 @@ void PlanetManager::drawCargo()
         it != info->end(); ++it)
     {
         offset -= 35.0f;
-
         drawItemIcon(*it, offset);
 
         if ((*it)._legalStatus == CargoItemInfo::lsLegal)
@@ -752,7 +810,7 @@ void PlanetManager::drawCargo()
         // trade items
         const std::string names[] = { "N/A", "N/T", "N/M", "MAX", "BUY" };
         setMinLineSize(1.0f);
-        drawButton( 820.0f, offset + 5.0f, 60.0f, 25.f, hi_buy);
+        drawButton( 820.0f, offset + 5.0f, 60.0f, 25.f, hi_buy && (bs == Planet::bsOk));
         if (bs == Planet::bsOk)
             glColor4f(1.0f, 0.852f, 0.0f, 1.0f);
         else
@@ -1042,6 +1100,28 @@ bool PlanetManager::draw()
     return true;
 }
 //----------------------------------------------------------------------------
+void PlanetManager::planetClick()
+{
+    const float gxoffset = 215.0f;
+    const float gyoffset = 65.0f;
+    if (_mouseX >= 210 && _mouseX <= 980 && _mouseY >= 60 && _mouseY <= 670)
+    {
+        Planet *pl = GameS::instance()->_galaxy.getNearest(
+            _mouseX - gxoffset, _mouseY - gyoffset);
+        Planet *pc = GameS::instance()->_currentPlanet;
+        if (!pl || !pc || pl == pc)
+            return;
+        float dist = pc->getDistance(pl->_x, pl->_y);
+        CargoItem *c = GameS::instance()->_cargo.findItem("Fuel");
+        if (c->_quantity >= dist)
+            _hyperspaceTarget = pl;
+    }
+}
+//----------------------------------------------------------------------------
+void PlanetManager::tradeClick()
+{
+}
+//----------------------------------------------------------------------------
 void PlanetManager::Up()
 {
 
@@ -1087,7 +1167,14 @@ void PlanetManager::input(const Trigger &trigger, const bool &isDown)
                 break;
 
             case eButtonTrigger:
-            default:    break;
+                // handle mouse click
+                if (_screenType == stMap)   // click on target planet
+                    planetClick();
+                if (_screenType == stTrade)
+                    tradeClick();
+                break;
+            default:
+                break;
         }
     }
 
