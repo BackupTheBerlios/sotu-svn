@@ -175,8 +175,8 @@ void Game::startNewCampaign()
 {
     _cargo.clear();
     _cargo.create(0);   // create empty cargo bay
-    _cargo.findItem("Fuel")->_quantity += 30;
-    _money = 500;
+    _cargo.findItem("Fuel")->_quantity += 40;
+    _money = 2000;
     _landed = true;
     _galaxy.recreate();
     _empireStatus = _rebelStatus = _kills = 0;
@@ -375,7 +375,7 @@ std::vector<CargoItemInfo>* CargoItemInfo::getCargoInfo()
             "Tertiary weapon - use middle mouse button or key S"));
         info.push_back(CargoItemInfo(5.0f, "models/WeaponUpgrade", "Smart bomb",       8, 3000, 0, 10, pmNormal,
             "Destroys all nearby enemies - press key D to detonate"));
-        info.push_back(CargoItemInfo(1.0f, "models/Stinger", "Stinger rockets",        3,  500, 0, 20, pmNormal,
+        info.push_back(CargoItemInfo(1.0f, "models/Stinger", "Stinger rocket",        3,  500, 0, 20, pmNormal,
             "Ammo for rocket launcher - press key F to fire"));
         info.push_back(CargoItemInfo(3.0f, "models/ShieldBoost", "Shield upgrade",     7, 2000, 0,  1, pmNormal,
             "Allows your ship to have 200 shield energy"));
@@ -504,6 +504,11 @@ bool Planet::isAt(float x, float y)                // allow few pixels miss
         && (y >= _y-range) && (y <= _y + range);
 }
 //----------------------------------------------------------------------------
+float Planet::getDistance(float x, float y)
+{
+    return sqrt((x-_x)*(x-_x) + (y-_y)*(y-_y));
+}
+//----------------------------------------------------------------------------
 int Planet::getPrice(const std::string& itemName)
 {
     _marketplace.create(this);
@@ -513,9 +518,16 @@ int Planet::getPrice(const std::string& itemName)
     return 0;
 }
 //----------------------------------------------------------------------------
-float Planet::getDistance(float x, float y)
+Planet::BuyStatus Planet::canBuy(CargoItemInfo& item)
 {
-    return sqrt((x-_x)*(x-_x) + (y-_y)*(y-_y));
+    int tlr = item._techLevelRequired;
+    if (tlr == -1)
+        return bsNA;
+    else if (tlr > _techLevel)
+        return bsNoTech;
+    else if (GameS::instance()->_money < getPrice(item._name))
+        return bsNoMoney;
+    return bsOk;
 }
 //----------------------------------------------------------------------------
 // called once each 5 turns or so

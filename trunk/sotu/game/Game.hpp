@@ -101,7 +101,10 @@ public:
     bool isAt(float x, float y);                // allow few pixels miss
     float getDistance(float x, float y);
 
+    typedef enum { bsNA=0, bsNoTech, bsNoMoney, bsMAX, bsOk } BuyStatus;
+    BuyStatus canBuy(CargoItemInfo& item);
     int getPrice(const std::string& itemName);
+
     void update();
 };
 //----------------------------------------------------------------------------

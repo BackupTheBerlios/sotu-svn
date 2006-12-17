@@ -555,11 +555,72 @@ void drawGun()
     glEnd();
 }
 //----------------------------------------------------------------------------
+void drawButton(float x, float y, float w, float h, bool highlight)
+{
+    if (highlight)
+        glColor4f(0.0f, 0.7f, 0.0f, 1.0f);
+    else
+        glColor4f(0.0f, 0.4f, 0.0f, 1.0f);
+    glBegin(GL_POLYGON);
+        glVertex2f( x,   y+h);
+        glVertex2f( x+w, y+h);
+        glVertex2f( x+w, y);
+        glVertex2f( x,   y);
+    glEnd();
+    if (highlight)
+        glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+    else
+        glColor4f(0.5f, 0.5f, 0.0f, 1.0f);
+    glBegin(GL_LINE_LOOP);
+        glVertex2f( x,   y+h);
+        glVertex2f( x+w, y+h);
+        glVertex2f( x+w, y);
+        glVertex2f( x,   y);
+    glEnd();
+}
+//----------------------------------------------------------------------------
+void buyInfo(Planet::BuyStatus bs, CargoItemInfo& c, int price, int money,
+    GLBitmapFont &font)
+{
+    Selectable::reset();
+    char buff[300];
+    std::string msg;
+    if (bs == Planet::bsOk)
+    {
+        sprintf(buff, "Buy %s for %d credits", c._name.c_str(), price);
+        msg = buff;
+        glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+    }
+    else
+        glColor4f(1.0f, 0.0f, 0.0f, 1.0f);
+
+    if (bs == Planet::bsNA)
+        msg = "Not available for sale";
+    else if (bs == Planet::bsNoTech)
+    {
+        sprintf(buff, "Item is only available on planets with tech.level %d or higher",
+            c._techLevelRequired);
+        msg = buff;
+    }
+    else if (bs == Planet::bsNoMoney)
+    {
+        sprintf(buff, "Item costs %d, but you only have %d credits", price, money);
+        msg = buff;
+    }
+    else if (bs == Planet::bsMAX)
+    {
+        sprintf(buff, "You already have maximum possible quantity (%d)", c._maxQty);
+        msg = buff;
+    }
+    font.DrawString(msg.c_str(), 20.0f, 17.0f, 0.65f, 0.65f);
+}
+//----------------------------------------------------------------------------
 void PlanetManager::drawCargo()
 {
     Planet *pl = GameS::instance()->_currentPlanet;
     drawPlanet(10.0f, 590.0f, pl, "CURRENT PLANET");
     bool landed = GameS::instance()->_landed;
+    int money = GameS::instance()->_money;
 
     glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
     GLBitmapFont &fontWhite = *(FontManagerS::instance()->getFont( "bitmaps/menuWhite"));
@@ -575,6 +636,7 @@ void PlanetManager::drawCargo()
     }
 
     // draw surrounding graphics
+    setMinLineSize(2.0f);
     glColor3f(0.7f, 0.7f, 0.0f);    // darker yellow color
     glBegin(GL_LINE_LOOP);
         glVertex2f( 980.0f,  60.0f);
@@ -588,13 +650,13 @@ void PlanetManager::drawCargo()
     glEnd();
 
     glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
-    float columns[] = { 280.0f, 600.0f, 750.0f, 900.0f };
+    float columns[] = { 280.0f, 600.0f, 750.0f };
     float offset = 620.0f;
     float fsize = 0.65f;
     fontWhite.DrawString("ITEM NAME", columns[0], offset, fsize, fsize);
     fontWhite.DrawString("YOU HAVE",  columns[1], offset, fsize, fsize, GLBitmapFont::alRight);
     fontWhite.DrawString("PRICE",     columns[2], offset, fsize, fsize, GLBitmapFont::alRight);
-    fontWhite.DrawString("TRADE",     columns[3], offset, fsize, fsize, GLBitmapFont::alCenter);
+    fontWhite.DrawString("TRADE",         900.0f, offset, fsize, fsize, GLBitmapFont::alCenter);
 
     // draw cargo
     std::vector<CargoItemInfo>* info = CargoItemInfo::getCargoInfo();
@@ -618,17 +680,51 @@ void PlanetManager::drawCargo()
         fontWhite.DrawString(buff, columns[1], offset, fsize, fsize, GLBitmapFont::alRight);
         total += c->_quantity;
 
-        sprintf(buff, "%d", pl->getPrice((*it)._name));
+        int price = pl->getPrice((*it)._name);
+        sprintf(buff, "%d", price);
         fontWhite.DrawString(buff, columns[2], offset, fsize, fsize, GLBitmapFont::alRight);
         fontWhite.DrawString(" cr.", columns[2], offset, fsize, fsize);
 
-        // trade items
-        fontWhite.DrawString("buy  sell", columns[3], offset, fsize, fsize, GLBitmapFont::alCenter);
+        Planet::BuyStatus bs = pl->canBuy(*it);
+        if ((*it)._maxQty > 0 && ((*it)._maxQty == c->_quantity))
+        {
+            glColor4f(1.0f, 0.0f, 0.0f, 1.0f);
+            fontWhite.DrawString(" MAX", columns[1], offset + 2.0f, 0.5f, 0.5f, GLBitmapFont::alLeft);
+            bs = Planet::bsMAX;
+        }
 
+        // set color if box is higlighted
+        bool hi_buy = false;
+        bool hi_sell = false;
         if (_mouseX >= 210 && _mouseX <= 980 && _mouseY > offset && _mouseY < offset + 35.0f)
         {
             current = offset;
             citem = it;
+
+            if (_mouseX > 820.0f && _mouseX < 880.0f)
+            {
+                hi_buy = true;
+                buyInfo(bs, *it, price, money, fontWhite);
+            }
+            if (_mouseX > 900.0f && _mouseX < 960.0f)
+                hi_sell = true;
+        }
+
+        // trade items
+        const std::string names[] = { "N/A", "N/T", "N/M", "MAX", "BUY" };
+        setMinLineSize(1.0f);
+        drawButton( 820.0f, offset + 5.0f, 60.0f, 25.f, hi_buy);
+        if (bs == Planet::bsOk)
+            glColor4f(1.0f, 0.852f, 0.0f, 1.0f);
+        else
+            glColor4f(1.0f, 0.2f, 0.0f, 1.0f);
+        fontWhite.DrawString(names[(int)bs].c_str(), 850.0f, offset + 3.0f, 0.6f, 0.6f, GLBitmapFont::alCenter);
+
+        if (c->_quantity > 0)   // sell
+        {
+            drawButton( 900.0f, offset + 5.0f, 60.0f, 25.f, hi_sell);
+            glColor4f(1.0f, 0.852f, 0.0f, 1.0f);
+            fontWhite.DrawString("SELL", 930.0f, offset + 3.0f, 0.6f, 0.6f, GLBitmapFont::alCenter);
         }
 
         string model = (*it)._modelName;
@@ -662,6 +758,7 @@ void PlanetManager::drawCargo()
 
         if ((*it)._name == "Slaves" || (*it)._name == "Fuel")   // separator
         {
+            setMinLineSize(2.0f);
             glColor3f(0.7f, 0.7f, 0.0f);        // darker yellow color
             glBegin(GL_LINE_STRIP);
                 glVertex2f( 970.0f, offset);
@@ -681,9 +778,6 @@ void PlanetManager::drawCargo()
         glEnd();
         glColor4f(3.0f, 1.0f, 3.0f, 0.8f);
         fontWhite.DrawString((*citem)._info.c_str(), 595.0f, 75.0f, 0.6f, 0.6f, GLBitmapFont::alCenter);
-
-        // Buy 1 food for 120 credits. BUY/SELL
-        //fontWhite.DrawString((*citem)._info.c_str(), 220.0f, 70.0f, 0.8f, 0.8f);
     }
 
 }
