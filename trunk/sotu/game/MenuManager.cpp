@@ -615,6 +615,38 @@ void buyInfo(Planet::BuyStatus bs, CargoItemInfo& c, int price, int money,
     font.DrawString(msg.c_str(), 20.0f, 17.0f, 0.65f, 0.65f);
 }
 //----------------------------------------------------------------------------
+void PlanetManager::drawItemIcon(CargoItemInfo& info, float offset)
+{
+    string model = info._modelName;
+    if (model != "")
+    {
+        glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+        Model *m = 0;
+        if (model != "GUN")
+            m = ModelManagerS::instance()->getModel(model.c_str());
+        glEnable(GL_LIGHTING);
+        glEnable(GL_DEPTH_TEST);
+        GLfloat light_position2[] = { 820.0, 620.0, 500.0, 0.0 };
+        glLightfv(GL_LIGHT0, GL_POSITION, light_position2);
+        glPushMatrix();
+            float ypos = offset + 17.0f;
+            if (model == "models/ShieldBoost")
+                ypos -= 5.0f;
+            glTranslatef(240.0, ypos, 25.0f);
+            float ang = _prevAngle+(_angle-_prevAngle)*GameState::frameFractionOther;
+            glRotatef(-ang+offset, 0.0, 1.0, 0.0);
+            if (info._scale != 1.0f)
+                glScalef(info._scale, info._scale, info._scale);
+            if (m)
+                m->draw();
+            else
+                drawGun();
+        glPopMatrix();
+        glDisable(GL_DEPTH_TEST);
+        glDisable(GL_LIGHTING);
+    }
+}
+//----------------------------------------------------------------------------
 void PlanetManager::drawCargo()
 {
     Planet *pl = GameS::instance()->_currentPlanet;
@@ -662,13 +694,13 @@ void PlanetManager::drawCargo()
     std::vector<CargoItemInfo>* info = CargoItemInfo::getCargoInfo();
     Cargo &pc = GameS::instance()->_cargo;
     int total = 0;
-    float current = 0;
-    std::vector<CargoItemInfo>::iterator citem = info->end();
-
     for (std::vector<CargoItemInfo>::iterator it = info->begin();
         it != info->end(); ++it)
     {
         offset -= 35.0f;
+
+        drawItemIcon(*it, offset);
+
         if ((*it)._legalStatus == CargoItemInfo::lsLegal)
             glColor4f(0.8f, 0.8f, 1.0f, 1.0f);
         else
@@ -698,8 +730,15 @@ void PlanetManager::drawCargo()
         bool hi_sell = false;
         if (_mouseX >= 210 && _mouseX <= 980 && _mouseY > offset && _mouseY < offset + 35.0f)
         {
-            current = offset;
-            citem = it;
+            glColor4f(0.0f, 1.0f, 0.0f, 0.3f);
+            glBegin(GL_POLYGON);
+                glVertex2f( 980.0f, offset + 35.0f);
+                glVertex2f( 980.0f, offset);
+                glVertex2f( 210.0f, offset);
+                glVertex2f( 210.0f, offset + 35.0f);
+            glEnd();
+            glColor4f(3.0f, 1.0f, 3.0f, 0.8f);
+            fontWhite.DrawString((*it)._info.c_str(), 595.0f, 75.0f, 0.6f, 0.6f, GLBitmapFont::alCenter);
 
             if (_mouseX > 820.0f && _mouseX < 880.0f)
             {
@@ -727,34 +766,6 @@ void PlanetManager::drawCargo()
             fontWhite.DrawString("SELL", 930.0f, offset + 3.0f, 0.6f, 0.6f, GLBitmapFont::alCenter);
         }
 
-        string model = (*it)._modelName;
-        if (model != "")
-        {
-            glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
-            Model *m = 0;
-            if (model != "GUN")
-                m = ModelManagerS::instance()->getModel(model.c_str());
-            glEnable(GL_LIGHTING);
-            glEnable(GL_DEPTH_TEST);
-            GLfloat light_position2[] = { 820.0, 620.0, 500.0, 0.0 };
-            glLightfv(GL_LIGHT0, GL_POSITION, light_position2);
-            glPushMatrix();
-                float ypos = offset + 17.0f;
-                if (model == "models/ShieldBoost")
-                    ypos -= 5.0f;
-                glTranslatef(240.0, ypos, 25.0f);
-                float ang = _prevAngle+(_angle-_prevAngle)*GameState::frameFractionOther;
-                glRotatef(-ang+offset, 0.0, 1.0, 0.0);
-                if ((*it)._scale != 1.0f)
-                    glScalef((*it)._scale, (*it)._scale, (*it)._scale);
-                if (m)
-                    m->draw();
-                else
-                    drawGun();
-            glPopMatrix();
-            glDisable(GL_DEPTH_TEST);
-            glDisable(GL_LIGHTING);
-        }
 
         if ((*it)._name == "Slaves" || (*it)._name == "Fuel")   // separator
         {
@@ -766,20 +777,6 @@ void PlanetManager::drawCargo()
             glEnd();
         }
     }
-
-    if (current)    // draw rectangle around current item and info stuff
-    {
-        glColor4f(0.0f, 1.0f, 0.0f, 0.3f);
-        glBegin(GL_POLYGON);
-            glVertex2f( 980.0f, current + 35.0f);
-            glVertex2f( 980.0f, current);
-            glVertex2f( 210.0f, current);
-            glVertex2f( 210.0f, current + 35.0f);
-        glEnd();
-        glColor4f(3.0f, 1.0f, 3.0f, 0.8f);
-        fontWhite.DrawString((*citem)._info.c_str(), 595.0f, 75.0f, 0.6f, 0.6f, GLBitmapFont::alCenter);
-    }
-
 }
 //----------------------------------------------------------------------------
 void PlanetManager::drawPlanet(float x, float y, Planet *pl,

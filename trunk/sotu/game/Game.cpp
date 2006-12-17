@@ -652,8 +652,14 @@ void Map::draw(float x, float y)
     Planet *p = GameS::instance()->_currentPlanet;
     if (p)
     {
-        glPointSize(1.0f);
+        //glPointSize(1.0f);
         glColor4f(0.6f, 1.0f, 0.5f, 0.4f);
+        float w = VideoS::instance()->getWidth();
+        w = w / (float)VIDEO_ORTHO_WIDTH;
+        float h = VideoS::instance()->getHeight();
+        h = h / (float)VIDEO_ORTHO_HEIGHT;
+        glScissor((int)(w*212.0f), (int)(h*62.0f), (int)(w*768.0f), (int)(h*608.0f));
+        glEnable(GL_SCISSOR_TEST);
         glBegin(GL_POLYGON);
         CargoItem *ci = GameS::instance()->_cargo.findItem("Fuel");
         float radius = ci->_quantity;
@@ -664,6 +670,7 @@ void Map::draw(float x, float y)
                         y + p->_y + sin(degInRad) * radius);
         }
         glEnd();
+        glDisable(GL_SCISSOR_TEST);
     }
 }
 //----------------------------------------------------------------------------

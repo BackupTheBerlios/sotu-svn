@@ -30,6 +30,7 @@
 class Selectable;
 class GLTexture;
 class Planet;
+class CargoItemInfo;
 // class GLTextureCubeMap;
 //----------------------------------------------------------------------------
 class MenuManager: public InterceptorI
@@ -125,6 +126,7 @@ private:
     void drawMap();
     void drawQuests();
     void drawPlanet(float x, float y, Planet *, const std::string& title);
+    void drawItemIcon(CargoItemInfo& info, float offset);
 };
 
 typedef Singleton<PlanetManager> PlanetManagerS;
