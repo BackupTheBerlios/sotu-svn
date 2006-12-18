@@ -50,8 +50,11 @@ void setMinLineSize(float desiredSize)
 }
 //----------------------------------------------------------------------------
 void gauge(const std::string& label, float x, float y,
-    float w, float h, float value, float maxvalue)
+    float w, float h, float value, float maxvalue, std::string text = "")
 {
+    if (value > maxvalue)
+        maxvalue = value;
+
     const float labeloffset = 1.0f;
     // draw label
     glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
@@ -68,14 +71,18 @@ void gauge(const std::string& label, float x, float y,
         glVertex2f( x+w*value/maxvalue, y-h-labeloffset );
     glEnd();
 
-    char buff[50];
-    if (maxvalue == 100.0f) // percentages
-        sprintf(buff, "%0.0f%%", value);
-    else
-        sprintf(buff, "%0.0f", value);
-    float width = fontWhite.GetWidth(buff, 0.5f);
+    if (text == "")
+    {
+        char buff[50];
+        if (maxvalue == 100.0f) // percentages
+            sprintf(buff, "%0.0f%%", value);
+        else
+            sprintf(buff, "%0.0f", value);
+        text = buff;
+    }
+    float width = fontWhite.GetWidth(text.c_str(), 0.5f);
     glColor3f(1.0f, 1.0f, 1.0f);
-    fontWhite.DrawString(buff, x+w-width, y, 0.5f, 0.5f);
+    fontWhite.DrawString(text.c_str(), x+w-width, y, 0.5f, 0.5f);
 
     // draw surrounding rectangle
     setMinLineSize(2.0f);
@@ -613,6 +620,8 @@ void buyInfo(Planet::BuyStatus bs, CargoItemInfo& c, int price, int money,
         sprintf(buff, "You already have maximum possible quantity (%d)", c._maxQty);
         msg = buff;
     }
+    else if (bs == Planet::bsCargoFull)
+        msg = "No more space in cargo hull.";
     font.DrawString(msg.c_str(), 20.0f, 17.0f, 0.65f, 0.65f);
 }
 //----------------------------------------------------------------------------
@@ -680,7 +689,7 @@ void PlanetManager::drawPlayer(float yoffset)
     }
 
     // between fighter image and text
-    yoffset -= 100.0f;
+    yoffset -= 80.0f;
 
     // money     20.f
     glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
@@ -688,24 +697,44 @@ void PlanetManager::drawPlayer(float yoffset)
     yoffset -= spacing;
     fontWhite.DrawString("Money:", 20.0f, yoffset, 0.5f, 0.5f);
     char buff[30];
-    sprintf(buff, "%d cr.", GameS::instance()->_money);
-    fontWhite.DrawString(buff, 200.0f, yoffset, 0.5f, 0.5f, GLBitmapFont::alRight);
+    sprintf(buff, "%d", GameS::instance()->_money);
+    glColor4f(1, 1, 0, 1);
+    fontWhite.DrawString(buff, 200.0f, yoffset, 0.65f, 0.65f, GLBitmapFont::alRight);
 
-    // military ranking   20.f
-    yoffset -= spacing;
-    fontWhite.DrawString("Military rank: Harmless", 20.0f, yoffset, 0.5f, 0.5f);
+    // rebel & empire status
+    std::string statuss[] = { "Rebel status:", "Empire status:" };
+    int sti[] = { GameS::instance()->_rebelStatus, GameS::instance()->_empireStatus };
+    std::string stname[] = { "Clean", "Fugitive", "Terrorist" };
+    for (int i=0; i<2; ++i)
+    {
+        yoffset -= spacing;
+        glColor4f(1, 1, 1, 1);
+        fontWhite.DrawString(statuss[i].c_str(), 20.0f, yoffset, 0.5f, 0.5f);
+        if (sti[i] == psClean)
+            glColor4f(0, 1, 0, 1);
+        else if (sti[i] == psFugitive)
+            glColor4f(1, 1, 0, 1);
+        else
+            glColor4f(1, 0, 0, 1);
+        fontWhite.DrawString(stname[sti[i]].c_str(), 200.0f, yoffset, 0.5f, 0.5f, GLBitmapFont::alRight);
+    }
 
-    // rebel status
     yoffset -= spacing;
-    fontWhite.DrawString("Rebel status: Fugitive", 20.0f, yoffset, 0.5f, 0.5f);
-
-    // empire status
-    yoffset -= spacing;
-    fontWhite.DrawString("Empire status: Clean", 20.0f, yoffset, 0.5f, 0.5f);
+    int rep_kills[] = { 0, 500, 1000, 2500, 4500, 6500, 9000 };
+    std::string reputation[] = { "Harmless", "Poor", "Average", "Competent",
+        "Dangerous", "Deadly", "Elite" };
+    std::string reps;
+    int kills = GameS::instance()->_kills;
+    for (unsigned int i = 0; i < sizeof(reputation)/sizeof(string); ++i)
+        if (kills >= rep_kills[i])
+            reps = reputation[i];
+    gauge("Reputation:", 20.0f, yoffset, 180.0f, 15, kills, 9000, reps.c_str());
 }
 //----------------------------------------------------------------------------
 void PlanetManager::drawCargo()
 {
+    float offset = 630.0f;
+
     Planet *pl = GameS::instance()->_currentPlanet;
     drawPlanet(10.0f, 590.0f, pl, "CURRENT PLANET");
     bool landed = GameS::instance()->_landed;
@@ -736,13 +765,12 @@ void PlanetManager::drawCargo()
         glVertex2f( 210.0f,  60.0f);
     glEnd();
     glBegin(GL_LINE_STRIP);
-        glVertex2f( 970.0f, 620.0f);
-        glVertex2f( 220.0f, 620.0f);
+        glVertex2f( 970.0f, offset);
+        glVertex2f( 220.0f, offset);
     glEnd();
 
     glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
     float columns[] = { 280.0f, 600.0f, 750.0f };
-    float offset = 620.0f;
     float fsize = 0.65f;
     fontWhite.DrawString("ITEM NAME", columns[0], offset, fsize, fsize);
     fontWhite.DrawString("YOU HAVE",  columns[1], offset, fsize, fsize, GLBitmapFont::alRight);
@@ -752,7 +780,16 @@ void PlanetManager::drawCargo()
     // draw cargo
     std::vector<CargoItemInfo>* info = CargoItemInfo::getCargoInfo();
     Cargo &pc = GameS::instance()->_cargo;
+
     int total = 0;
+    for (std::vector<CargoItemInfo>::iterator it = info->begin();
+        it != info->end(); ++it)
+    {
+        CargoItem *c = pc.findItem((*it)._name);
+        if ((*it)._weight > 0)
+            total += c->_quantity * (*it)._weight;
+    }
+
     for (std::vector<CargoItemInfo>::iterator it = info->begin();
         it != info->end(); ++it)
     {
@@ -768,7 +805,6 @@ void PlanetManager::drawCargo()
         char buff[30];
         sprintf(buff, "%d", c->_quantity);
         fontWhite.DrawString(buff, columns[1], offset, fsize, fsize, GLBitmapFont::alRight);
-        total += c->_quantity;
 
         int price = pl->getPrice((*it)._name);
         sprintf(buff, "%d", price);
@@ -782,6 +818,8 @@ void PlanetManager::drawCargo()
             fontWhite.DrawString(" MAX", columns[1], offset + 2.0f, 0.5f, 0.5f, GLBitmapFont::alLeft);
             bs = Planet::bsMAX;
         }
+        if ((*it)._weight != 0 && total >= 20)  // !=0 is important as it can be -1
+            bs = Planet::bsCargoFull;
 
         // set color if box is higlighted
         bool hi_buy = false;
@@ -796,7 +834,7 @@ void PlanetManager::drawCargo()
                 glVertex2f( 210.0f, offset + 35.0f);
             glEnd();
             glColor4f(3.0f, 1.0f, 3.0f, 0.8f);
-            fontWhite.DrawString((*it)._info.c_str(), 595.0f, 75.0f, 0.6f, 0.6f, GLBitmapFont::alCenter);
+            fontWhite.DrawString((*it)._info.c_str(), 595.0f, 70.0f, 0.6f, 0.6f, GLBitmapFont::alCenter);
 
             if (_mouseX > 820.0f && _mouseX < 880.0f)
             {
@@ -808,14 +846,17 @@ void PlanetManager::drawCargo()
         }
 
         // trade items
-        const std::string names[] = { "N/A", "N/T", "N/M", "MAX", "BUY" };
-        setMinLineSize(1.0f);
-        drawButton( 820.0f, offset + 5.0f, 60.0f, 25.f, hi_buy && (bs == Planet::bsOk));
-        if (bs == Planet::bsOk)
-            glColor4f(1.0f, 0.852f, 0.0f, 1.0f);
-        else
-            glColor4f(1.0f, 0.2f, 0.0f, 1.0f);
-        fontWhite.DrawString(names[(int)bs].c_str(), 850.0f, offset + 3.0f, 0.6f, 0.6f, GLBitmapFont::alCenter);
+        if (bs != Planet::bsCargoFull)
+        {
+            const std::string names[] = { "N/A", "N/T", "N/M", "MAX", "BUY", "FULL" };
+            setMinLineSize(1.0f);
+            drawButton( 820.0f, offset + 5.0f, 60.0f, 25.f, hi_buy && (bs == Planet::bsOk));
+            if (bs == Planet::bsOk)
+                glColor4f(1.0f, 0.852f, 0.0f, 1.0f);
+            else
+                glColor4f(1.0f, 0.2f, 0.0f, 1.0f);
+            fontWhite.DrawString(names[(int)bs].c_str(), 850.0f, offset + 3.0f, 0.6f, 0.6f, GLBitmapFont::alCenter);
+        }
 
         if (c->_quantity > 0)   // sell
         {
@@ -824,7 +865,23 @@ void PlanetManager::drawCargo()
             fontWhite.DrawString("SELL", 930.0f, offset + 3.0f, 0.6f, 0.6f, GLBitmapFont::alCenter);
         }
 
-
+        if ((*it)._name == "Slaves")
+        {
+            setMinLineSize(2.0f);
+            glColor3f(0.7f, 0.7f, 0.0f);        // darker yellow color
+            glBegin(GL_LINE_STRIP);
+                glVertex2f( columns[0], offset);
+                glVertex2f( columns[1], offset);
+            glEnd();
+            offset -=35;
+            glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+            fontWhite.DrawString("Available ship capacity", columns[0], offset, fsize, fsize);
+            char buff2[30];
+            sprintf(buff2, "%d", ( total >= 20 ? 0 : 20 - total));
+            if (total >= 20)
+                glColor4f(1.0f, 0.0f, 0.0f, 1.0f);
+            fontWhite.DrawString(buff2, columns[1], offset, fsize, fsize, GLBitmapFont::alRight);
+        }
         if ((*it)._name == "Slaves" || (*it)._name == "Fuel")   // separator
         {
             setMinLineSize(2.0f);
@@ -834,6 +891,16 @@ void PlanetManager::drawCargo()
                 glVertex2f( 220.0f, offset);
             glEnd();
         }
+    }
+
+    if (total >= 20)
+    {
+        glPushMatrix();
+            glTranslatef(870.0f, 500.0f, 0.0f);
+            glRotatef(90.0f, 0, 0, 1);
+            glColor4f(1.0f, 0.852f, 0.0f, 1.0f);
+            fontWhite.DrawString("SHIP FULL", 0.0f, 0.0f, 1.0f, 1.0f, GLBitmapFont::alCenter);
+        glPopMatrix();
     }
 }
 //----------------------------------------------------------------------------
@@ -1013,6 +1080,7 @@ void PlanetManager::drawMap()
 //----------------------------------------------------------------------------
 void PlanetManager::drawQuests()
 {
+    drawPlayer(650);
 }
 //----------------------------------------------------------------------------
 bool PlanetManager::draw()
@@ -1120,6 +1188,56 @@ void PlanetManager::planetClick()
 //----------------------------------------------------------------------------
 void PlanetManager::tradeClick()
 {
+    if (!GameS::instance()->_landed)
+        return;
+
+    std::vector<CargoItemInfo>* info = CargoItemInfo::getCargoInfo();
+    Cargo &pc = GameS::instance()->_cargo;
+    int total = 0;
+    for (std::vector<CargoItemInfo>::iterator it = info->begin();
+        it != info->end(); ++it)
+    {
+        CargoItem *c = pc.findItem((*it)._name);
+        total += c->_quantity * (*it)._weight;
+    }
+
+    Planet *pl = GameS::instance()->_currentPlanet;
+    float offset = 630.0f;
+    for (std::vector<CargoItemInfo>::iterator it = info->begin();
+        it != info->end(); ++it)
+    {
+        offset -= 35.0f;
+        CargoItem *c = pc.findItem((*it)._name);
+
+        // skip the cargo sum
+        if ((*it)._name == "Proton flank burst")
+            offset -=35;
+
+        if (_mouseY <= offset || _mouseY >= offset + 35.0f)
+            continue;
+
+        int price = pl->getPrice((*it)._name);
+        if (_mouseX > 900.0f && _mouseX < 960.0f)
+        {
+            if (c->_quantity > 0)   // sell
+            {
+                c->_quantity--;
+                GameS::instance()->_money += price;
+            }
+            return;
+        }
+
+        if (_mouseX <= 820.0f || _mouseX >= 880.0f)
+            continue;
+        if (total >= 20 && (*it)._weight > 0)    // cargo full
+            return;
+        if (Planet::bsOk != pl->canBuy(*it))
+            return;
+        if ((*it)._maxQty > 0 && ((*it)._maxQty == c->_quantity))
+            return;
+        c->_quantity++;
+        GameS::instance()->_money -= price;
+    }
 }
 //----------------------------------------------------------------------------
 void PlanetManager::Up()

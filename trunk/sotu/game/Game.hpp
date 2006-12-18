@@ -101,7 +101,7 @@ public:
     bool isAt(float x, float y);                // allow few pixels miss
     float getDistance(float x, float y);
 
-    typedef enum { bsNA=0, bsNoTech, bsNoMoney, bsMAX, bsOk } BuyStatus;
+    typedef enum { bsNA=0, bsNoTech, bsNoMoney, bsMAX, bsOk, bsCargoFull } BuyStatus;
     BuyStatus canBuy(CargoItemInfo& item);
     int getPrice(const std::string& itemName);
 
@@ -126,6 +126,7 @@ private:
 //----------------------------------------------------------------------------
 typedef enum { eUnknown, eMenu, eInGame, ePlanetMenu, ePaused, eCameraFlyby,
         eLAST } ContextEnum;
+typedef enum { psClean=0, psFugitive, psTerrorist } PlayerStatus;
 //----------------------------------------------------------------------------
 class Game
 {
@@ -135,11 +136,10 @@ public:
     Planet* _currentPlanet;
     Cargo _cargo;           // Player's cargo
     int _money;             // and money
-    int _rebelStatus;
-    int _empireStatus;
+    PlayerStatus _rebelStatus;       // clean, fugitive, terrorist
+    PlayerStatus _empireStatus;
     int _kills;
     bool _landed;
-
 
     bool init( void);
     void run( void);

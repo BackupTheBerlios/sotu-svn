@@ -175,11 +175,13 @@ void Game::startNewCampaign()
 {
     _cargo.clear();
     _cargo.create(0);   // create empty cargo bay
-    _cargo.findItem("Fuel")->_quantity += 40;
+    _cargo.findItem("Fuel")->_quantity += 30;
+    _cargo.findItem("Proton flank burst")->_quantity += 1;
     _money = 2000;
     _landed = true;
     _galaxy.recreate();
-    _empireStatus = _rebelStatus = _kills = 0;
+    _empireStatus = _rebelStatus = psClean;
+    _kills = 0;
 
     // TODO: reset quests
 
@@ -356,7 +358,7 @@ std::vector<CargoItemInfo>* CargoItemInfo::getCargoInfo()
             "Cheaper on planets with lower tech level"));
         info.push_back(CargoItemInfo(6.0f, "models/ArmorPierce", "Electronics",        5,  195, 1,  0, pmContraTech,
             "Cheaper on planets with higher tech level"));
-        info.push_back(CargoItemInfo(5.0f, "models/SuperBonus", "Alien artifacts",    -1,   20, 0,  0, pmNormal,
+        info.push_back(CargoItemInfo(5.0f, "models/SuperBonus", "Alien artifacts",    -1,   20,-1,  0, pmNormal,
             "Some of the aliens you shoot might drop it"));
         info.push_back(CargoItemInfo(6.0f, "models/Bonus1", "Jewelry",                 3,  400, 1,  0, pmRandom,
             "Price of this item varies randomly"));
@@ -375,7 +377,7 @@ std::vector<CargoItemInfo>* CargoItemInfo::getCargoInfo()
             "Tertiary weapon - use middle mouse button or key S"));
         info.push_back(CargoItemInfo(5.0f, "models/WeaponUpgrade", "Smart bomb",       8, 3000, 0, 10, pmNormal,
             "Destroys all nearby enemies - press key D to detonate"));
-        info.push_back(CargoItemInfo(1.0f, "models/Stinger", "Stinger rocket",        3,  500, 0, 20, pmNormal,
+        info.push_back(CargoItemInfo(1.0f, "models/Stinger", "Stinger rocket",         3,  500, 0, 20, pmNormal,
             "Ammo for rocket launcher - press key F to fire"));
         info.push_back(CargoItemInfo(3.0f, "models/ShieldBoost", "Shield upgrade",     7, 2000, 0,  1, pmNormal,
             "Allows your ship to have 200 shield energy"));
