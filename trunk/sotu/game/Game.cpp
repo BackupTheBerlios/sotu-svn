@@ -131,7 +131,8 @@ bool Game::init( void)
     GameState::stopwatch.reset();
     GameState::stopwatch.pause();
 
-    if( ! StageManagerS::instance()->init()) return false;
+    if (!StageManagerS::instance()->init())
+        return false;
 
     ConfigS::instance()->getFloat( "horsePower", GameState::horsePower);
 
@@ -158,12 +159,10 @@ void Game::reset( void)
     StageManagerS::instance()->reset();
 }
 //----------------------------------------------------------------------------
-void Game::startNewGame( void)
+void Game::startNewGame()
 {
     GameS::instance()->reset();
-    _context = eInGame;
-    InputS::instance()->disableInterceptor();   // disable planetMenu & menu
-    GameState::stopwatch.start();
+    switchContext(eInGame);
     AudioS::instance()->playSample( "sounds/voiceGo.wav");
 
     bool allowVerticalMovement = false;
@@ -188,7 +187,7 @@ void Game::startNewCampaign()
     switchContext(ePlanetMenu);
 }
 //----------------------------------------------------------------------------
-void Game::updateOtherLogic( void)
+void Game::updateOtherLogic()
 {
     int stepCount = 0;
     float currentTime = Timer::getTime();
@@ -232,7 +231,7 @@ void Game::updateOtherLogic( void)
     }
 }
 //----------------------------------------------------------------------------
-void Game::updateInGameLogic( void)
+void Game::updateInGameLogic()
 {
     int stepCount = 0;
     float currentGameTime = GameState::stopwatch.getTime();
@@ -282,7 +281,7 @@ void Game::run( void)
     Video &video = *VideoS::instance();
     Input &input = *InputS::instance();
 
-    //make sure we start of in menu mode
+    //make sure we start off in menu mode
     switchContext(eMenu);
 
     // Here it is: the main loop.
@@ -315,7 +314,8 @@ void Game::switchContext(ContextEnum c)
     if (_context == c)  // nothing to change
         return;
 
-    AudioS::instance()->playSample( "sounds/humm.wav");
+    if (c != eInGame)
+        AudioS::instance()->playSample( "sounds/humm.wav");
 
     if (c == eInGame)               // entering game mode
         GameState::stopwatch.start();

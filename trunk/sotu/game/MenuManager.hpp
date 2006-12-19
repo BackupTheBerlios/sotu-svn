@@ -128,6 +128,7 @@ private:
     void drawPlanet(float x, float y, Planet *, const std::string& title);
     void drawItemIcon(CargoItemInfo& info, float offset);
     void drawPlayer(float yoffset);
+    void drawCursor(float x, float y, bool special);
 
     void planetClick();
     void tradeClick();

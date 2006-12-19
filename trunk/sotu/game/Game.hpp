@@ -144,7 +144,7 @@ public:
     bool init( void);
     void run( void);
     void reset( void);
-    void startNewGame( void);
+    void startNewGame();
 
     void startNewCampaign();
     ContextEnum getContext();
@@ -157,8 +157,8 @@ private:
     Game( const Game&);
     Game &operator=(const Game&);
 
-    void updateOtherLogic( void);
-    void updateInGameLogic( void);
+    void updateOtherLogic();
+    void updateInGameLogic();
     ContextEnum _context;
     ContextEnum _previousContext;
 };

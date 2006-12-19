@@ -123,7 +123,7 @@ void EscapeSelectable::activate( void)
         if( _active)
             _active->deactivate();
         _active = this;
-        AudioS::instance()->playSample( "sounds/beep.wav");
+        AudioS::instance()->playSample("sounds/beep.wav");
     }
 }
 //------------------------------------------------------------------------------

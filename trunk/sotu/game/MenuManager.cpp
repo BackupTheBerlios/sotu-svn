@@ -573,6 +573,15 @@ void drawButton(float x, float y, float w, float h, bool highlight)
             glVertex2f( x+w, y);
             glVertex2f( x,   y);
         glEnd();
+
+        static float lastx = 0;
+        static float lasty = 0;
+        if (lastx != x || lasty != y)
+        {
+            AudioS::instance()->playSample( "sounds/beep.wav");
+            lastx = x;
+            lasty = y;
+        }
     }
     if (highlight)
         glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
@@ -944,6 +953,53 @@ void PlanetManager::drawPlanet(float x, float y, Planet *pl,
     gauge("Alien activity",  25.0f, y-190, 170, 15, pl->_alienActivity, 100);
 }
 //----------------------------------------------------------------------------
+void PlanetManager::drawCursor(float x, float y, bool special)
+{
+    float ang = _prevAngle+(_angle-_prevAngle)*GameState::frameFractionOther;
+    int angi = (int)ang;
+    angi %= 80;
+    if (angi > 40)
+        angi = 80 - angi;
+    float alpha = 0.4f + (float)angi * 0.01f;
+    float offs = 5.0f;
+    float len = 10.0f;
+    if (special)
+    {
+        glColor4f(1, 1, 1, 1);
+        setMinLineSize(2.0f);
+        offs = 4.0f - (float)angi * 0.08f;
+        len = 4.0f;
+    }
+    else
+    {
+        glColor4f(0, 1, 0, alpha);
+        setMinLineSize(3.0f);
+    }
+
+    glEnable(GL_LINE_SMOOTH);
+    glBegin(GL_LINE_STRIP);      // J
+        glVertex2f( x - offs - len, y + offs);
+        glVertex2f( x - offs      , y + offs);
+        glVertex2f( x - offs      , y + offs + len);
+    glEnd();
+    glBegin(GL_LINE_STRIP);     // L
+        glVertex2f( x + offs + len, y + offs);
+        glVertex2f( x + offs      , y + offs);
+        glVertex2f( x + offs      , y + offs + len);
+    glEnd();
+    glBegin(GL_LINE_STRIP);     // 7
+        glVertex2f( x - offs - len, y - offs);
+        glVertex2f( x - offs      , y - offs);
+        glVertex2f( x - offs      , y - offs - len);
+    glEnd();
+    glBegin(GL_LINE_STRIP);     // F
+        glVertex2f( x + offs + len, y - offs);
+        glVertex2f( x + offs      , y - offs);
+        glVertex2f( x + offs      , y - offs - len);
+    glEnd();
+    glDisable(GL_LINE_SMOOTH);
+}
+//----------------------------------------------------------------------------
 void PlanetManager::drawMap()
 {
     // galaxy offset on screen
@@ -960,6 +1016,8 @@ void PlanetManager::drawMap()
     glEnd();
 
     drawPlanet(10.0f, 590.0f, _hyperspaceTarget, "HYPERSPACE TARGET");
+    if (_hyperspaceTarget)
+        drawCursor( gxoffset + _hyperspaceTarget->_x, gyoffset + _hyperspaceTarget->_y, true);
 
     Map& galaxy = GameS::instance()->_galaxy;
     galaxy.draw(gxoffset, gyoffset);
@@ -1021,60 +1079,7 @@ void PlanetManager::drawMap()
             }
         }
 
-        // plusing cursor (needs reworking so machine speed doesn't affect it)
-        static float trans = 0.4f;
-        static float dir = 0.005f;
-        trans += dir;
-        if (trans > 0.8f || trans < 0.4f)
-            dir = -dir;
-        glColor4f(0.0f, 1.0f, 0.0f, trans);
-
-        setMinLineSize(3.0f);
-        glEnable(GL_LINE_SMOOTH);
-        #if 0
-        const float ptrSize = 15.0f;
-        const float ptrLen = 10.0f;
-        glBegin(GL_LINE_LOOP);  // around
-            glVertex2f( tmpx - ptrSize, tmpy - ptrSize);
-            glVertex2f( tmpx - ptrSize, tmpy + ptrSize);
-            glVertex2f( tmpx + ptrSize, tmpy + ptrSize);
-            glVertex2f( tmpx + ptrSize, tmpy - ptrSize);
-        glEnd();
-        glBegin(GL_LINES);      // +
-            glVertex2f( tmpx - ptrSize - ptrLen, tmpy);
-            glVertex2f( tmpx - ptrSize + ptrLen, tmpy);
-            glVertex2f( tmpx + ptrSize - ptrLen, tmpy);
-            glVertex2f( tmpx + ptrSize + ptrLen, tmpy);
-            glVertex2f( tmpx, tmpy - ptrSize - ptrLen);
-            glVertex2f( tmpx, tmpy - ptrSize + ptrLen);
-            glVertex2f( tmpx, tmpy + ptrSize - ptrLen);
-            glVertex2f( tmpx, tmpy + ptrSize + ptrLen);
-        glEnd();
-        #else
-        const float offs = 5.0f;
-        const float len = 10.0f;
-        glBegin(GL_LINE_STRIP);      // J
-            glVertex2f( tmpx - offs - len, tmpy + offs);
-            glVertex2f( tmpx - offs      , tmpy + offs);
-            glVertex2f( tmpx - offs      , tmpy + offs + len);
-        glEnd();
-        glBegin(GL_LINE_STRIP);     // L
-            glVertex2f( tmpx + offs + len, tmpy + offs);
-            glVertex2f( tmpx + offs      , tmpy + offs);
-            glVertex2f( tmpx + offs      , tmpy + offs + len);
-        glEnd();
-        glBegin(GL_LINE_STRIP);     // 7
-            glVertex2f( tmpx - offs - len, tmpy - offs);
-            glVertex2f( tmpx - offs      , tmpy - offs);
-            glVertex2f( tmpx - offs      , tmpy - offs - len);
-        glEnd();
-        glBegin(GL_LINE_STRIP);     // F
-            glVertex2f( tmpx + offs + len, tmpy - offs);
-            glVertex2f( tmpx + offs      , tmpy - offs);
-            glVertex2f( tmpx + offs      , tmpy - offs - len);
-        glEnd();
-        #endif
-        glDisable(GL_LINE_SMOOTH);
+        drawCursor(tmpx, tmpy, false);
     }
 }
 //----------------------------------------------------------------------------
@@ -1182,7 +1187,10 @@ void PlanetManager::planetClick()
         float dist = pc->getDistance(pl->_x, pl->_y);
         CargoItem *c = GameS::instance()->_cargo.findItem("Fuel");
         if (c->_quantity >= dist)
+        {
             _hyperspaceTarget = pl;
+            AudioS::instance()->playSample("sounds/confirm.wav");
+        }
     }
 }
 //----------------------------------------------------------------------------
@@ -1223,20 +1231,25 @@ void PlanetManager::tradeClick()
             {
                 c->_quantity--;
                 GameS::instance()->_money += price;
+                AudioS::instance()->playSample("sounds/whoop.wav");
             }
+            else
+                AudioS::instance()->playSample("sounds/bark.wav");
             return;
         }
 
         if (_mouseX <= 820.0f || _mouseX >= 880.0f)
             continue;
-        if (total >= 20 && (*it)._weight > 0)    // cargo full
+        if (total >= 20 && (*it)._weight > 0 ||
+            Planet::bsOk != pl->canBuy(*it)  ||
+            (*it)._maxQty > 0 && ((*it)._maxQty == c->_quantity))
+        {
+            AudioS::instance()->playSample("sounds/bark.wav");
             return;
-        if (Planet::bsOk != pl->canBuy(*it))
-            return;
-        if ((*it)._maxQty > 0 && ((*it)._maxQty == c->_quantity))
-            return;
+        }
         c->_quantity++;
         GameS::instance()->_money -= price;
+        AudioS::instance()->playSample("sounds/whoop.wav");
     }
 }
 //----------------------------------------------------------------------------
