@@ -34,7 +34,7 @@
 
         <ActionItem
             Text="Begin Chapter One"
-            Action="NewGame"
+            Action="NewCampaign"
             Info="Start a new game!"
             Position="500.0 110.0"/>
     </Menu>
@@ -109,7 +109,7 @@
         Size="0.85"
         Position="500.0 360.0" />
         <TextItem
-        Text="This game uses code of Crittical Mass game"
+        Text="This game is based on Critter game"
         Info="Long live GPL license."
         Position="500.0 280.0" />
         <TextItem

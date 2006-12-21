@@ -47,8 +47,8 @@ Hero::Hero():
     XTRACE();
     for( int i=0; i<360; i++)
     {
-    _sint[i] = sin( i * ((float)M_PI/180.0f));
-    _cost[i] = cos( i * ((float)M_PI/180.0f));
+        _sint[i] = sin( i * ((float)M_PI/180.0f));
+        _cost[i] = cos( i * ((float)M_PI/180.0f));
     }
     reset();
 }
@@ -96,38 +96,28 @@ void Hero::init( ParticleInfo *p)
     updatePrevs(p);
 }
 //----------------------------------------------------------------------------
-void Hero::assignWeapons( Skill::SkillEnum skill)
+void Hero::assignWeapons()
 {
     WeaponDepot *wDepot = WeaponDepotS::instance();
-    switch( skill)
-    {
-    case Skill::eInsane:
-        _weapon[ Hero::PRIMARY_WEAPON] =
-            wDepot->getWeapon( WeaponWINGPHASER);
-        _weapon[ Hero::SECONDARY_WEAPON] =
-            wDepot->getWeapon( WeaponFLANKBURST);
-        _weapon[ Hero::TERTIARY_WEAPON] =
-            wDepot->getWeapon( WeaponICESPRAY);
-        break;
+    _weapon[ Hero::PRIMARY_WEAPON] = wDepot->getWeapon(WeaponWINGPHASER);
+    Cargo &c = GameS::instance()->_cargo;
+    CargoItem *spread = c.findItem("Proton spread fire");
+    if (spread->_quantity > 0)
+        _weapon[ Hero::TERTIARY_WEAPON] = wDepot->getWeapon(WeaponICESPRAY);
+    else
+        _weapon[ Hero::TERTIARY_WEAPON] = wDepot->getWeapon(WeaponDOG);
 
-    case Skill::eExpert:
-        _weapon[ Hero::PRIMARY_WEAPON] =
-            wDepot->getWeapon( WeaponSTINGER);
-        _weapon[ Hero::SECONDARY_WEAPON] =
-            wDepot->getWeapon( WeaponFLANKBURST);
-        _weapon[ Hero::TERTIARY_WEAPON] =
-            wDepot->getWeapon( WeaponICESPRAY);
-        break;
+    CargoItem *sideways = c.findItem("Wave emitter");
+    if (sideways->_quantity > 0)
+        _weapon[ Hero::SECONDARY_WEAPON] = wDepot->getWeapon(WeaponFLANKBURST);
+    else
+        _weapon[ Hero::SECONDARY_WEAPON] = wDepot->getWeapon(WeaponDOG);
 
-    default:
-        _weapon[ Hero::PRIMARY_WEAPON] =
-            wDepot->getWeapon( WeaponSTINGER);
-        _weapon[ Hero::SECONDARY_WEAPON] =
-            wDepot->getWeapon( WeaponFLANKBURST);
-        _weapon[ Hero::TERTIARY_WEAPON] =
-            wDepot->getWeapon( WeaponDOG);
-        break;
-    }
+    CargoItem *enh = c.findItem("Proton enhancer");
+    if (enh->_quantity > 0)
+        setArmorPierce(2.0f);
+    else
+        setArmorPierce(1.0f);
 }
 //----------------------------------------------------------------------------
 void Hero::addEnergy( int val)
@@ -159,25 +149,65 @@ void Hero::hit( ParticleInfo * p, int damage, int /*radIndex*/)
     if( !_isAlive) return;
     //cout << "Hero hit with " << damage << endl;
 
+    if (damage > 0)
+        AudioS::instance()->playSample( "sounds/bang.wav");
+
     if( _shieldEnergy > 0)
     {
         _shieldEnergy -= damage;
-        if( _shieldEnergy < 0)
+        if( _shieldEnergy <= 0)
         {
-            _energy += _shieldEnergy;
             _shieldEnergy = 0;
+            if( GameState::horsePower > 90.0)
+            {
+                static ParticleGroup *effects =
+                    ParticleGroupManagerS::instance()->getParticleGroup(EFFECTS_GROUP2);
+                ParticleInfo pi;
+                pi.color.x = 1.0f;
+                pi.color.y = 0.8f;
+                pi.color.z = 0.0f;
+                pi.position = pInfo->position;
+                pi.text = "Shield lost";
+                effects->newParticle( "ScoreHighlight", pi);
+            }
         }
     }
     else
     {
         _energy -= damage;
-    }
+        if (damage > 0)
+        {
+            // remove some of the weapons
+            Cargo &c = GameS::instance()->_cargo;
+            std::string toLose[] = { "Proton spread fire", "Proton enhancer",
+                "Wave emitter", "Smart bomb", "Shield upgrade" };
+            for (int tries = 0; tries < 3; tries++)
+            {
+                int rnd = Random::integer(sizeof(toLose)/sizeof(std::string));
+                CargoItem *item = c.findItem(toLose[rnd]);
+                if (item->_quantity > 0)
+                {
+                    item->_quantity--;
+                    char buff[200];
+                    sprintf(buff, "%s lost", toLose[rnd].c_str());
 
-    if( damage > 0)
-    {
-        //as an extra penalty, reset any armor piercing...
-        setArmorPierce( 1.0f);
-        AudioS::instance()->playSample( "sounds/bang.wav");
+                    if( GameState::horsePower > 90.0)
+                    {
+                        static ParticleGroup *effects =
+                            ParticleGroupManagerS::instance()->getParticleGroup(EFFECTS_GROUP2);
+                        ParticleInfo pi;
+                        pi.color.x = 1.0f;
+                        pi.color.y = 0.8f;
+                        pi.color.z = 0.0f;
+                        pi.position = pInfo->position;
+                        pi.text = buff;
+                        effects->newParticle( "ScoreHighlight", pi);
+                    }
+                    assignWeapons();
+                    break;
+                }
+            }
+        }
     }
 
     //hero dead...
@@ -411,11 +441,11 @@ void Hero::weaponFire( bool isDown, int weapNum)
             return;
         }
 
-    ConfigS::instance()->getBoolean( "autofireOn", _autofireOn);
-    if( ! _autofireOn)
-    {
-        needButtonUp = true;
-    }
+        ConfigS::instance()->getBoolean( "autofireOn", _autofireOn);
+        if( ! _autofireOn)
+        {
+            needButtonUp = true;
+        }
         _weaponEnergy -= er;
 
         //FIXME: offset depending on where weapon is mounted

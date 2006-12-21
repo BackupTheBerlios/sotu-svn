@@ -165,6 +165,8 @@ void Game::startNewGame()
     switchContext(eInGame);
     AudioS::instance()->playSample( "sounds/voiceGo.wav");
 
+    _landed = false;
+
     bool allowVerticalMovement = false;
     ConfigS::instance()->getBoolean( "allowVerticalMovement", allowVerticalMovement);
     HeroS::instance()->allowVerticalMovement(allowVerticalMovement);
@@ -175,7 +177,7 @@ void Game::startNewCampaign()
     _cargo.clear();
     _cargo.create(0);   // create empty cargo bay
     _cargo.findItem("Fuel")->_quantity += 30;
-    _cargo.findItem("Proton flank burst")->_quantity += 1;
+    _cargo.findItem("Proton spread fire")->_quantity += 1;
     _money = 2000;
     _landed = true;
     _galaxy.recreate();
@@ -369,12 +371,12 @@ std::vector<CargoItemInfo>* CargoItemInfo::getCargoInfo()
         info.push_back(CargoItemInfo(5.0f, "models/Boss1_Eye1", "Slaves",              1,  195, 1,  0, pmProTech,
             "Trading this item is illegal on Rebel planets",  lsiRebels));
 
-        info.push_back(CargoItemInfo(1.0f, "models/IceSpray", "Proton flank burst",    3,  400, 0,  1, pmNormal,
-            "Secondary weapon - use right mouse button"));
+        info.push_back(CargoItemInfo(1.0f, "models/IceSpray", "Proton spread fire",    3,  400, 0,  1, pmNormal,
+            "Secondary weapon - use right mouse button or CTRL key"));
         info.push_back(CargoItemInfo(1.0f, "models/IceSprayPierce", "Proton enhancer", 6,  500, 0,  1, pmNormal,
             "Enhances primary and secondary weapon power"));
         info.push_back(CargoItemInfo(0.8f, "models/FlankBurster", "Wave emitter",      8, 1200, 0,  1, pmNormal,
-            "Tertiary weapon - use middle mouse button or key S"));
+            "Tertiary weapon - use middle mouse button or ALT key"));
         info.push_back(CargoItemInfo(5.0f, "models/WeaponUpgrade", "Smart bomb",       8, 3000, 0, 10, pmNormal,
             "Destroys all nearby enemies - press key D to detonate"));
         info.push_back(CargoItemInfo(1.0f, "models/Stinger", "Stinger rocket",         3,  500, 0, 20, pmNormal,

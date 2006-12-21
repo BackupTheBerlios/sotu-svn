@@ -68,7 +68,7 @@ private:
     bool findLevelPacks( void);
     bool loadNextLevelPack( void);
     bool selectLevel();
-    bool activateLevel( void);
+    bool activateLevel();
 };
 //----------------------------------------------------------------------------
 typedef Singleton<StageManager> StageManagerS;

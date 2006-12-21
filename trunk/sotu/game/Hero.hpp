@@ -84,12 +84,12 @@ public:
     void setArmorPierce( float damageMultiplier);
     float getArmorPierce( void)
     {
-	return _damageMultiplier;
+        return _damageMultiplier;
     }
 
     void upgradeWeapons( void);
 
-    void assignWeapons( Skill::SkillEnum skill);
+    void assignWeapons();
 
     float lastXPos;
     float lastYPos;

@@ -764,6 +764,8 @@ void PlanetManager::drawCargo()
 
     drawPlayer(280.0f);
 
+    float columns[] = { 280.0f, 600.0f, 750.0f };
+
     // draw surrounding graphics
     setMinLineSize(2.0f);
     glColor3f(0.7f, 0.7f, 0.0f);    // darker yellow color
@@ -774,17 +776,19 @@ void PlanetManager::drawCargo()
         glVertex2f( 210.0f,  60.0f);
     glEnd();
     glBegin(GL_LINE_STRIP);
-        glVertex2f( 970.0f, offset);
         glVertex2f( 220.0f, offset);
+        glVertex2f( landed ? 970.0f : columns[1], offset);
     glEnd();
 
     glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
-    float columns[] = { 280.0f, 600.0f, 750.0f };
     float fsize = 0.65f;
     fontWhite.DrawString("ITEM NAME", columns[0], offset, fsize, fsize);
     fontWhite.DrawString("YOU HAVE",  columns[1], offset, fsize, fsize, GLBitmapFont::alRight);
-    fontWhite.DrawString("PRICE",     columns[2], offset, fsize, fsize, GLBitmapFont::alRight);
-    fontWhite.DrawString("TRADE",         900.0f, offset, fsize, fsize, GLBitmapFont::alCenter);
+    if (landed)
+    {
+        fontWhite.DrawString("PRICE",     columns[2], offset, fsize, fsize, GLBitmapFont::alRight);
+        fontWhite.DrawString("TRADE",         900.0f, offset, fsize, fsize, GLBitmapFont::alCenter);
+    }
 
     // draw cargo
     std::vector<CargoItemInfo>* info = CargoItemInfo::getCargoInfo();
@@ -814,11 +818,13 @@ void PlanetManager::drawCargo()
         char buff[30];
         sprintf(buff, "%d", c->_quantity);
         fontWhite.DrawString(buff, columns[1], offset, fsize, fsize, GLBitmapFont::alRight);
-
-        int price = pl->getPrice((*it)._name);
-        sprintf(buff, "%d", price);
-        fontWhite.DrawString(buff, columns[2], offset, fsize, fsize, GLBitmapFont::alRight);
-        fontWhite.DrawString(" cr.", columns[2], offset, fsize, fsize);
+        int price = pl->getPrice((*it)._name);  // needed below
+        if (landed)
+        {
+            sprintf(buff, "%d", price);
+            fontWhite.DrawString(buff, columns[2], offset, fsize, fsize, GLBitmapFont::alRight);
+            fontWhite.DrawString(" cr.", columns[2], offset, fsize, fsize);
+        }
 
         Planet::BuyStatus bs = pl->canBuy(*it);
         if ((*it)._maxQty > 0 && ((*it)._maxQty == c->_quantity))
@@ -845,7 +851,7 @@ void PlanetManager::drawCargo()
             glColor4f(3.0f, 1.0f, 3.0f, 0.8f);
             fontWhite.DrawString((*it)._info.c_str(), 595.0f, 70.0f, 0.6f, 0.6f, GLBitmapFont::alCenter);
 
-            if (_mouseX > 820.0f && _mouseX < 880.0f)
+            if (landed && _mouseX > 820.0f && _mouseX < 880.0f)
             {
                 hi_buy = true;
                 buyInfo(bs, *it, price, money, fontWhite);
@@ -855,7 +861,7 @@ void PlanetManager::drawCargo()
         }
 
         // trade items
-        if (bs != Planet::bsCargoFull)
+        if (landed && bs != Planet::bsCargoFull)
         {
             const std::string names[] = { "N/A", "N/T", "N/M", "MAX", "BUY", "FULL" };
             setMinLineSize(1.0f);
@@ -867,7 +873,7 @@ void PlanetManager::drawCargo()
             fontWhite.DrawString(names[(int)bs].c_str(), 850.0f, offset + 3.0f, 0.6f, 0.6f, GLBitmapFont::alCenter);
         }
 
-        if (c->_quantity > 0)   // sell
+        if (landed && c->_quantity > 0)   // sell
         {
             drawButton( 900.0f, offset + 5.0f, 60.0f, 25.f, hi_sell);
             glColor4f(1.0f, 0.852f, 0.0f, 1.0f);
@@ -896,13 +902,13 @@ void PlanetManager::drawCargo()
             setMinLineSize(2.0f);
             glColor3f(0.7f, 0.7f, 0.0f);        // darker yellow color
             glBegin(GL_LINE_STRIP);
-                glVertex2f( 970.0f, offset);
                 glVertex2f( 220.0f, offset);
+                glVertex2f( (landed || (*it)._name == "Fuel") ? 970.0f : columns[1], offset);
             glEnd();
         }
     }
 
-    if (total >= 20)
+    if (landed && total >= 20)
     {
         glPushMatrix();
             glTranslatef(870.0f, 500.0f, 0.0f);
@@ -910,6 +916,14 @@ void PlanetManager::drawCargo()
             glColor4f(1.0f, 0.852f, 0.0f, 1.0f);
             fontWhite.DrawString("SHIP FULL", 0.0f, 0.0f, 1.0f, 1.0f, GLBitmapFont::alCenter);
         glPopMatrix();
+    }
+    if (!landed)
+    {
+        glColor4f(1.0f, 0.852f, 0.0f, 1.0f);
+        fontWhite.DrawString("TRADE NOT",   800.0f, 510.0f, 1.0f, 1.0f, GLBitmapFont::alCenter);
+        fontWhite.DrawString("POSSIBLE",    800.0f, 390.0f, 1.0f, 1.0f, GLBitmapFont::alCenter);
+        fontWhite.DrawString("WHILE IN",    800.0f, 270.0f, 1.0f, 1.0f, GLBitmapFont::alCenter);
+        fontWhite.DrawString("OUTER SPACE", 800.0f, 150.0f, 1.0f, 1.0f, GLBitmapFont::alCenter);
     }
 }
 //----------------------------------------------------------------------------
@@ -1218,7 +1232,7 @@ void PlanetManager::tradeClick()
         CargoItem *c = pc.findItem((*it)._name);
 
         // skip the cargo sum
-        if ((*it)._name == "Proton flank burst")
+        if ((*it)._name == "Proton spread fire")
             offset -=35;
 
         if (_mouseY <= offset || _mouseY >= offset + 35.0f)

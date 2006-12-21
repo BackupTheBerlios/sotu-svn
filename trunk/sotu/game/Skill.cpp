@@ -2,6 +2,7 @@
 //   Skill settings
 //
 // Copyright (C) 2001 Frank Becker
+// Copyright (C) 2006 Milan Babuskov
 //
 // This program is free software; you can redistribute it and/or modify it under
 // the terms of the GNU General Public License as published by the Free Software
@@ -17,7 +18,7 @@
 #include <Config.hpp>
 #include <GameState.hpp>
 #include <Hero.hpp>
-
+//----------------------------------------------------------------------------
 Skill::Skill( void)
 {
     XTRACE();
@@ -25,19 +26,20 @@ Skill::Skill( void)
     ConfigS::instance()->getString( "skill", skill);
     updateSkill( convertStringToSkill( skill));
 }
-
+//----------------------------------------------------------------------------
 Skill::~Skill()
 {
     XTRACE();
 }
-
+//----------------------------------------------------------------------------
 void Skill::updateSkill( const Skill::SkillEnum &skill)
 {
     XTRACE();
 
-    HeroS::instance()->assignWeapons( skill);
+    HeroS::instance()->assignWeapons();
 
-    if( GameState::skill == skill) return;
+    if( GameState::skill == skill)
+        return;
 
     GameState::skill = skill;
 
@@ -48,59 +50,59 @@ void Skill::updateSkill( const Skill::SkillEnum &skill)
 
     switch( GameState::skill)
     {
-	case Skill::eRookie:
-	    _fireProbability = 7; //0-255
-	    _maxBullets = 3;
-	    _maxAttacking = 1;
-	    break;
+    case Skill::eRookie:
+        _fireProbability = 7; //0-255
+        _maxBullets = 3;
+        _maxAttacking = 1;
+        break;
 
-	case Skill::eNormal:
-	    _fireProbability = 10; //0-255
-	    _maxBullets = 7;
-	    _maxAttacking = 3;
-	    break;
+    case Skill::eNormal:
+        _fireProbability = 10; //0-255
+        _maxBullets = 7;
+        _maxAttacking = 3;
+        break;
 
-	case Skill::eExpert:
-	    _fireProbability = 15; //0-255
-	    _maxBullets = 12;
-	    _maxAttacking = 7;
-	    break;
+    case Skill::eExpert:
+        _fireProbability = 15; //0-255
+        _maxBullets = 12;
+        _maxAttacking = 7;
+        break;
 
-	case Skill::eInsane:
-	    _fireProbability = 25; //0-255
-	    _maxBullets = 30;
-	    _maxAttacking = 50;
-	    break;
+    case Skill::eInsane:
+        _fireProbability = 25; //0-255
+        _maxBullets = 30;
+        _maxAttacking = 50;
+        break;
 
-	default:
-	    _fireProbability = 0; //0-255
-	    _maxBullets = 0;
-	    break;
+    default:
+        _fireProbability = 0; //0-255
+        _maxBullets = 0;
+        break;
     }
 }
-
-void Skill::updateSkill( void)
+//----------------------------------------------------------------------------
+void Skill::updateSkill()
 {
     string newSkill;
     ConfigS::instance()->getString( "skill", newSkill);
-    updateSkill( convertStringToSkill( newSkill));
+    updateSkill(convertStringToSkill( newSkill));
 }
-
+//----------------------------------------------------------------------------
 void Skill::incrementSkill( void)
 {
     if( (GameState::skill+1) != Skill::eLAST)
     {
-	updateSkill( (Skill::SkillEnum)(GameState::skill+1)); 
+        updateSkill( (Skill::SkillEnum)(GameState::skill+1));
     }
 }
-
-Skill::SkillEnum Skill::convertStringToSkill( const string &skill)
+//----------------------------------------------------------------------------
+Skill::SkillEnum Skill::convertStringToSkill(const string& skill)
 {
     XTRACE();
     if( skill == SKILL_ROOKIE) return eRookie;
     if( skill == SKILL_NORMAL) return eNormal;
     if( skill == SKILL_EXPERT) return eExpert;
     if( skill == SKILL_INSANE) return eInsane;
-
     return eNormal;
 }
+//----------------------------------------------------------------------------

@@ -878,9 +878,14 @@ ActionSelectable::ActionSelectable(const BoundingBox &r, const string &action,
 void ActionSelectable::select( void)
 {
     LOG_INFO << "Selecting: " << _action << endl;
-    if (_action == "NewGame")
+    if (_action == "NewCampaign")
     {
         GameS::instance()->startNewCampaign();
+        return;
+    }
+    if (_action == "NewGame")
+    {
+        GameS::instance()->startNewGame();
         return;
     }
     else if (_action == "Quit")

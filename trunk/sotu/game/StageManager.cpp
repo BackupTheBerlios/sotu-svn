@@ -21,6 +21,7 @@
 #include <Skill.hpp>
 #include <XMLHelper.hpp>
 
+#include "Game.hpp"
 #include <Random.hpp>
 #include <ParticleInfo.hpp>
 #include <Particles.hpp>
@@ -76,11 +77,15 @@ void StageManager::update( void)
     {
         if (selectLevel())
             activateLevel();
-        //else
-        //{
-        //    change active planet
-        //    return to planetarymenu();
-        //}
+        else
+        {
+            // reached space station
+            GameS::instance()->_landed = true;
+            GameS::instance()->switchContext(ePlanetMenu);
+
+            // TODO: show MessageBox -> successfully reached space station
+            //       ili jos bolje neku animaciju
+        }
     }
 }
 //----------------------------------------------------------------------------
@@ -88,13 +93,13 @@ void StageManager::update( void)
 bool StageManager::selectLevel()
 {
     // sledeci nivo
-    // TODO: ovde napraviti odabir protivnika u zavisnosti od toga kakva
-    //       je planeta u pitanju. Faktori:
+    // Odabir protivnika u zavisnosti od toga kakva
+    // je planeta u pitanju. Faktori:
     //       1. blizina aliena (0-100%))
     //       2. rebel sentiment (0-100%)
     //       3. rebel status  (neutral=0,unfriendly=1,wanted=2)
     //       4. empire status (neutral=0,unfriendly=1,wanted=2)
-    //       Algoritam:
+    // Algoritam:
     //       broj talasa aliena = 4 + random(2) + aliens/10 = 5+[0-10]
     //       broj talasa rebela = (rebels-50)/10 * rebel_status  = [1-5]*[0-2] = [0-10]
     //       broj talasa empire = (50-rebels)/10 * empire_status = [1-5]*[0-2] = [0-10]
@@ -104,32 +109,56 @@ bool StageManager::selectLevel()
     int index = 0;
     if (alien_wave == -1)
     {   // new game
-        alien_wave = 4; // 4 + random(2) + aliens/10
-        rebel_wave = 0; //
-        empire_wave = 5;
+        Planet *p = GameS::instance()->_currentPlanet;
+        int rebelStatus = (int)(GameS::instance()->_rebelStatus);
+        int empireStatus = (int)(GameS::instance()->_empireStatus);
+        alien_wave = 4 + Random::integer(2) + (p->_alienActivity / 10);
+        rebel_wave = ((p->_rebelSentiment - 50) / 10) * rebelStatus;
+        empire_wave = ((50 - p->_rebelSentiment)/ 10) * empireStatus;
     }
 
-    // select one of the enemy types
-    if (alien_wave > 0)
-    {
-        alien_wave--;
-        index = 0;
-    }
-    else if (rebel_wave > 0)
-    {
-        rebel_wave--;
-        index = 2;
-    }
-    else if (empire_wave > 0)
-    {
-        empire_wave--;
-        index = 1;
-    }
-    else    // no more waves
+    // no more
+    if (alien_wave <= 0 && rebel_wave <= 0 && empire_wave <= 0)
     {
         alien_wave = -1;    // mark for next time
         return false;
     }
+
+    // select one of the enemy types
+    char buff[100];
+    int type;
+    while (true)
+    {
+        type = Random::integer(3);
+        if (type == 0 && alien_wave > 0 ||
+            type == 1 && rebel_wave > 0 ||
+            type == 2 && empire_wave > 0)
+        {
+            break;
+        }
+    }
+    if (type == 0)
+    {
+        sprintf(buff, "Aliens - %d wave%s incoming",
+            alien_wave, alien_wave == 1 ? "" : "s");
+        alien_wave--;
+        index = 0;
+    }
+    else if (type == 1)
+    {
+        sprintf(buff, "Rebels - %d wave%s incoming",
+            rebel_wave, rebel_wave == 1 ? "" : "s");
+        rebel_wave--;
+        index = 2;
+    }
+    else if (type == 2)
+    {
+        sprintf(buff, "Empire fleet - %d wave%s incoming",
+            empire_wave, empire_wave == 1 ? "" : "s");
+        empire_wave--;
+        index = 1;
+    }
+    _activeLevelName = buff;
 
     // select one of the enemies from that group
     TiXmlNode *tmp = _activeLevel;
@@ -159,7 +188,6 @@ bool StageManager::findLevelPacks( void)
             _levelPackList.insert( _levelPackList.end(), resourceName);
         }
     }
-
 
     _levelPackIterator = _levelPackList.begin();
 
@@ -211,7 +239,7 @@ bool StageManager::loadNextLevelPack( void)
     return true;
 }
 //----------------------------------------------------------------------------
-bool StageManager::activateLevel( void)
+bool StageManager::activateLevel()
 {
     XTRACE();
 
@@ -224,13 +252,12 @@ bool StageManager::activateLevel( void)
     SkillS::instance()->updateSkill();
 #endif
 
-    TiXmlElement* levelNode = _activeLevel->ToElement();
-    _activeLevelName = *levelNode->Attribute("Name");
-    LOG_INFO << "Level '" << _activeLevelName
-             << "' by " << *levelNode->Attribute("Author") << endl;
+    //TiXmlElement* levelNode = _activeLevel->ToElement();
+    //_activeLevelName = *levelNode->Attribute("Name");
+    LOG_INFO << "Level '" << _activeLevelName << endl;
 
     static ParticleGroup *effects =
-	ParticleGroupManagerS::instance()->getParticleGroup( EFFECTS_GROUP2);
+        ParticleGroupManagerS::instance()->getParticleGroup( EFFECTS_GROUP2);
     ParticleInfo pi;
     pi.position.x =  0.0;
     pi.position.y =  0.0;
