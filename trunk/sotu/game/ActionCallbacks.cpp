@@ -123,3 +123,32 @@ void EscapeAction::performAction( Trigger &, bool isDown)
     GameS::instance()->switchContext(ePlanetMenu);
 }
 //----------------------------------------------------------------------------
+void HyperSpaceJump::performAction(Trigger &, bool isDown)
+{
+    if (!isDown)
+        return;
+
+    if (GameS::instance()->getContext() != eInGame)
+        return;
+
+    // check fuel
+    Planet *target = PlanetManagerS::instance()->_hyperspaceTarget;
+    Planet *source = GameS::instance()->_currentPlanet;
+    if (target == source)
+    {
+        HeroS::instance()->popMessage("No hyperspace target", 1.0f, 0.0f, 0.0f);
+        return;
+    }
+
+    float dist = source->getDistance(target->_x, target->_y);
+    CargoItem* fuel = GameS::instance()->_cargo.findItem("Fuel");
+    if (fuel->_quantity < (int)(dist + 0.92))
+    {
+        HeroS::instance()->popMessage("Not enough fuel", 1.0f, 0.0f, 0.0f);
+        return;
+    }
+
+    // start hyperspace countdown
+    GameS::instance()->hyperspaceJump();
+}
+//----------------------------------------------------------------------------

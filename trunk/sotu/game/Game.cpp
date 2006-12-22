@@ -349,6 +349,16 @@ void Game::previousContext()
         switchContext(_previousContext);
 }
 //----------------------------------------------------------------------------
+void Game::hyperspaceJump()
+{
+    Planet *target = PlanetManagerS::instance()->_hyperspaceTarget;
+    float dist = _currentPlanet->getDistance(target->_x, target->_y);
+    CargoItem* fuel = _cargo.findItem("Fuel");
+    fuel->_quantity -= (int)(dist + 0.92);
+    _currentPlanet = target;
+    startNewGame();
+}
+//----------------------------------------------------------------------------
 // CARGO *********************************************************************
 //----------------------------------------------------------------------------
 std::vector<CargoItemInfo>* CargoItemInfo::getCargoInfo()
@@ -366,7 +376,7 @@ std::vector<CargoItemInfo>* CargoItemInfo::getCargoInfo()
             "Price of this item varies randomly"));
         info.push_back(CargoItemInfo(1.0f, "GUN", "Firearms",                          4,  300, 1,  0, pmNormal,
             "Trading this item is illegal on Empire planets", lsiEmpire));
-        info.push_back(CargoItemInfo(2.0f, "models/Boss1_Teeth", "Narcotics",          6,  395, 1,  0, pmProTech,
+        info.push_back(CargoItemInfo(2.0f, "models/Boss1_Teeth", "Narcotics",          3,  395, 1,  0, pmProTech,
             "Trading this item is illegal on all planets",    lsiBoth));
         info.push_back(CargoItemInfo(5.0f, "models/Boss1_Eye1", "Slaves",              1,  195, 1,  0, pmProTech,
             "Trading this item is illegal on Rebel planets",  lsiRebels));

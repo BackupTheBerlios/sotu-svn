@@ -40,6 +40,8 @@ void StageManager::reset( void)
 
     _levelPackIterator = _levelPackList.begin();
     loadNextLevelPack();
+    // planet was probably changed so we need to recalculate
+    _enemies.reset();
     selectLevel();
     activateLevel();
 }
@@ -89,9 +91,16 @@ void StageManager::update( void)
     }
 }
 //----------------------------------------------------------------------------
-// vraca false ako je dosta bilo
-bool StageManager::selectLevel()
+EnemyWaves::EnemyWaves():
+    _alienTotal(-1), _rebelTotal(0), _empireTotal(0),
+    _alienDone(0), _rebelDone(0), _empireDone(0)
 {
+}
+//----------------------------------------------------------------------------
+void EnemyWaves::reset()
+{
+    _alienDone = _rebelDone = _empireDone = 0;
+
     // sledeci nivo
     // Odabir protivnika u zavisnosti od toga kakva
     // je planeta u pitanju. Faktori:
@@ -103,68 +112,73 @@ bool StageManager::selectLevel()
     //       broj talasa aliena = 4 + random(2) + aliens/10 = 5+[0-10]
     //       broj talasa rebela = (rebels-50)/10 * rebel_status  = [1-5]*[0-2] = [0-10]
     //       broj talasa empire = (50-rebels)/10 * empire_status = [1-5]*[0-2] = [0-10]
-    static int alien_wave=-1;
-    static int rebel_wave=-1;
-    static int empire_wave=-1;
-    int index = 0;
-    if (alien_wave == -1)
-    {   // new game
-        Planet *p = GameS::instance()->_currentPlanet;
-        int rebelStatus = (int)(GameS::instance()->_rebelStatus);
-        int empireStatus = (int)(GameS::instance()->_empireStatus);
-        alien_wave = 4 + Random::integer(2) + (p->_alienActivity / 10);
-        rebel_wave = ((p->_rebelSentiment - 50) / 10) * rebelStatus;
-        empire_wave = ((50 - p->_rebelSentiment)/ 10) * empireStatus;
-    }
+    Planet *p = GameS::instance()->_currentPlanet;
+    int rebelStatus = (int)(GameS::instance()->_rebelStatus);
+    int empireStatus = (int)(GameS::instance()->_empireStatus);
+    _alienTotal  = 4 + Random::integer(2) + (p->_alienActivity / 10);
+    _rebelTotal  = ((p->_rebelSentiment - 50) / 10) * rebelStatus;
+    _empireTotal = ((50 - p->_rebelSentiment)/ 10) * empireStatus;
+}
+//----------------------------------------------------------------------------
+// returns -1 if no more
+int EnemyWaves::getNextWave(std::string& name)
+{
+    if (_alienTotal == -1)     // just in case
+        reset();
 
-    // no more
-    if (alien_wave <= 0 && rebel_wave <= 0 && empire_wave <= 0)
+    if (_alienDone >= _alienTotal && _rebelDone >= _rebelTotal
+        && _empireDone >= _empireTotal)
     {
-        alien_wave = -1;    // mark for next time
-        return false;
+        return -1;
     }
 
-    // select one of the enemy types
-    char buff[100];
     int type;
+    int index;
+    char buff[200];
     while (true)
     {
         type = Random::integer(3);
-        if (type == 0 && alien_wave > 0 ||
-            type == 1 && rebel_wave > 0 ||
-            type == 2 && empire_wave > 0)
+        if (type == 0 && _alienDone < _alienTotal ||
+            type == 1 && _rebelDone < _rebelTotal ||
+            type == 2 && _empireDone < _empireTotal)
         {
             break;
         }
     }
+
     if (type == 0)
     {
-        sprintf(buff, "Aliens - %d wave%s incoming",
-            alien_wave, alien_wave == 1 ? "" : "s");
-        alien_wave--;
-        index = 0;
+        _alienDone++;
+        sprintf(buff, "Aliens - wave %d of %d", _alienDone, _alienTotal);
+        index = 0;  // TODO: more enemy types
     }
     else if (type == 1)
     {
-        sprintf(buff, "Rebels - %d wave%s incoming",
-            rebel_wave, rebel_wave == 1 ? "" : "s");
-        rebel_wave--;
+        _rebelDone++;
+        sprintf(buff, "Rebels - wave %d of %d", _rebelDone, _rebelTotal);
         index = 2;
     }
-    else if (type == 2)
+    else // if (type == 2)
     {
-        sprintf(buff, "Empire fleet - %d wave%s incoming",
-            empire_wave, empire_wave == 1 ? "" : "s");
-        empire_wave--;
+        _empireDone++;
+        sprintf(buff, "Empire fleet - wave %d of %d", _empireDone, _empireTotal);
         index = 1;
     }
-    _activeLevelName = buff;
+    name = buff;
+    return index;
+}
+//----------------------------------------------------------------------------
+// vraca false ako je dosta bilo
+bool StageManager::selectLevel()
+{
+    int index = _enemies.getNextWave(_activeLevelName);
+    if (index == -1)
+        return false;
 
-    // select one of the enemies from that group
     TiXmlNode *tmp = _activeLevel;
-    while (tmp->PreviousSibling())
+    while (tmp->PreviousSibling())      // find first
         tmp = tmp->PreviousSibling();
-    for (int i=0; i<index; i++)
+    for (int i=0; i<index; i++)         // move to Nth
         tmp = tmp->NextSibling();
     _activeLevel = tmp;
     return true;

@@ -2,6 +2,7 @@
 //   Callback manager.
 //
 // Copyright (C) 2001 Frank Becker
+// Copyright (C) 2006 Milan Babuskov
 //
 // This program is free software; you can redistribute it and/or modify it under
 // the terms of the GNU General Public License as published by the Free Software
@@ -17,12 +18,12 @@
 #include <CallbackManager.hpp>
 #include <FindHash.hpp>
 #include <Hero.hpp>
-
+//----------------------------------------------------------------------------
 CallbackManager::CallbackManager( void)
 {
     XTRACE();
 }
-
+//----------------------------------------------------------------------------
 CallbackManager::~CallbackManager()
 {
     XTRACE();
@@ -35,7 +36,7 @@ CallbackManager::~CallbackManager()
 
     _actionMap.clear();
 }
-
+//----------------------------------------------------------------------------
 void CallbackManager::init( void)
 {
     XTRACE();
@@ -56,8 +57,9 @@ void CallbackManager::init( void)
     new ConfirmAction();
     new EscapeAction();
     new CritterBoard();
+    new HyperSpaceJump();
 }
-
+//----------------------------------------------------------------------------
 void CallbackManager::addCallback( Callback *cb)
 {
     XTRACE();
@@ -65,7 +67,7 @@ void CallbackManager::addCallback( Callback *cb)
              << cb->getActionName() << "]" << endl;
     _actionMap[ cb->getActionName()] = cb;
 }
-
+//----------------------------------------------------------------------------
 Callback *CallbackManager::getCallback( string actionString)
 {
     XTRACE();
@@ -78,3 +80,4 @@ Callback *CallbackManager::getCallback( string actionString)
     }
     return cb;
 }
+//----------------------------------------------------------------------------

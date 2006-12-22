@@ -2,6 +2,7 @@
 //   Action callbacks for mouse and keyboard events.
 //
 // Copyright (C) 2001 Frank Becker
+// Copyright (C) 2006 Milan Babuskov
 //
 // This program is free software; you can redistribute it and/or modify it under
 // the terms of the GNU General Public License as published by the Free Software
@@ -18,7 +19,7 @@
 #include <Trace.hpp>
 #include <Callback.hpp>
 #include <GameState.hpp>
-
+//----------------------------------------------------------------------------
 class MotionAction: public Callback
 {
 public:
@@ -26,7 +27,7 @@ public:
     virtual ~MotionAction() { XTRACE(); }
     virtual void performAction( Trigger &trigger, bool isDown);
 };
-
+//----------------------------------------------------------------------------
 class MotionLeftAction: public Callback
 {
 public:
@@ -34,7 +35,7 @@ public:
     virtual ~MotionLeftAction() { XTRACE(); }
     virtual void performAction( Trigger &, bool isDown);
 };
-
+//----------------------------------------------------------------------------
 class MotionRightAction: public Callback
 {
 public:
@@ -42,7 +43,7 @@ public:
     virtual ~MotionRightAction() { XTRACE(); }
     virtual void performAction( Trigger &, bool isDown);
 };
-
+//----------------------------------------------------------------------------
 class MotionUpAction: public Callback
 {
 public:
@@ -50,7 +51,7 @@ public:
     virtual ~MotionUpAction() { XTRACE(); }
     virtual void performAction( Trigger &, bool isDown);
 };
-
+//----------------------------------------------------------------------------
 class MotionDownAction: public Callback
 {
 public:
@@ -58,12 +59,12 @@ public:
     virtual ~MotionDownAction() { XTRACE(); }
     virtual void performAction( Trigger &, bool isDown);
 };
-
+//----------------------------------------------------------------------------
 class WeaponFireAction: public Callback
 {
 public:
     WeaponFireAction( int numWeap, string actionName):
-	Callback( actionName),
+        Callback( actionName),
         _numWeap( numWeap)
     {
         XTRACE();
@@ -73,7 +74,7 @@ public:
 private:
     int _numWeap;
 };
-
+//----------------------------------------------------------------------------
 class SnapshotAction: public Callback
 {
 public:
@@ -81,7 +82,7 @@ public:
     virtual ~SnapshotAction() { XTRACE(); }
     virtual void performAction( Trigger &trigger, bool isDown);
 };
-
+//----------------------------------------------------------------------------
 class ConfirmAction: public Callback
 {
 public:
@@ -89,7 +90,7 @@ public:
     virtual ~ConfirmAction() { XTRACE(); }
     virtual void performAction( Trigger &, bool isDown);
 };
-
+//----------------------------------------------------------------------------
 class ChangeContext: public Callback
 {
 public:
@@ -97,7 +98,7 @@ public:
     virtual ~ChangeContext() { XTRACE(); }
     virtual void performAction( Trigger &, bool isDown);
 };
-
+//----------------------------------------------------------------------------
 class CritterBoard: public Callback
 {
 public:
@@ -105,7 +106,7 @@ public:
     virtual ~CritterBoard() { XTRACE(); }
     virtual void performAction( Trigger &, bool isDown);
 };
-
+//----------------------------------------------------------------------------
 class PauseGame: public Callback
 {
 public:
@@ -116,7 +117,7 @@ public:
     virtual ~PauseGame() { XTRACE(); }
     virtual void performAction( Trigger &, bool isDown);
 };
-
+//----------------------------------------------------------------------------
 class EscapeAction: public Callback
 {
 public:
@@ -127,5 +128,16 @@ public:
     virtual ~EscapeAction() { XTRACE(); }
     virtual void performAction( Trigger &, bool isDown);
 };
-
+//----------------------------------------------------------------------------
+class HyperSpaceJump: public Callback
+{
+public:
+    HyperSpaceJump(): Callback("HyperSpace")
+    {
+        XTRACE();
+    }
+    virtual ~HyperSpaceJump() { XTRACE(); }
+    virtual void performAction( Trigger&, bool isDown);
+};
+//----------------------------------------------------------------------------
 #endif

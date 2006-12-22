@@ -46,6 +46,8 @@ public:
     virtual void draw( void);
     void drawWeapon( unsigned int weapNum);
 
+    void popMessage(const char *msg, float red, float green, float blue);
+
     void move( float dx, float dy);
     void move( Direction::DirectionEnum d, bool isDown);
     void allowVerticalMovement(bool allow);

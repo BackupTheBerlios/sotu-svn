@@ -142,6 +142,22 @@ void Hero::addShield( int val)
     }
 }
 //----------------------------------------------------------------------------
+void Hero::popMessage(const char *msg, float red, float green, float blue)
+{
+    if( GameState::horsePower > 90.0)
+    {
+        static ParticleGroup *effects =
+            ParticleGroupManagerS::instance()->getParticleGroup(EFFECTS_GROUP2);
+        ParticleInfo pi;
+        pi.color.x = red;
+        pi.color.y = green;
+        pi.color.z = blue;
+        pi.position = pInfo->position;
+        pi.text = msg;
+        effects->newParticle( "ScoreHighlight", pi);
+    }
+}
+//----------------------------------------------------------------------------
 #include "SimpleEnemy.hpp"
 void Hero::hit( ParticleInfo * p, int damage, int /*radIndex*/)
 {
@@ -158,18 +174,7 @@ void Hero::hit( ParticleInfo * p, int damage, int /*radIndex*/)
         if( _shieldEnergy <= 0)
         {
             _shieldEnergy = 0;
-            if( GameState::horsePower > 90.0)
-            {
-                static ParticleGroup *effects =
-                    ParticleGroupManagerS::instance()->getParticleGroup(EFFECTS_GROUP2);
-                ParticleInfo pi;
-                pi.color.x = 1.0f;
-                pi.color.y = 0.8f;
-                pi.color.z = 0.0f;
-                pi.position = pInfo->position;
-                pi.text = "Shield lost";
-                effects->newParticle( "ScoreHighlight", pi);
-            }
+            popMessage("Shield lost", 1.0f, 0.8f, 0.0f);
         }
     }
     else
@@ -190,19 +195,7 @@ void Hero::hit( ParticleInfo * p, int damage, int /*radIndex*/)
                     item->_quantity--;
                     char buff[200];
                     sprintf(buff, "%s lost", toLose[rnd].c_str());
-
-                    if( GameState::horsePower > 90.0)
-                    {
-                        static ParticleGroup *effects =
-                            ParticleGroupManagerS::instance()->getParticleGroup(EFFECTS_GROUP2);
-                        ParticleInfo pi;
-                        pi.color.x = 1.0f;
-                        pi.color.y = 0.8f;
-                        pi.color.z = 0.0f;
-                        pi.position = pInfo->position;
-                        pi.text = buff;
-                        effects->newParticle( "ScoreHighlight", pi);
-                    }
+                    popMessage(buff, 1.0f, 0.6f, 0.0f);
                     assignWeapons();
                     break;
                 }

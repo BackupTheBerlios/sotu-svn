@@ -36,3 +36,4 @@ bind MotionLeft LEFT
 bind ChangeContext c
 bind Snapshot F12
 bind PauseGame p
+bind HyperSpace h

@@ -23,6 +23,22 @@
 
 #include <tinyxml.h>
 //----------------------------------------------------------------------------
+class EnemyWaves
+{
+private:
+    int _alienTotal;
+    int _rebelTotal;
+    int _empireTotal;
+    int _alienDone;
+    int _rebelDone;
+    int _empireDone;
+
+public:
+    EnemyWaves();
+    void reset();
+    int getNextWave(std::string& name);
+};
+//----------------------------------------------------------------------------
 class StageManager
 {
 friend class Singleton<StageManager>;
@@ -69,6 +85,8 @@ private:
     bool loadNextLevelPack( void);
     bool selectLevel();
     bool activateLevel();
+
+    EnemyWaves _enemies;
 };
 //----------------------------------------------------------------------------
 typedef Singleton<StageManager> StageManagerS;
