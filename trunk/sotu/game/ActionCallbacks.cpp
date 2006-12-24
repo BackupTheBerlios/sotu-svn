@@ -120,7 +120,14 @@ void EscapeAction::performAction( Trigger &, bool isDown)
         return;
 
     // TRY IT!
-    GameS::instance()->switchContext(ePlanetMenu);
+    if (HeroS::instance()->alive())
+        GameS::instance()->switchContext(ePlanetMenu);
+    else
+    {
+        // get back to main menu
+        MenuManagerS::instance()->exitMenu(false);
+        GameS::instance()->switchContext(eMenu);
+    }
 }
 //----------------------------------------------------------------------------
 void HyperSpaceJump::performAction(Trigger &, bool isDown)

@@ -28,69 +28,6 @@
 #include <ParticleGroup.hpp>
 #include <ParticleGroupManager.hpp>
 //----------------------------------------------------------------------------
-bool StageManager::init( void)
-{
-    return findLevelPacks();
-}
-//----------------------------------------------------------------------------
-void StageManager::reset( void)
-{
-    //catch used skill changes via runtime config
-    SkillS::instance()->updateSkill();
-
-    _levelPackIterator = _levelPackList.begin();
-    loadNextLevelPack();
-    // planet was probably changed so we need to recalculate
-    _enemies.reset();
-    selectLevel();
-    activateLevel();
-}
-//----------------------------------------------------------------------------
-void StageManager::update( void)
-{
-    // armor piercing se kupuje, i ako se izgubi moze jedino da ga kupi ako
-    // prezivi do sledece planete
-#if 0
-    static ParticleGroup *bonus =
-        ParticleGroupManagerS::instance()->getParticleGroup( BONUS_GROUP);
-
-    //no armor piercing needed for rookie
-    if( (GameState::skill != Skill::eRookie) &&
-        (HeroS::instance()->getArmorPierce() <= 1.0f))
-    {
-        if( Random::rangef0_1() < 0.001f)
-        {
-            LOG_INFO << "ArmorPierce" << endl;
-            float posX = (Random::rangef0_1()-0.5f) * 60.0f;
-            bonus->newParticle( "ArmorPierce", posX, 49.0f, -100.0f);
-        }
-    }
-
-    if( Random::rangef0_1() < 0.001f)
-    {
-        LOG_INFO << "WeaponUpgrade" << endl;
-        float posX = (Random::rangef0_1()-0.5f) * 60.0f;
-        bonus->newParticle( "WeaponUpgrade", posX, 49.0f, -100.0f);
-    }
-#endif
-
-    // pobio sve protivnike
-    if( GameState::numObjects == 0)
-    {
-        if (selectLevel())
-            activateLevel();
-        else
-        {
-            // reached space station
-            GameS::instance()->_landed = true;
-            GameS::instance()->switchContext(ePlanetMenu);
-
-            // TODO: show MessageBox -> successfully reached space station
-            //       ili jos bolje neku animaciju
-        }
-    }
-}
-//----------------------------------------------------------------------------
 EnemyWaves::EnemyWaves():
     _alienTotal(-1), _rebelTotal(0), _empireTotal(0),
     _alienDone(0), _rebelDone(0), _empireDone(0)
@@ -149,23 +86,87 @@ int EnemyWaves::getNextWave(std::string& name)
     if (type == 0)
     {
         _alienDone++;
-        sprintf(buff, "Aliens - wave %d of %d", _alienDone, _alienTotal);
+        sprintf(buff, "Alien wave %d of %d", _alienDone, _alienTotal);
         index = 0;  // TODO: more enemy types
     }
     else if (type == 1)
     {
         _rebelDone++;
-        sprintf(buff, "Rebels - wave %d of %d", _rebelDone, _rebelTotal);
+        sprintf(buff, "Rebel wave %d of %d", _rebelDone, _rebelTotal);
         index = 2;
     }
     else // if (type == 2)
     {
         _empireDone++;
-        sprintf(buff, "Empire fleet - wave %d of %d", _empireDone, _empireTotal);
+        sprintf(buff, "Empire fleet wave %d of %d", _empireDone, _empireTotal);
         index = 1;
     }
     name = buff;
     return index;
+}
+//----------------------------------------------------------------------------
+// STAGE MANAGER *************************************************************
+//----------------------------------------------------------------------------
+bool StageManager::init( void)
+{
+    return findLevelPacks();
+}
+//----------------------------------------------------------------------------
+void StageManager::reset( void)
+{
+    //catch used skill changes via runtime config
+    SkillS::instance()->updateSkill();
+
+    _levelPackIterator = _levelPackList.begin();
+    loadNextLevelPack();
+    // planet was probably changed so we need to recalculate
+    _enemies.reset();
+    selectLevel();
+    activateLevel();
+}
+//----------------------------------------------------------------------------
+void StageManager::update( void)
+{
+    // armor piercing se kupuje, i ako se izgubi moze jedino da ga kupi ako
+    // prezivi do sledece planete
+#if 0
+    static ParticleGroup *bonus =
+        ParticleGroupManagerS::instance()->getParticleGroup( BONUS_GROUP);
+
+    //no armor piercing needed for rookie
+    if( (GameState::skill != Skill::eRookie) &&
+        (HeroS::instance()->getArmorPierce() <= 1.0f))
+    {
+        if( Random::rangef0_1() < 0.001f)
+        {
+            LOG_INFO << "ArmorPierce" << endl;
+            float posX = (Random::rangef0_1()-0.5f) * 60.0f;
+            bonus->newParticle( "ArmorPierce", posX, 49.0f, -100.0f);
+        }
+    }
+
+    // TODO: ovo ce mi trebati kada ispali Mega Bomb
+    float posX = (Random::rangef0_1()-0.5f) * 60.0f;
+    bonus->newParticle( "WeaponUpgrade", posX, 49.0f, -100.0f);
+#endif
+
+    // pobio sve protivnike
+    if( GameState::numObjects == 0)
+    {
+        if (selectLevel())
+            activateLevel();
+        else
+        {
+            // reached space station
+            GameS::instance()->_landed = true;
+            GameS::instance()->switchContext(ePlanetMenu);
+
+            // TODO: show MessageBox -> successfully reached space station
+            //       ili jos bolje neku animaciju
+
+            SkillS::instance()->incrementSkill();
+        }
+    }
 }
 //----------------------------------------------------------------------------
 // vraca false ako je dosta bilo
@@ -220,17 +221,12 @@ bool StageManager::loadNextLevelPack( void)
 {
     XTRACE();
 
-    if( _levelPackIterator == _levelPackList.end())
-    {
+    if (_levelPackIterator == _levelPackList.end())
         _levelPackIterator = _levelPackList.begin();
-        //when we wrap around, increment skill
-        SkillS::instance()->incrementSkill();
-    }
-
     delete _activeLevelPack;
 
     string levelPackName = *_levelPackIterator;
-    _activeLevelPack = XMLHelper::load( levelPackName);
+    _activeLevelPack = XMLHelper::load(levelPackName);
 
     if( !_activeLevelPack)
     {
@@ -244,7 +240,7 @@ bool StageManager::loadNextLevelPack( void)
     //advance to next level pack
     _levelPackIterator++;
 
-    if( !_activeLevelPack)
+    if (!_activeLevelPack)
     {
         LOG_ERROR << "No level pack found!" << endl;
         return false;
@@ -257,21 +253,13 @@ bool StageManager::activateLevel()
 {
     XTRACE();
 
-    if( !_activeLevel)
-    {
+    if (!_activeLevel)
         return false;
-    }
-#if 0
-    //catch used skill changes via runtime config
-    SkillS::instance()->updateSkill();
-#endif
 
-    //TiXmlElement* levelNode = _activeLevel->ToElement();
-    //_activeLevelName = *levelNode->Attribute("Name");
     LOG_INFO << "Level '" << _activeLevelName << endl;
 
     static ParticleGroup *effects =
-        ParticleGroupManagerS::instance()->getParticleGroup( EFFECTS_GROUP2);
+        ParticleGroupManagerS::instance()->getParticleGroup(EFFECTS_GROUP2);
     ParticleInfo pi;
     pi.position.x =  0.0;
     pi.position.y =  0.0;
@@ -285,7 +273,7 @@ bool StageManager::activateLevel()
     pi.extra.y = 0.1f;
     pi.extra.z = 0.1f;
 
-    effects->newParticle( "StatusMessage", pi);
+    effects->newParticle("StatusMessage", pi);
 
     GameState::numObjects = 0;
     _levelStartTime = GameState::stopwatch.getTime();

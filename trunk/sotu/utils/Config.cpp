@@ -1,7 +1,8 @@
 // Description:
-//   Keeps track of configurable values. 
+//   Keeps track of configurable values.
 //
 // Copyright (C) 2001 Frank Becker
+// Copyright (C) 2006 Milan Babuskov
 //
 // This program is free software; you can redistribute it and/or modify it under
 // the terms of the GNU General Public License as published by the Free Software
@@ -12,6 +13,7 @@
 // ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
 // FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details
 //
+//----------------------------------------------------------------------------
 #include <stdlib.h>
 #ifndef VCPP
 #include <unistd.h>
@@ -26,7 +28,7 @@
 #include <Tokenizer.hpp>
 
 const string CONFIG_DEFAULT_FILE = "config.txt";
-
+//----------------------------------------------------------------------------
 Config::Config( void):
     _defaultConfigFileName(CONFIG_DEFAULT_FILE),
     _subdir(""),
@@ -34,7 +36,7 @@ Config::Config( void):
 {
     XTRACE();
 }
-
+//----------------------------------------------------------------------------
 Config::~Config()
 {
     XTRACE();
@@ -52,19 +54,19 @@ Config::~Config()
     }
     _keyValueMapTrans.clear();
 }
-
+//----------------------------------------------------------------------------
 void Config::getConfigItemList( list<ConfigItem> &ciList)
 {
     hash_map<string, Value*, hash<string> >::const_iterator ci;
     for( ci=_keyValueMap.begin(); ci!=_keyValueMap.end(); ci++)
     {
-	ConfigItem item;
-	item.key = ci->first;
-	item.value = ci->second->getString();
-	ciList.insert( ciList.begin(), item);
+        ConfigItem item;
+        item.key = ci->first;
+        item.value = ci->second->getString();
+        ciList.insert( ciList.begin(), item);
     }
 }
-
+//----------------------------------------------------------------------------
 const string &Config::getConfigFileName( void)
 {
     static string configFile;
@@ -76,61 +78,61 @@ const string &Config::getConfigFileName( void)
     //does explicitly given config file exist?
     if( configFile == "")
     {
-	if( (stat( _defaultConfigFileName.c_str(), &statInfo) != -1) )
-	{
-	    //local config.txt exists -> OK
-	    return _defaultConfigFileName;
-	}
+        if( (stat( _defaultConfigFileName.c_str(), &statInfo) != -1) )
+        {
+            //local config.txt exists -> OK
+            return _defaultConfigFileName;
+        }
 
-	configFile = _defaultConfigFileName;
+        configFile = _defaultConfigFileName;
 
-	if( _subdir != "")
-	{
-	    _configDirectory = _subdir + "/";
-	    configFile = _configDirectory + configFile;
-	}
+        if( _subdir != "")
+        {
+            _configDirectory = _subdir + "/";
+            configFile = _configDirectory + configFile;
+        }
 
 #ifndef WIN32
-	const char * home = getenv("HOME");
-	if( home)
-	{
-	    _configDirectory = home + string("/") + _configDirectory;
-	    configFile = home + string("/") + configFile;
-	}
+        const char * home = getenv("HOME");
+        if( home)
+        {
+            _configDirectory = home + string("/") + _configDirectory;
+            configFile = home + string("/") + configFile;
+        }
 #endif
     }
     else
     {
-	if( (stat( configFile.c_str(), &statInfo) != -1) )
-	{
-	    //local config exists -> OK
-	    return configFile;
-	}
+        if( (stat( configFile.c_str(), &statInfo) != -1) )
+        {
+            //local config exists -> OK
+            return configFile;
+        }
 
-	if( _subdir != "")
-	{
-	    _configDirectory = _subdir + "/";
-	    configFile = _configDirectory + configFile;
-	}
+        if( _subdir != "")
+        {
+            _configDirectory = _subdir + "/";
+            configFile = _configDirectory + configFile;
+        }
 
 #ifndef WIN32
-	const char * home = getenv("HOME");
-	if( home)
-	{
-	    string homeConfig = home + string("/") + configFile;
-	    if( (stat( homeConfig.c_str(), &statInfo) != -1) )
-	    {
-		_configDirectory = home + string("/") + _configDirectory;
-		//home config exists -> OK
-		configFile = homeConfig;
-	    }
-	}
+        const char * home = getenv("HOME");
+        if( home)
+        {
+            string homeConfig = home + string("/") + configFile;
+            if( (stat( homeConfig.c_str(), &statInfo) != -1) )
+            {
+                _configDirectory = home + string("/") + _configDirectory;
+                //home config exists -> OK
+                configFile = homeConfig;
+            }
+        }
 #endif
     }
 
     return configFile;
 }
-
+//----------------------------------------------------------------------------
 void Config::updateFromCommandLine( int argc, char *argv[])
 {
     XTRACE();
@@ -139,25 +141,25 @@ void Config::updateFromCommandLine( int argc, char *argv[])
         if( (argv[i][0] == '+') && ((i+1)<argc))
         {
             updateKeyword( &argv[i][1], argv[i+1]);
-	    i++;
+            i++;
         }
         if( (argv[i][0] == '-') && ((i+1)<argc))
         {
-	    if( (argv[i+1][0] != '-') && (argv[i+1][0] != '+'))
-	    {
-		updateTransitoryKeyword( &argv[i][1], argv[i+1]);
-		i++;
-	    }
-	    else
-		updateTransitoryKeyword( &argv[i][1], "true");
+            if( (argv[i+1][0] != '-') && (argv[i+1][0] != '+'))
+            {
+                updateTransitoryKeyword( &argv[i][1], argv[i+1]);
+                i++;
+            }
+            else
+                updateTransitoryKeyword( &argv[i][1], "true");
         }
-	else if( (argv[i][0] == '-'))
-	{
+        else if( (argv[i][0] == '-'))
+        {
             updateTransitoryKeyword( &argv[i][1], "true");
-	}
+        }
     }
 }
-
+//----------------------------------------------------------------------------
 void Config::updateFromFile( void)
 {
     XTRACE();
@@ -167,22 +169,22 @@ void Config::updateFromFile( void)
 
     if( !ResourceManagerS::instance()->selectResource( configFile))
     {
-	string systemConfigFile = "system/config.txt";
-	if( !ResourceManagerS::instance()->selectResource( systemConfigFile))
-	{
-	    LOG_ERROR << "System Config file not found!" << endl;
-	    return;
-	}
-        LOG_WARNING << "Config file [" << configFile 
-	            << "] not found, using default." << endl;
+        string systemConfigFile = "system/config.txt";
+        if( !ResourceManagerS::instance()->selectResource( systemConfigFile))
+        {
+            LOG_ERROR << "System Config file not found!" << endl;
+            return;
+        }
+        LOG_WARNING << "Config file [" << configFile
+                    << "] not found, using default." << endl;
     }
     ziStream &infile = ResourceManagerS::instance()->getInputStream();
 
     string line;
-    
+
     while( !getline( infile, line).eof())
     {
-//	LOG_INFO << "[" << line << "]" << endl; 
+        //        LOG_INFO << "[" << line << "]" << endl;
 
         //explicitly skip comments
         if( line[0] == '#') continue;
@@ -198,17 +200,17 @@ void Config::updateFromFile( void)
         string setKeyname = t.next();
         if( setKeyname == "set")
         {
-	    string keyword = t.next();
-	    string value = t.next();
+            string keyword = t.next();
+            string value = t.next();
 
-//	    LOG_INFO << "Keyword [" << keyword << "] = [" 
+//            LOG_INFO << "Keyword [" << keyword << "] = ["
 //                     << value << "]" << endl;
 
-	    updateKeyword( keyword, value);
+            updateKeyword( keyword, value);
         }
     }
 }
-
+//----------------------------------------------------------------------------
 void Config::updateTransitoryKeyword( const char *keyword, const char *value)
 {
     XTRACE();
@@ -216,11 +218,11 @@ void Config::updateTransitoryKeyword( const char *keyword, const char *value)
     {
         string tmpKeyword( keyword);
         string tmpValue( value);
-	removeTrans( tmpKeyword);
-	_keyValueMapTrans[ tmpKeyword] = new Value( tmpValue);
+        removeTrans( tmpKeyword);
+        _keyValueMapTrans[ tmpKeyword] = new Value( tmpValue);
     }
 }
-
+//----------------------------------------------------------------------------
 void Config::updateKeyword( const char *keyword, const char *value)
 {
     XTRACE();
@@ -228,62 +230,62 @@ void Config::updateKeyword( const char *keyword, const char *value)
     {
         string tmpKeyword( keyword);
         string tmpValue( value);
-	remove( tmpKeyword);
-	_keyValueMap[ tmpKeyword] = new Value( tmpValue);
+        remove( tmpKeyword);
+        _keyValueMap[ tmpKeyword] = new Value( tmpValue);
     }
 }
-
+//----------------------------------------------------------------------------
 void Config::updateTransitoryKeyword( const string keyword, const string value)
 {
     XTRACE();
     removeTrans( keyword);
     _keyValueMapTrans[ keyword] = new Value( value);
 }
-
+//----------------------------------------------------------------------------
 void Config::updateKeyword( const string keyword, const string value)
 {
     XTRACE();
     remove( keyword);
     _keyValueMap[ keyword] = new Value( value);
 }
-
+//----------------------------------------------------------------------------
 void Config::updateTransitoryKeyword( const string keyword, Value *value)
 {
     XTRACE();
     removeTrans( keyword);
     _keyValueMapTrans[ keyword] = value;
 }
-
+//----------------------------------------------------------------------------
 void Config::updateKeyword( const string keyword, Value *value)
 {
     XTRACE();
     remove( keyword);
     _keyValueMap[ keyword] = value;
 }
-
+//----------------------------------------------------------------------------
 void Config::remove( const string &keyword)
 {
     removeImpl(keyword, _keyValueMap);
 }
-
+//----------------------------------------------------------------------------
 void Config::removeTrans( const string &keyword)
 {
     removeImpl(keyword, _keyValueMapTrans);
 }
-
+//----------------------------------------------------------------------------
 void Config::removeImpl( const string &keyword,
-	hash_map< string, Value*, hash<string>, equal_to<string> > &kvmap)
+        hash_map< string, Value*, hash<string>, equal_to<string> > &kvmap)
 {
     hash_map<string, Value*, hash<string> >::iterator ci;
     ci = kvmap.find( keyword);
 
     if( ci!=kvmap.end())
     {
-	delete ci->second;
-	kvmap.erase( ci);
+        delete ci->second;
+        kvmap.erase( ci);
     }
 }
-
+//----------------------------------------------------------------------------
 void Config::saveToFile( bool truncate)
 {
     XTRACE();
@@ -301,70 +303,72 @@ void Config::saveToFile( bool truncate)
 
     outfile << "# This is a generated file. Edit carefully!" << endl;
     outfile << "# --- Variable section --- " << endl;
- 
+
     hash_map<string, Value*, hash<string> >::const_iterator ci;
     for( ci=_keyValueMap.begin(); ci!=_keyValueMap.end(); ci++)
     {
         Value *val = ci->second;
 
         if( val)
-	{
-	    string v = val->getString();
+        {
+            if (ci->first == "skill")   // don't save the skill
+                continue;
+            string v = val->getString();
             if( v.find_first_of(" \t") != string::npos)
-	    {
-		//value contains whitespace
-		outfile << "set " << ci->first << " = \"" << v << "\"" << endl;
-	    }
-	    else
-	    {
-		outfile << "set " << ci->first << " = " << v << endl;
-	    }
-	}
+            {
+                //value contains whitespace
+                outfile << "set " << ci->first << " = \"" << v << "\"" << endl;
+            }
+            else
+            {
+                outfile << "set " << ci->first << " = " << v << endl;
+            }
+        }
         else
-	{
-	    LOG_WARNING << "No value for key [" << ci->first << "]" << endl;
-	}
+        {
+            LOG_WARNING << "No value for key [" << ci->first << "]" << endl;
+        }
 
     }
 
     list<ConfigHandler*>::iterator i;
     for( i=_configHandlerList.begin(); i!=_configHandlerList.end(); i++)
     {
-	ConfigHandler *ch = *i;
-	ch->save( outfile);
+        ConfigHandler *ch = *i;
+        ch->save( outfile);
     }
 }
-
+//----------------------------------------------------------------------------
 bool Config::getString( const string &keyword, string &value)
 {
     XTRACE();
     if( getStringImpl(keyword,value,_keyValueMapTrans)) return true;
     return getStringImpl(keyword,value,_keyValueMap);
 }
-
+//----------------------------------------------------------------------------
 bool Config::getInteger( const string &keyword, int &value)
 {
     XTRACE();
     if( getIntegerImpl(keyword,value,_keyValueMapTrans)) return true;
     return getIntegerImpl(keyword,value,_keyValueMap);
 }
-
+//----------------------------------------------------------------------------
 bool Config::getBoolean( const string &keyword, bool &value)
 {
     XTRACE();
     if( getBooleanImpl(keyword,value,_keyValueMapTrans)) return true;
     return getBooleanImpl(keyword,value,_keyValueMap);
 }
-
+//----------------------------------------------------------------------------
 bool Config::getFloat( const string &keyword, float &value)
 {
     XTRACE();
     if( getFloatImpl(keyword,value,_keyValueMapTrans)) return true;
     return getFloatImpl(keyword,value,_keyValueMap);
 }
-
-bool Config::getStringImpl( const string &keyword, string &value, 
-	hash_map< string, Value*, hash<string>, equal_to<string> > &kvmap)
+//----------------------------------------------------------------------------
+bool Config::getStringImpl( const string &keyword, string &value,
+        hash_map< string, Value*, hash<string>, equal_to<string> > &kvmap)
 {
     hash_map<string, Value*, hash<string> >::const_iterator ci;
     ci = kvmap.find( keyword);
@@ -375,11 +379,11 @@ bool Config::getStringImpl( const string &keyword, string &value,
         return true;
     }
 
-    return false; 
+    return false;
 }
-
-bool Config::getIntegerImpl( const string &keyword, int &value, 
-	hash_map< string, Value*, hash<string>, equal_to<string> > &kvmap)
+//----------------------------------------------------------------------------
+bool Config::getIntegerImpl( const string &keyword, int &value,
+        hash_map< string, Value*, hash<string>, equal_to<string> > &kvmap)
 {
     hash_map<string, Value*, hash<string> >::const_iterator ci;
     ci = kvmap.find( keyword);
@@ -390,11 +394,11 @@ bool Config::getIntegerImpl( const string &keyword, int &value,
         return true;
     }
 
-    return false; 
+    return false;
 }
-
+//----------------------------------------------------------------------------
 bool Config::getBooleanImpl( const string &keyword, bool &value,
-	hash_map< string, Value*, hash<string>, equal_to<string> > &kvmap)
+        hash_map< string, Value*, hash<string>, equal_to<string> > &kvmap)
 {
     hash_map<string, Value*, hash<string> >::const_iterator ci;
     ci = kvmap.find( keyword);
@@ -405,11 +409,11 @@ bool Config::getBooleanImpl( const string &keyword, bool &value,
         return true;
     }
 
-    return false; 
+    return false;
 }
-
+//----------------------------------------------------------------------------
 bool Config::getFloatImpl( const string &keyword, float &value,
-	hash_map< string, Value*, hash<string>, equal_to<string> > &kvmap)
+        hash_map< string, Value*, hash<string>, equal_to<string> > &kvmap)
 {
     hash_map<string, Value*, hash<string> >::const_iterator ci;
     ci = kvmap.find( keyword);
@@ -420,9 +424,9 @@ bool Config::getFloatImpl( const string &keyword, float &value,
         return true;
     }
 
-    return false; 
+    return false;
 }
-
+//----------------------------------------------------------------------------
 void Config::dump( void)
 {
     XTRACE();
@@ -432,9 +436,10 @@ void Config::dump( void)
     {
         Value *val = ci->second;
         if( val)
-	    LOG_INFO << ci->first << " = " << val->dump() << endl;
+            LOG_INFO << ci->first << " = " << val->dump() << endl;
         else
-	    LOG_INFO << ci->first << endl;
+            LOG_INFO << ci->first << endl;
 
     }
 }
+//----------------------------------------------------------------------------

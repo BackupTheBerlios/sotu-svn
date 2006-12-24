@@ -84,25 +84,23 @@ void Skill::updateSkill( const Skill::SkillEnum &skill)
 void Skill::updateSkill()
 {
     string newSkill;
-    ConfigS::instance()->getString( "skill", newSkill);
-    updateSkill(convertStringToSkill( newSkill));
+    ConfigS::instance()->getString("skill", newSkill);
+    updateSkill(convertStringToSkill(newSkill));
 }
 //----------------------------------------------------------------------------
 void Skill::incrementSkill( void)
 {
-    if( (GameState::skill+1) != Skill::eLAST)
-    {
-        updateSkill( (Skill::SkillEnum)(GameState::skill+1));
-    }
+    if ((GameState::skill+1) != Skill::eLAST)
+        updateSkill((Skill::SkillEnum)(GameState::skill+1));
 }
 //----------------------------------------------------------------------------
 Skill::SkillEnum Skill::convertStringToSkill(const string& skill)
 {
     XTRACE();
-    if( skill == SKILL_ROOKIE) return eRookie;
-    if( skill == SKILL_NORMAL) return eNormal;
-    if( skill == SKILL_EXPERT) return eExpert;
-    if( skill == SKILL_INSANE) return eInsane;
+    if (skill == SKILL_ROOKIE) return eRookie;
+    if (skill == SKILL_NORMAL) return eNormal;
+    if (skill == SKILL_EXPERT) return eExpert;
+    if (skill == SKILL_INSANE) return eInsane;
     return eNormal;
 }
 //----------------------------------------------------------------------------

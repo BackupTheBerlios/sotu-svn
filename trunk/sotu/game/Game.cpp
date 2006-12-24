@@ -183,6 +183,7 @@ void Game::startNewCampaign()
     _galaxy.recreate();
     _empireStatus = _rebelStatus = psClean;
     _kills = 0;
+    ConfigS::instance()->updateKeyword("skill", SKILL_ROOKIE);
 
     // TODO: reset quests
 

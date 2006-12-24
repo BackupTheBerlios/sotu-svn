@@ -479,7 +479,7 @@ bool Video::update( void)
             //{
                 string escmsg = "Press ESC to exit";
                 glColor4f(1.0f,0.852f,0.0f,1.0f);
-                smallFont.DrawString(escmsg.c_str() , 215, 140, 1.0f, 1.0f);
+                smallFont.DrawString(escmsg.c_str() , 500, 140, 1.0f, 1.0f, GLBitmapFont::alCenter);
             //}
             glColor4f(1.0f,1.0f,1.0f,1.0f);
         }

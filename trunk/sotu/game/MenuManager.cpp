@@ -418,11 +418,10 @@ void MenuManager::Enter( void)
     }
 }
 //----------------------------------------------------------------------------
-// returns true if we should exit
 void MenuManager::exitMenu(bool allowQuitGame)
 {
     XTRACE();
-    if( _currentMenu != _topMenu)   // if not top level menu
+    if (_currentMenu != _topMenu)   // if not top level menu
     {
         _currentMenu = _currentMenu->Parent();
         loadMenuLevel();

@@ -270,8 +270,9 @@ void Hero::allowVerticalMovement(bool allow)
 //----------------------------------------------------------------------------
 bool Hero::update( ParticleInfo *p)
 {
-//    XTRACE();
-    if( !_isAlive) return false;
+    //    XTRACE();
+    if( !_isAlive)
+        return false;
 
     updatePrevs(p);
 
