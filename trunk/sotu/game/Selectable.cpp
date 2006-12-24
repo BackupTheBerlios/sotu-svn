@@ -885,7 +885,10 @@ void ActionSelectable::select( void)
     }
     if (_action == "NewGame")
     {
-        GameS::instance()->startNewGame();
+        if (GameS::instance()->_landed)
+            GameS::instance()->startNewGame();
+        else
+            GameS::instance()->switchContext(eInGame);
         return;
     }
     else if (_action == "Quit")

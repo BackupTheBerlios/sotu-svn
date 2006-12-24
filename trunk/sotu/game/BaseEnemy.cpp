@@ -27,26 +27,26 @@
 #include <ScoreKeeper.hpp>
 
 ParticleGroup *BaseEnemy::_enemyGroup = 0;
-
+//----------------------------------------------------------------------------
 BaseEnemy::BaseEnemy( LEnemy *le, std::string name):
         ParticleType( name, false),
         _lEnemy(le),
-	_energy(100),
+    _energy(100),
         _enableDraw(false),
-	_extraUpdateAfterTransport(false),
+    _extraUpdateAfterTransport(false),
         _moveState(eEntry),
         _transitionBC( *new BezierCurve<Point3D>(4))
 {
     XTRACE();
     if( !_enemyGroup)
     {
-	_enemyGroup = ParticleGroupManagerS::instance()->getParticleGroup(
-	    ENEMIES_GROUP);
+    _enemyGroup = ParticleGroupManagerS::instance()->getParticleGroup(
+        ENEMIES_GROUP);
     }
 
     GameState::numObjects++;
 
-    _levelStartTime = 
+    _levelStartTime =
         StageManagerS::instance()->levelStartTime() + le->spawnTime;
     //start offscreen
     _activePathIndex = 0;
@@ -62,7 +62,7 @@ BaseEnemy::BaseEnemy( LEnemy *le, std::string name):
 
     _transitionPath.init( &_transitionBC);
 }
-
+//----------------------------------------------------------------------------
 BaseEnemy::~BaseEnemy()
 {
     XTRACE();
@@ -70,26 +70,24 @@ BaseEnemy::~BaseEnemy()
     delete [] _lEnemy->retreat;
     delete _lEnemy;
 }
-
+//----------------------------------------------------------------------------
 bool BaseEnemy::update( ParticleInfo *p)
 {
-//    XTRACE();
+    //    XTRACE();
     if( p->tod == 0)
     {
-	GameState::numObjects--;
-	if( (_moveState==eAttack) || (_moveState==eRetreat))
-	{
-	    GameState::enemyAttackCount--;
-	}
-	delete this;
-	return false;
+        GameState::numObjects--;
+        if ((_moveState==eAttack) || (_moveState==eRetreat))
+        {
+            GameState::enemyAttackCount--;
+        }
+        delete this;
+        return false;
     }
 
     float dt = GameState::startOfGameStep - _pathStartTime;
     if( dt < 0)
-    {
-	return true;
-    }
+        return true;
     _enableDraw = true;
 
     float len = _activePath->length();
@@ -97,72 +95,71 @@ bool BaseEnemy::update( ParticleInfo *p)
     _prevDir = _dir;
     if( dt > len)
     {
-//LOG_INFO << "dt = " << dt << ", len = " << len << endl;
-	getNextPath();
-	dt -= len;
-	_pathStartTime += len;
-	_activePath->getTangent( dt, _prevDir); 
+    //LOG_INFO << "dt = " << dt << ", len = " << len << endl;
+        getNextPath();
+        dt -= len;
+        _pathStartTime += len;
+        _activePath->getTangent( dt, _prevDir);
     }
 
     _activePath->getPos( dt, _pos);
-    _activePath->getTangent( dt, _dir); 
+    _activePath->getTangent( dt, _dir);
 
-///LOG_INFO << "dt = " << dt << ", len = " << len << endl;
-///LOG_INFO << "-p1 = " << _pos.x << "," << _pos.y << endl;
-///LOG_INFO << "-off = " << _offset.x << "," << _offset.y << endl;
+    ///LOG_INFO << "dt = " << dt << ", len = " << len << endl;
+    ///LOG_INFO << "-p1 = " << _pos.x << "," << _pos.y << endl;
+    ///LOG_INFO << "-off = " << _offset.x << "," << _offset.y << endl;
 
     updatePrevs(p);
 
     p->position.x = _pos.x + _offset.x;
     p->position.y = _pos.y + _offset.y;
-//	p->position.z = _pos.z + _offset.z;
+    //  p->position.z = _pos.z + _offset.z;
 
     if( _extraUpdateAfterTransport)
     {
-	//We transport the enemy to a staging area. We need to update again 
-	//to make sure we use the new position in the interpolation step
-	updatePrevs(p);
-	_extraUpdateAfterTransport = false;
+        //We transport the enemy to a staging area. We need to update again
+        //to make sure we use the new position in the interpolation step
+        updatePrevs(p);
+        _extraUpdateAfterTransport = false;
     }
 
     static ParticleGroup *ebg=
-	ParticleGroupManagerS::instance()->getParticleGroup( 
-	    SHOOTABLE_ENEMY_BULLETS_GROUP);
+    ParticleGroupManagerS::instance()->getParticleGroup(
+        SHOOTABLE_ENEMY_BULLETS_GROUP);
 
-    if( (GameState::enemyBulletCount < Skill::getMaxBullets()) && 
-	( (_moveState == eIdle) || 
-	  (_moveState == eAttack) ||
-	  (GameState::skill!=Skill::eRookie)))
+    if( (GameState::enemyBulletCount < Skill::getMaxBullets()) &&
+        ( (_moveState == eIdle) ||
+        (_moveState == eAttack) ||
+        (GameState::skill!=Skill::eRookie)))
     {
-	p->extra.x += 0.1f*GAME_STEP_SCALE;
-	if( p->extra.x > 0.5)
-	{
-	    if( (Random::random() & 0xff) < Skill::getFireProbability())
-	    {
-		ebg->newParticle(
-//		    "PlasmaBullet",p->position.x,p->position.y,p->position.z);
-		    "BallOfFire",p->position.x,p->position.y,p->position.z);
-		AudioS::instance()->playSample( "sounds/laser3.wav");
-	    }
-	    p->extra.x = 0;
-	}
+        p->extra.x += 0.1f*GAME_STEP_SCALE;
+        if( p->extra.x > 0.5)
+        {
+            if( (Random::random() & 0xff) < Skill::getFireProbability())
+            {
+                ebg->newParticle(
+                    //          "PlasmaBullet",p->position.x,p->position.y,p->position.z);
+                    "BallOfFire",p->position.x,p->position.y,p->position.z);
+                AudioS::instance()->playSample( "sounds/laser3.wav");
+            }
+            p->extra.x = 0;
+        }
     }
-
     return true;
 }
-
+//----------------------------------------------------------------------------
 void BaseEnemy::updateOffset( void)
 {
-//    XTRACE();
+    //    XTRACE();
     //update offset to end of path
     Point3D p1;
     _activePath->end( p1);
     _offset = _offset + p1;
 }
-
+//----------------------------------------------------------------------------
 void BaseEnemy::sendHome( void)
 {
-//    XTRACE();
+    //    XTRACE();
     _nextMoveState = eIdle;
     _activePathIndex = 0;
     _nextPath = _lEnemy->idle;
@@ -193,153 +190,137 @@ void BaseEnemy::sendHome( void)
     _moveState = eTransition;
     _activePath = &_transitionPath;
 }
-
+//----------------------------------------------------------------------------
 void BaseEnemy::getNextPath( void)
 {
-//    XTRACE();
+    //    XTRACE();
     updateOffset();
     switch( _moveState)
     {
-	case eIdle:
-	    if( ( GameState::enemyAttackCount < Skill::getMaxAttacking()) &&
-		( _lEnemy->numAttackPaths > 0) &&
-                (( Random::random() & 0xff) > 0x80))
-	    {
-		_moveState = eAttack;
-		_activePathIndex = Random::random() % _lEnemy->numAttackPaths;
-		_activePath = _lEnemy->attack[ _activePathIndex];
-		AudioS::instance()->playSample( "sounds/attackWave.wav");
-		GameState::enemyAttackCount++;
-	    }
-	    break;
+    case eIdle:
+        if( ( GameState::enemyAttackCount < Skill::getMaxAttacking()) &&
+            ( _lEnemy->numAttackPaths > 0) && (( Random::random() & 0xff) > 0x80))
+        {
+            _moveState = eAttack;
+            _activePathIndex = Random::random() % _lEnemy->numAttackPaths;
+            _activePath = _lEnemy->attack[ _activePathIndex];
+            AudioS::instance()->playSample( "sounds/attackWave.wav");
+            GameState::enemyAttackCount++;
+        }
+        break;
 
-	case eEntry:
-	    {
-		_nextMoveState = eIdle;
-		_nextPath = _lEnemy->idle;
+    case eEntry:
+        {
+            _nextMoveState = eIdle;
+            _nextPath = _lEnemy->idle;
+            Point3D p1 = Point3D( 0,0,0);
+            Point3D p2;
 
-		Point3D p1 = Point3D( 0,0,0);
-		Point3D p2;
+            _transitionBC.SetControlPoint( 0, p1);
+            //LOG_INFO << "p1 = " << p1.x << "," << p1.y << endl;
+            //LOG_INFO << "off = " << _offset.x << "," << _offset.y << endl;
 
-		_transitionBC.SetControlPoint( 0, p1);
-//LOG_INFO << "p1 = " << p1.x << "," << p1.y << endl;
-//LOG_INFO << "off = " << _offset.x << "," << _offset.y << endl;
+            _activePath->endT(p2);
+            p2 = p1 - p2;
+            _transitionBC.SetControlPoint( 1, p2);
+            p1 = _lEnemy->home - _offset;
+            _transitionBC.SetControlPoint( 3, p1);
+            p2 = p1 + Point3D( 0, 50, 0);
+            _transitionBC.SetControlPoint( 2, p2);
+            _transitionPath.update();
+            _moveState = eTransition;
+            _activePath = &_transitionPath;
+        }
+        break;
 
-		_activePath->endT(p2);
-		p2 = p1 - p2;
-		_transitionBC.SetControlPoint( 1, p2);
+    case eAttack:
+        if ((_lEnemy->numRetreatPaths > 0) && ((Random::random() & 0xff) < 255))
+        {
+            //every now end then retreat
+            _moveState = eRetreat;
+            _activePathIndex = Random::random() % _lEnemy->numRetreatPaths;
+            _activePath = _lEnemy->retreat[ _activePathIndex];
+        }
 
-		p1 = _lEnemy->home - _offset;
-		_transitionBC.SetControlPoint( 3, p1);
+        if( _offset.y < -60.0)
+            sendHome();
+        break;
 
-		p2 = p1 + Point3D( 0, 50, 0);
-		_transitionBC.SetControlPoint( 2, p2);
+    case eRetreat:
+        //enough retreat, go back to attack
+        if( _lEnemy->numAttackPaths > 0)
+        {
+            _moveState = eAttack;
+            _activePathIndex = Random::random() % _lEnemy->numAttackPaths;
+            _activePath = _lEnemy->attack[ _activePathIndex];
+        }
 
-		_transitionPath.update();
-		_moveState = eTransition;
-		_activePath = &_transitionPath;
-	    }
-	    break;
+        if( _offset.y > 60.0)
+            sendHome();
+        break;
 
-	case eAttack:
-	    if( (_lEnemy->numRetreatPaths > 0) &&
-		( (Random::random() & 0xff) < 255))
-	    {
-		//every now end then retreat
-		_moveState = eRetreat;
-		_activePathIndex = Random::random() % _lEnemy->numRetreatPaths;
-		_activePath = _lEnemy->retreat[ _activePathIndex];
-	    }
+    case eTransition:
+        //                _offset = _lEnemy->home;
+        _moveState = _nextMoveState;
+        _activePath = _nextPath;
+        break;
 
-	    if( _offset.y < -60.0)
-	    {
-		sendHome();
-	    }
-	    break;
-
-	case eRetreat:
-	    //enough retreat, go back to attack
-	    if( _lEnemy->numAttackPaths > 0)
-	    {
-		_moveState = eAttack;
-		_activePathIndex = Random::random() % _lEnemy->numAttackPaths;
-		_activePath = _lEnemy->attack[ _activePathIndex];
-	    }
-
-	    if( _offset.y > 60.0)
-	    {
-		sendHome();
-	    }
-	    break;
-
-	case eTransition:
-//                _offset = _lEnemy->home;
-	    _moveState = _nextMoveState;
-	    _activePath = _nextPath;
-	    break;
-
-	default:
-	    _activePath = _lEnemy->idle;
-	    break;
+    default:
+        _activePath = _lEnemy->idle;
+        break;
     }
 }
-
+//----------------------------------------------------------------------------
 void BaseEnemy::hit( ParticleInfo *p, int damage, int /*radIndex*/)
-{ 
-//    XTRACE();
+{
+    //    XTRACE();
     static ParticleGroup *effects =
-	ParticleGroupManagerS::instance()->getParticleGroup( EFFECTS_GROUP2);
+    ParticleGroupManagerS::instance()->getParticleGroup( EFFECTS_GROUP2);
 
     _energy -= damage;
-    if( _energy <= 0)
+    if (_energy <= 0)
     {
-	static ParticleGroup *bonus =
-	    ParticleGroupManagerS::instance()->getParticleGroup( BONUS_GROUP);
+        static ParticleGroup *bonus =
+            ParticleGroupManagerS::instance()->getParticleGroup( BONUS_GROUP);
 
-	p->tod = 0; 
-	if( _moveState == eAttack)
-	{
-	    ScoreKeeperS::instance()->addToCurrentScore( 200);
-	}
-	else
-	{
-	    ScoreKeeperS::instance()->addToCurrentScore( 100);
-	}
+        p->tod = 0;
+        if( _moveState == eAttack)
+        {
+            ScoreKeeperS::instance()->addToCurrentScore( 200);
+        }
+        else
+        {
+            ScoreKeeperS::instance()->addToCurrentScore( 100);
+        }
 
-	if( (Random::random() & 0xff) > 10)
-	    bonus->newParticle( "Bonus1", 
-		p->position.x, p->position.y, p->position.z);
-	else
-	    bonus->newParticle( "SuperBonus", 
-		p->position.x, p->position.y, p->position.z);
+        if( (Random::random() & 0xff) > 10)
+            bonus->newParticle( "Bonus1", p->position.x, p->position.y, p->position.z);
+        else
+            bonus->newParticle( "SuperBonus", p->position.x, p->position.y, p->position.z);
 
-	//spawn explosion
-	for( int i=0; i<(int)(GameState::horsePower/2.0); i++)
-	{
-	    effects->newParticle(
-		"ExplosionPiece", p->position.x, p->position.y, p->position.z);
-	}
-	AudioS::instance()->playSample( "sounds/explosion.wav");
+        //spawn explosion
+        for( int i=0; i<(int)(GameState::horsePower/2.0); i++)
+        {
+            effects->newParticle(
+            "ExplosionPiece", p->position.x, p->position.y, p->position.z);
+        }
+        AudioS::instance()->playSample( "sounds/explosion.wav");
     }
     else
     {
-	//a hit but no kill
-	ScoreKeeperS::instance()->addToCurrentScore( 50);
-
-	ParticleInfo pi;
-
-	pi.position.x = p->position.x;
-	pi.position.y = p->position.y;
-	pi.position.z = p->position.z;
-
-	pi.velocity.x = _dir.x*0.6f*GAME_STEP_SCALE;
-	pi.velocity.y = _dir.y*0.6f*GAME_STEP_SCALE;
-	pi.velocity.z = _dir.z*0.6f*GAME_STEP_SCALE;
-
-	effects->newParticle( "MiniSmoke", pi);
+        //a hit but no kill
+        ScoreKeeperS::instance()->addToCurrentScore( 50);
+        ParticleInfo pi;
+        pi.position.x = p->position.x;
+        pi.position.y = p->position.y;
+        pi.position.z = p->position.z;
+        pi.velocity.x = _dir.x*0.6f*GAME_STEP_SCALE;
+        pi.velocity.y = _dir.y*0.6f*GAME_STEP_SCALE;
+        pi.velocity.z = _dir.z*0.6f*GAME_STEP_SCALE;
+        effects->newParticle( "MiniSmoke", pi);
     }
 }
-
+//----------------------------------------------------------------------------
 //transforms y axis to 'at' vector
 void BaseEnemy::alignWith( Point3D &dohAt)
 {
@@ -366,3 +347,4 @@ void BaseEnemy::alignWith( Point3D &dohAt)
 
     glMultMatrixf(m);
 }
+//----------------------------------------------------------------------------

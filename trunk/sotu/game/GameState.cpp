@@ -13,7 +13,7 @@
 // FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details
 //
 #include <GameState.hpp>
-
+//----------------------------------------------------------------------------
 bool GameState::isDeveloper = false;
 bool GameState::showFPS = false;
 bool GameState::isAlive = true;
@@ -27,3 +27,4 @@ int GameState::enemyBulletCount = 0;
 int GameState::enemyAttackCount = 0;
 PausableTimer GameState::stopwatch;
 Skill::SkillEnum GameState::skill = Skill::eUnknown;
+//----------------------------------------------------------------------------
