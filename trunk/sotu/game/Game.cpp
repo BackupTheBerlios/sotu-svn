@@ -304,6 +304,7 @@ void Game::run( void)
         input.update();
         audio.update();
         video.update();
+        SDL_Delay(1);   // let the system breathe at least a little bit
     }
 }
 //----------------------------------------------------------------------------
