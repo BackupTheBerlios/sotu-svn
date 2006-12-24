@@ -41,7 +41,7 @@ const float MIN_Y=-45;
 //----------------------------------------------------------------------------
 Hero::Hero():
     ParticleType( "Hero"),
-    pInfo(0),
+    _pInfo(0),
     _maxY(MIN_Y)
 {
     XTRACE();
@@ -62,7 +62,7 @@ void Hero::reset( void)
     _moveUp=0;
     _moveDown=0;
     _energy=100;
-    _shieldEnergy=30;
+    _shieldEnergy=100;
     _weaponEnergy=100.0;
     _damageMultiplier = 1.0;
 
@@ -81,13 +81,16 @@ Hero::~Hero()
     XTRACE();
 }
 //----------------------------------------------------------------------------
-void Hero::init( ParticleInfo *p)
+void Hero::init(ParticleInfo *p)
 {
     XTRACE();
-    pInfo = p;
+    _pInfo = p;
 
     //override Y
     p->position.y = MIN_Y;
+
+    // set some reasonable damage when player collides with aliens
+    p->damage = 30;
 
     vec3 minpt, maxpt;
     _model->getBoundingBox( minpt, maxpt);
@@ -148,7 +151,7 @@ void Hero::popMessage(const char *msg, float red, float green, float blue)
         pi.color.x = red;
         pi.color.y = green;
         pi.color.z = blue;
-        pi.position = pInfo->position;
+        pi.position = _pInfo->position;
         pi.text = msg;
         effects->newParticle("ScoreHighlight", pi);
     }
@@ -282,34 +285,30 @@ bool Hero::update(ParticleInfo *p)
     if (_moveLeft)
     {
         _xPos += _moveLeft;
-            Clamp( _xPos, MIN_X, MAX_X);
+        Clamp( _xPos, MIN_X, MAX_X);
     }
     if (_moveRight)
     {
         _xPos += _moveRight;
-            Clamp( _xPos, MIN_X, MAX_X);
+        Clamp( _xPos, MIN_X, MAX_X);
     }
 
     if (_moveUp)
     {
         _yPos += _moveUp;
-            Clamp( _yPos, MIN_Y, _maxY);
+        Clamp( _yPos, MIN_Y, _maxY);
     }
     if (_moveDown)
     {
         _yPos += _moveDown;
-            Clamp( _yPos, MIN_Y, _maxY);
+        Clamp( _yPos, MIN_Y, _maxY);
     }
 
     for (int i=0; i<Hero::MAX_WEAPONS; i++)
-    {
         if (_weaponAutofire[i] && weaponLoaded(i))
-        {
             weaponFire(true, i);
-        }
-    }
 
-    spawnSparks(_shieldEnergy/3, pInfo->radius, *p);
+    spawnSparks(_shieldEnergy/3, _pInfo->radius, *p);
     lastXPos = _xPos;
     lastYPos = _yPos;
     return true;
@@ -328,11 +327,11 @@ void Hero::move( float dx, float dy)
 //    XTRACE();
     if( !_isAlive)
         return;
-    if( !pInfo)
+    if( !_pInfo)
         return;
 
-    float & _xPos = pInfo->position.x;
-    float & _yPos = pInfo->position.y;
+    float & _xPos = _pInfo->position.x;
+    float & _yPos = _pInfo->position.y;
 
     _xPos += dx;
     _yPos += dy;
@@ -397,12 +396,12 @@ void Hero::weaponFire( bool isDown, int weapNum)
         } */
         return;
     }
-    if( !pInfo)
+    if( !_pInfo)
         return;
 
-    float & _xPos = pInfo->position.x;
-    float & _yPos = pInfo->position.y;
-    float & _zPos = pInfo->position.z;
+    float & _xPos = _pInfo->position.x;
+    float & _yPos = _pInfo->position.y;
+    float & _zPos = _pInfo->position.z;
 
     static bool needButtonUp = false;
     if( isDown == false)
@@ -468,11 +467,11 @@ void Hero::draw( void)
 //    XTRACE();
     if( !_isAlive)
         return;
-    if( !pInfo)
+    if( !_pInfo)
         return;
 
     ParticleInfo pi;
-    interpolate( pInfo, pi);
+    interpolate( _pInfo, pi);
 
     glDisable( GL_DEPTH_TEST);
     glDisable( GL_LIGHTING);
@@ -492,7 +491,7 @@ void Hero::draw( void)
 
     glEnable(GL_TEXTURE_2D);
     bitmaps->bind();
-    float r = pInfo->radius/((42.0f-2.0f)/2.0f);
+    float r = _pInfo->radius/((42.0f-2.0f)/2.0f);
     glColor4f(1.0,1.0,1.0,(float)_shieldEnergy/(float)200.0);
     bitmaps->DrawC( shield, 0, 0, r, r);
     glDisable(GL_TEXTURE_2D);

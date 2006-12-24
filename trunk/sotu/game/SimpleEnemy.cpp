@@ -198,9 +198,13 @@ void SimpleEnemy::hit( ParticleInfo *p, int damage, int /*radIndex*/)
     static ParticleGroup *effects =
         ParticleGroupManagerS::instance()->getParticleGroup( EFFECTS_GROUP2);
 
+    if (damage < 0)
+    {
+        LOG_WARNING << "NEGATIVE DAMAGE: " << damage << endl;
+        damage = 30;
+    }
     _energy -= damage;
-    LOG_INFO << "DAMAGE: " << damage << ", ENERGY = " << _energy << endl;
-    if( _energy <= 0)
+    if (_energy <= 0)
     {
         static ParticleGroup *bonus =
             ParticleGroupManagerS::instance()->getParticleGroup( BONUS_GROUP);

@@ -20,8 +20,19 @@
 
 class ParticleType;
 
-struct ParticleInfo
+class ParticleInfo
 {
+public:
+    ParticleInfo()      // some defaults
+    {
+        damage = 30;
+        next = 0;
+        particle = 0;
+        related = 0;
+        tod = 0;
+        radius = 0;
+    };
+
     //values for current game step position
     vec3 position;
     vec3 velocity;

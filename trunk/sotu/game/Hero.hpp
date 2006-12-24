@@ -106,7 +106,7 @@ private:
     void spawnSparks( int spawnCount, float r, ParticleInfo &pi);
 
     Model *_model;
-    ParticleInfo *pInfo;
+    ParticleInfo *_pInfo;
 
     float _moveLeft;
     float _moveRight;
