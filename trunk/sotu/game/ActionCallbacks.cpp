@@ -138,24 +138,10 @@ void HyperSpaceJump::performAction(Trigger &, bool isDown)
     if (GameS::instance()->getContext() != eInGame)
         return;
 
-    // check fuel
-    Planet *target = PlanetManagerS::instance()->getHyperspaceTarget();
-    Planet *source = GameS::instance()->_currentPlanet;
-    if (target == source)
-    {
-        HeroS::instance()->popMessage("No hyperspace target", 1.0f, 0.0f, 0.0f);
-        return;
-    }
-
-    float dist = source->getDistance(target->_x, target->_y);
-    CargoItem* fuel = GameS::instance()->_cargo.findItem("Fuel");
-    if (fuel->_quantity < (int)(dist + 0.92))
-    {
-        HeroS::instance()->popMessage("Not enough fuel", 1.0f, 0.0f, 0.0f);
-        return;
-    }
-
-    // start hyperspace countdown
-    GameS::instance()->_hyperspaceCount = GameState::stopwatch.getTime();
+    std::string hsError = GameS::instance()->getHyperspaceAvailable();
+    if (hsError == "OK")
+        GameS::instance()->_hyperspaceCount = GameState::stopwatch.getTime();
+    else
+        HeroS::instance()->popMessage(hsError.c_str(), 1.0f, 0.0f, 0.0f);
 }
 //----------------------------------------------------------------------------

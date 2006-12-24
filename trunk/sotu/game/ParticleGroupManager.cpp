@@ -89,7 +89,7 @@ bool ParticleGroupManager::update( void)
     for( li=_linkedParticleGroupList.begin();
          li!=_linkedParticleGroupList.end(); li++)
     {
-    LinkedParticleGroup *lpg = *li;
+        LinkedParticleGroup *lpg = *li;
         //collision detect based on links...
         lpg->group1->detectCollisions( lpg->group2);
     }

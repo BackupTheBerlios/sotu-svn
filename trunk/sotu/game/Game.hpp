@@ -140,6 +140,7 @@ public:
 
     float _hyperspaceCount;
     void hyperspaceJump();
+    std::string getHyperspaceAvailable();   // returns "OK" is o.k.
 
     bool init( void);
     void run( void);

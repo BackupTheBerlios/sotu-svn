@@ -371,6 +371,19 @@ void Game::hyperspaceJump()
     // TODO: add particle: Successfully reached %s
 }
 //----------------------------------------------------------------------------
+std::string Game::getHyperspaceAvailable()
+{
+    Planet *target = PlanetManagerS::instance()->getHyperspaceTarget();
+    if (target == _currentPlanet)
+        return "No hyperspace target";
+
+    float dist = _currentPlanet->getDistance(target->_x, target->_y);
+    CargoItem* fuel = _cargo.findItem("Fuel");
+    if (fuel->_quantity < (int)(dist + 0.92))
+        return "Not enough fuel";
+    return "OK";
+}
+//----------------------------------------------------------------------------
 // CARGO *********************************************************************
 //----------------------------------------------------------------------------
 std::vector<CargoItemInfo>* CargoItemInfo::getCargoInfo()
