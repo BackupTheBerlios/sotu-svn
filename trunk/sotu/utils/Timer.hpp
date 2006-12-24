@@ -14,6 +14,7 @@
 //
 #ifndef _Timer_hpp_
 #define _Timer_hpp_
+//----------------------------------------------------------------------------
 
 #include <defines.h>
 
@@ -22,7 +23,7 @@
 #else
 #include "SDL.h"
 #endif
-
+//----------------------------------------------------------------------------
 class Timer
 {
 public:
@@ -34,27 +35,22 @@ public:
         static float startSeconds = -1.0;
 
         gettimeofday(&tv, &tz);
-        
-        if( startSeconds < 0.0)
-        {
-            //not interested in subsecond start time
-	    startSeconds = tv.tv_sec;
-        }
-        
+        if (startSeconds < 0.0) //not interested in subsecond start time
+            startSeconds = tv.tv_sec;
         return( tv.tv_sec - startSeconds + tv.tv_usec/1000000.0);
-    } 
+    }
 #else
-    static float getTime( void)
+    static float getTime(void)
     {
-        return( (float)SDL_GetTicks()/1000.0f);
+        return ((float)SDL_GetTicks()/1000.0f);
     }
 
     static void sleep( float sleep)
     {
         Uint32 ms = (Uint32)(sleep*1000.0);
-        SDL_Delay( ms);
+        SDL_Delay(ms);
     }
 #endif
 };
-
+//----------------------------------------------------------------------------
 #endif

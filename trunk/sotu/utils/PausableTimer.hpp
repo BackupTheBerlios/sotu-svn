@@ -17,7 +17,7 @@
 
 #include <iostream>
 #include <Timer.hpp>
-
+//----------------------------------------------------------------------------
 class PausableTimer
 {
 public:
@@ -30,16 +30,16 @@ public:
 
     void reset( void)
     {
-	_isPaused = false;
+        _isPaused = false;
         _adjust = Timer::getTime();
-    } 
+    }
 
     void pause( void)
     {
-        if( ! _isPaused)
+        if (!_isPaused)
         {
             _isPaused = true;
-	    _pausedAt = Timer::getTime() - _adjust;
+            _pausedAt = Timer::getTime() - _adjust;
         }
     }
 
@@ -47,21 +47,17 @@ public:
     {
         if( _isPaused)
         {
-	    _isPaused = false;
-	    _adjust = Timer::getTime() - _pausedAt;
+            _isPaused = false;
+            _adjust = Timer::getTime() - _pausedAt;
         }
     }
 
     float getTime( void)
     {
         if( _isPaused)
-	{ 
-	    return( _pausedAt);
-	}
+            return _pausedAt;
         else
-	{ 
-	    return( Timer::getTime() - _adjust) ;
-	}
+            return (Timer::getTime() - _adjust);
     }
 
 private:
@@ -69,5 +65,5 @@ private:
     float _adjust;
     float _pausedAt;
 };
-
+//----------------------------------------------------------------------------
 #endif
