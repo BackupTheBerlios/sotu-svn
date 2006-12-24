@@ -28,7 +28,7 @@ ParticleGroupManager::~ParticleGroupManager()
     XTRACE();
 
     list<LinkedParticleGroup*>::iterator li;
-    for( li=_linkedParticleGroupList.begin(); 
+    for( li=_linkedParticleGroupList.begin();
          li!=_linkedParticleGroupList.end(); li++)
     {
         delete (*li);
@@ -38,7 +38,7 @@ ParticleGroupManager::~ParticleGroupManager()
     list<ParticleGroup*>::iterator i;
     for( i=_particleGroupList.begin(); i!=_particleGroupList.end(); i++)
     {
-	delete (*i);
+    delete (*i);
     }
 
     ParticleGroup::destroyParticleTypes();
@@ -60,7 +60,7 @@ void ParticleGroupManager::reset( void)
     list<ParticleGroup*>::iterator i;
     for( i=_particleGroupList.begin(); i!=_particleGroupList.end(); i++)
     {
-	(*i)->reset();
+    (*i)->reset();
     }
 }
 
@@ -71,7 +71,7 @@ void ParticleGroupManager::draw( void)
     list<ParticleGroup*>::iterator i;
     for( i=_particleGroupList.begin(); i!=_particleGroupList.end(); i++)
     {
-	(*i)->draw();
+        (*i)->draw();
     }
 }
 
@@ -86,10 +86,10 @@ bool ParticleGroupManager::update( void)
     }
 
     list<LinkedParticleGroup*>::iterator li;
-    for( li=_linkedParticleGroupList.begin(); 
+    for( li=_linkedParticleGroupList.begin();
          li!=_linkedParticleGroupList.end(); li++)
     {
-	LinkedParticleGroup *lpg = *li;
+    LinkedParticleGroup *lpg = *li;
         //collision detect based on links...
         lpg->group1->detectCollisions( lpg->group2);
     }
@@ -120,9 +120,9 @@ void ParticleGroupManager::addLink( const string &group1, const string &group2)
 
     if( !g1 || !g2) return;
 
-    LOG_INFO << "Collision detection between [" 
-             << group1 << "] and [" 
-             << group2 << "] enabled." 
+    LOG_INFO << "Collision detection between ["
+             << group1 << "] and ["
+             << group2 << "] enabled."
              << endl;
 
     LinkedParticleGroup *lpg = new LinkedParticleGroup;

@@ -14,6 +14,7 @@
 // FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details
 //
 #include <math.h> //we need cos(..) and sin(..) and sqrt(..)
+#include "SDL.h"
 #include <Trace.hpp>
 #include "utils/Random.hpp"
 
@@ -151,7 +152,7 @@ void Game::reset( void)
     ParticleGroupManagerS::instance()->reset();
     HeroS::instance()->reset();
     ParticleGroupManagerS::instance()->
-        getParticleGroup( HERO_GROUP)->newParticle( string("Hero"), 0, 0, -100);
+        getParticleGroup(HERO_GROUP)->newParticle( string("Hero"), 0, 0, -100);
 
     ScoreKeeperS::instance()->resetCurrentScore();
     GameState::stopwatch.reset();
@@ -161,14 +162,15 @@ void Game::reset( void)
 //----------------------------------------------------------------------------
 void Game::startNewGame()
 {
-    GameS::instance()->reset();
+    _hyperspaceCount = 0;
+    reset();
     switchContext(eInGame);
-    AudioS::instance()->playSample( "sounds/voiceGo.wav");
+    AudioS::instance()->playSample("sounds/voiceGo.wav");
 
     _landed = false;
 
     bool allowVerticalMovement = false;
-    ConfigS::instance()->getBoolean( "allowVerticalMovement", allowVerticalMovement);
+    ConfigS::instance()->getBoolean("allowVerticalMovement", allowVerticalMovement);
     HeroS::instance()->allowVerticalMovement(allowVerticalMovement);
 }
 //----------------------------------------------------------------------------
@@ -238,12 +240,18 @@ void Game::updateInGameLogic()
 {
     int stepCount = 0;
     float currentGameTime = GameState::stopwatch.getTime();
+    float hyspace = 0;
+    if (_hyperspaceCount != 0)
+        hyspace = currentGameTime - _hyperspaceCount;
     while( (currentGameTime - GameState::startOfGameStep) > GAME_STEP_SIZE)
     {
-        // adding new enemies, moving on to the next level, etc.
-        StageManagerS::instance()->update();
-        // update all objects, particles, etc.
-        ParticleGroupManagerS::instance()->update();
+        if (hyspace < 10)
+        {
+            // adding new enemies, moving on to the next level, etc.
+            StageManagerS::instance()->update();
+            // update all objects, particles, etc.
+            ParticleGroupManagerS::instance()->update();
+        }
 
         //FIXME: Currently the Critterboard is updated in the video system. Should be on its own.
         VideoS::instance()->updateLogic();
@@ -353,12 +361,14 @@ void Game::previousContext()
 //----------------------------------------------------------------------------
 void Game::hyperspaceJump()
 {
-    Planet *target = PlanetManagerS::instance()->_hyperspaceTarget;
+    Planet *target = PlanetManagerS::instance()->getHyperspaceTarget();
     float dist = _currentPlanet->getDistance(target->_x, target->_y);
     CargoItem* fuel = _cargo.findItem("Fuel");
     fuel->_quantity -= (int)(dist + 0.92);
     _currentPlanet = target;
     startNewGame();
+
+    // TODO: add particle: Successfully reached %s
 }
 //----------------------------------------------------------------------------
 // CARGO *********************************************************************
@@ -611,7 +621,7 @@ void Map::recreate()
             if (x == stepSize && y == stepSize)   // XEN (cell=1,1)
             {
                 p = new Planet(1.5*(float)stepSize, 1.5*(float)stepSize, "XEN");
-                PlanetManagerS::instance()->_hyperspaceTarget = p;
+                PlanetManagerS::instance()->setHyperspaceTarget(p);
                 GameS::instance()->_currentPlanet = p;
             }
             else

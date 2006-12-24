@@ -489,6 +489,17 @@ void PlanetManager::setActiveScreen(ScreenType newone)
     _screenType = newone;
 }
 //----------------------------------------------------------------------------
+void PlanetManager::setHyperspaceTarget(Planet *p)
+{
+    GameS::instance()->_hyperspaceCount = 0;
+    _hyperspaceTarget = p;
+}
+//----------------------------------------------------------------------------
+Planet *PlanetManager::getHyperspaceTarget()
+{
+    return _hyperspaceTarget;
+}
+//----------------------------------------------------------------------------
 bool PlanetManager::update()
 {
     _prevAngle = _angle;
@@ -1053,7 +1064,7 @@ void PlanetManager::drawMap()
         Planet *p = GameS::instance()->_currentPlanet;
         if (p)
         {
-            Selectable::reset(true);    // deactivate active node
+            Selectable::reset();    // deactivate active node
             GLBitmapFont &fontWhite = *(FontManagerS::instance()->getFont( "bitmaps/menuWhite"));
             if (p == pl)
             {
@@ -1201,7 +1212,7 @@ void PlanetManager::planetClick()
         CargoItem *c = GameS::instance()->_cargo.findItem("Fuel");
         if (c->_quantity >= dist)
         {
-            _hyperspaceTarget = pl;
+            setHyperspaceTarget(pl);
             AudioS::instance()->playSample("sounds/confirm.wav");
         }
     }

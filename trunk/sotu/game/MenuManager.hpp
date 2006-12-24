@@ -87,7 +87,6 @@ class PlanetManager: public InterceptorI
 {
 friend class Singleton<PlanetManager>;
 public:
-    Planet* _hyperspaceTarget;
     bool init();
     bool update();
     bool draw();
@@ -103,6 +102,9 @@ public:
     void setActiveScreen(ScreenType newone);
 
     virtual void input( const Trigger &trigger, const bool &isDown);
+
+    void setHyperspaceTarget(Planet *p);
+    Planet *getHyperspaceTarget();
 
 private:
     virtual ~PlanetManager();
@@ -120,6 +122,8 @@ private:
     // there will be more, this is just a test
     typedef std::vector<GLTexture *> PlanetTexList;
     PlanetTexList _planetTex;
+
+    Planet* _hyperspaceTarget;
 
     ScreenType _screenType;
     void drawCargo();

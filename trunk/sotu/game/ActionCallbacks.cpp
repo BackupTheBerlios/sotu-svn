@@ -139,7 +139,7 @@ void HyperSpaceJump::performAction(Trigger &, bool isDown)
         return;
 
     // check fuel
-    Planet *target = PlanetManagerS::instance()->_hyperspaceTarget;
+    Planet *target = PlanetManagerS::instance()->getHyperspaceTarget();
     Planet *source = GameS::instance()->_currentPlanet;
     if (target == source)
     {
@@ -156,6 +156,6 @@ void HyperSpaceJump::performAction(Trigger &, bool isDown)
     }
 
     // start hyperspace countdown
-    GameS::instance()->hyperspaceJump();
+    GameS::instance()->_hyperspaceCount = GameState::stopwatch.getTime();
 }
 //----------------------------------------------------------------------------

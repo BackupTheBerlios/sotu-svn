@@ -2,6 +2,7 @@
 //   Starfield with nebulas.
 //
 // Copyright (C) 2001 Frank Becker
+// Copyright (C) 2006 Milan Babuskov
 //
 // This program is free software; you can redistribute it and/or modify it under
 // the terms of the GNU General Public License as published by the Free Software
@@ -15,13 +16,14 @@
 #include <math.h>
 #include <string>
 
+#include "Game.hpp"
 #include <Starfield.hpp>
 #include <Trace.hpp>
 #include <GameState.hpp>
 #include <Random.hpp>
 #include <Constants.hpp>
 #include <BitmapManager.hpp>
-
+//----------------------------------------------------------------------------
 Starfield::Starfield( void)
 {
     XTRACE();
@@ -29,18 +31,18 @@ Starfield::Starfield( void)
     _nebula = BitmapManagerS::instance()->getBitmap( "bitmaps/nebula");
     if( !_nebula)
     {
-    LOG_ERROR << "Unable to load nebula" << endl;
+        LOG_ERROR << "Unable to load nebula" << endl;
     }
     _nebulaIndex = _nebula->getIndex( "Nebula");
     _nebulaHalfWidth = (float)(_nebula->getWidth( _nebulaIndex))/2.0f;
     _nebulaHalfHeight= (float)(_nebula->getHeight( _nebulaIndex))/2.0f;
 }
-
+//----------------------------------------------------------------------------
 Starfield::~Starfield()
 {
     XTRACE();
 }
-
+//----------------------------------------------------------------------------
 void Starfield::init( float z)
 {
     XTRACE();
@@ -71,15 +73,35 @@ void Starfield::init( float z)
 
     updatePrevs();
 }
-
+//----------------------------------------------------------------------------
 void Starfield::update( void)
 {
-//    XTRACE();
+    //    XTRACE();
     updatePrevs();
+
+    float speed = 1.0f;
+    float &hs = GameS::instance()->_hyperspaceCount;
+    if (hs != 0)
+    {
+        float diff = GameState::stopwatch.getTime() - hs;
+        if (diff >= 10.0f)
+        {
+            if (diff > 15.0f)
+                speed = 20.0f - diff;
+            else
+                speed = diff - 8.0f;
+            speed *= 5.0f;
+        }
+        if (diff > 20.0f)
+        {
+            hs = 0;
+            GameS::instance()->hyperspaceJump();
+        }
+    }
 
     for( int i=0; i<NUM_STARS; i++)
     {
-        _starInfo[i].y -= _starInfo[i].d;
+        _starInfo[i].y -= _starInfo[i].d * speed;
         if( _starInfo[i].y < -100.0)
         {
             _starInfo[i].y = 100.0;
@@ -88,7 +110,7 @@ void Starfield::update( void)
     }
     for( int i=0; i<NUM_NEBULAS; i++)
     {
-        _nebulaInfo[i].y -= _nebulaInfo[i].d;
+        _nebulaInfo[i].y -= _nebulaInfo[i].d * speed;
         if( _nebulaInfo[i].y < (-50.0-_nebulaInfo[i].max))
         {
             pickSize( _nebulaInfo[i]);
@@ -105,10 +127,10 @@ void Starfield::update( void)
         }
     }
 }
-
+//----------------------------------------------------------------------------
 void Starfield::updatePrevs( void)
 {
-//    XTRACE();
+    //    XTRACE();
     for( int i=0; i<NUM_STARS; i++)
     {
         _prevStarInfoY[ i] = _starInfo[ i].y;
@@ -118,12 +140,12 @@ void Starfield::updatePrevs( void)
         _prevNebulaInfoY[ i] = _nebulaInfo[ i].y;
     }
 }
-
+//----------------------------------------------------------------------------
 void Starfield::draw( bool showStars, bool showNebulas)
 {
-//    XTRACE();
+    //    XTRACE();
 
-//  glDisable(GL_DEPTH_TEST);
+    //  glDisable(GL_DEPTH_TEST);
     glDisable(GL_LIGHTING);
 
     if( showStars)
@@ -139,6 +161,14 @@ void Starfield::draw( bool showStars, bool showNebulas)
         }
         glEnd();
     }
+
+    /*
+    if (showNebulas)
+    {
+        float &hs = GameS::instance()->_hyperspaceCount;
+        if (hs != 0 && GameState::stopwatch.getTime() - hs >= 10.0f)
+            showNebulas = false;
+    }*/
 
     if( showNebulas)
     {
@@ -164,15 +194,15 @@ void Starfield::draw( bool showStars, bool showNebulas)
     }
 
     glEnable(GL_LIGHTING);
-//  glEnable(GL_DEPTH_TEST);
+    //  glEnable(GL_DEPTH_TEST);
 }
-
+//----------------------------------------------------------------------------
 void Starfield::pickSize( Nebula &n)
 {
     n.sizeX = Random::rangef0_1()*1.2f + 0.4f;
     n.sizeY = Random::rangef0_1()*1.2f + 0.4f;
 }
-
+//----------------------------------------------------------------------------
 void Starfield::findMax( Nebula &n)
 {
     float sina = _nebulaHalfWidth *n.sizeX*sin( n.rot * ((float)M_PI/180.0f));
@@ -181,7 +211,7 @@ void Starfield::findMax( Nebula &n)
     float t2 = fabs(+sina + cosa);
     n.max = max(t1,t2);
 }
-
+//----------------------------------------------------------------------------
 void Starfield::pickColor( Nebula &n)
 {
     //only use 2 color components
@@ -213,3 +243,4 @@ void Starfield::pickColor( Nebula &n)
         break;
     }
 }
+//----------------------------------------------------------------------------

@@ -138,6 +138,7 @@ public:
     int _kills;
     bool _landed;
 
+    float _hyperspaceCount;
     void hyperspaceJump();
 
     bool init( void);

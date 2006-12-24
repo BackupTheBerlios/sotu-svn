@@ -415,6 +415,11 @@ bool Video::update( void)
     if (context != ePlanetMenu)
         StarfieldS::instance()->draw( _showStarfield, _showNebulas);
 
+    float hyspace = GameS::instance()->_hyperspaceCount;
+    int countdown = -1;
+    if (hyspace != 0)
+        countdown = (int)(GameState::stopwatch.getTime() - hyspace);
+
     if (context == eInGame || context == ePaused)
     {
         if (HeroS::instance()->alive())
@@ -423,7 +428,8 @@ bool Video::update( void)
             HeroS::instance()->draw();
             glPopMatrix();
         }
-        ParticleGroupManagerS::instance()->draw();
+        if (hyspace == 0 || countdown < 10)
+            ParticleGroupManagerS::instance()->draw();
     }
 
     //--- Ortho stuff from here on ---
@@ -436,6 +442,25 @@ bool Video::update( void)
 
     glDisable(GL_DEPTH_TEST);
     glDisable(GL_LIGHTING);
+
+    if (hyspace != 0 && (context == eInGame || context == ePaused))
+    {
+        if (countdown < 10)
+        {
+            glColor4f(1.0f,0.5f,0.0f,0.4f);
+            char buff[100];
+            sprintf(buff, "Hyperspace jump in %d seconds", 10 - countdown);
+            smallFont.DrawString(buff, 500, 400, 1.0f, 1.0f, GLBitmapFont::alCenter);
+        }
+        if (countdown > 15)
+        {
+            glColor4f(0.2f,0.9f,1.0f,0.8f);
+            char buff[100];
+            Planet *ph = PlanetManagerS::instance()->getHyperspaceTarget();
+            sprintf(buff, "Reaching %s orbit", ph->_name.c_str());
+            smallFont.DrawString(buff, 500, 400, 1.0f, 1.0f, GLBitmapFont::alCenter);
+        }
+    }
 
     glColor4f(1.0,1.0,1.0,1.0);
     if (context != ePlanetMenu)
