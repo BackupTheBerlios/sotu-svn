@@ -77,37 +77,10 @@ void ScoreKeeper::resetCurrentScore( void)
 int ScoreKeeper::addToCurrentScore( int value)
 {
     XTRACE();
-    float multiplier = 1.0f;
-
-    switch( GameState::skill)
-    {
-        case Skill::eRookie:
-            multiplier = 0.5f;
-            break;
-
-        case Skill::eNormal:
-            multiplier = 1.0f;
-            break;
-
-        case Skill::eExpert:
-            multiplier = 1.5f;
-            break;
-
-        case Skill::eInsane:
-            multiplier = 3.0f;
-            break;
-
-        case Skill::eUnknown:
-        case Skill::eLAST:
-        default:
-            break;
-    }
-
-    int newValue = (int) ((float)value * multiplier);
+    int newValue = value * 3;
 
     _leaderBoard[ _currentIndex].score += newValue;
     time( & _leaderBoard[ _currentIndex].time);
-
     updateLeaderBoard();
 
     //return the real value;

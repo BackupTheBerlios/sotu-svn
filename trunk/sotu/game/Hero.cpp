@@ -120,26 +120,22 @@ void Hero::assignWeapons()
         setArmorPierce(1.0f);
 }
 //----------------------------------------------------------------------------
-void Hero::addEnergy( int val)
+void Hero::addEnergy(int val)
 {
     _energy += val;
     if( _energy > 100)
-    {
-        //add unused energy as score
-        ScoreKeeperS::instance()->addToCurrentScore( (_energy-100)*10);
         _energy = 100;
-    }
 }
 //----------------------------------------------------------------------------
-void Hero::addShield( int val)
+void Hero::addShield(int val)
 {
     _shieldEnergy += val;
-    if( _shieldEnergy > 100)
-    {
-        //add unused energy as score
-        ScoreKeeperS::instance()->addToCurrentScore( (_shieldEnergy-100)*10);
-        _shieldEnergy = 100;
-    }
+    Cargo& c = GameS::instance()->_cargo;
+    CargoItem *item = c.findItem("Shield upgrade");
+    int upgrades = (item ? item->_quantity : 0);    // safeguard
+    int maxval = 100 + 100 * upgrades;
+    if( _shieldEnergy > maxval)
+        _shieldEnergy = maxval;
 }
 //----------------------------------------------------------------------------
 void Hero::popMessage(const char *msg, float red, float green, float blue)
@@ -154,12 +150,12 @@ void Hero::popMessage(const char *msg, float red, float green, float blue)
         pi.color.z = blue;
         pi.position = pInfo->position;
         pi.text = msg;
-        effects->newParticle( "ScoreHighlight", pi);
+        effects->newParticle("ScoreHighlight", pi);
     }
 }
 //----------------------------------------------------------------------------
 #include "SimpleEnemy.hpp"
-void Hero::hit( ParticleInfo * p, int damage, int /*radIndex*/)
+void Hero::hit(ParticleInfo * p, int damage, int /*radIndex*/)
 {
 //    XTRACE();
     if( !_isAlive) return;
@@ -268,7 +264,7 @@ void Hero::allowVerticalMovement(bool allow)
         _maxY = MIN_Y;
 }
 //----------------------------------------------------------------------------
-bool Hero::update( ParticleInfo *p)
+bool Hero::update(ParticleInfo *p)
 {
     //    XTRACE();
     if( !_isAlive)
@@ -281,43 +277,41 @@ bool Hero::update( ParticleInfo *p)
 
     _weaponEnergy += 3.0f * GAME_STEP_SCALE;
 
-    Clamp( _weaponEnergy, 0.0, 100.0);
+    Clamp(_weaponEnergy, 0.0, 100.0);
 
-    if( _moveLeft)
+    if (_moveLeft)
     {
         _xPos += _moveLeft;
             Clamp( _xPos, MIN_X, MAX_X);
     }
-    if( _moveRight)
+    if (_moveRight)
     {
         _xPos += _moveRight;
             Clamp( _xPos, MIN_X, MAX_X);
     }
 
-    if( _moveUp)
+    if (_moveUp)
     {
         _yPos += _moveUp;
             Clamp( _yPos, MIN_Y, _maxY);
     }
-    if( _moveDown)
+    if (_moveDown)
     {
         _yPos += _moveDown;
             Clamp( _yPos, MIN_Y, _maxY);
     }
 
-    for( int i=0; i<Hero::MAX_WEAPONS; i++)
+    for (int i=0; i<Hero::MAX_WEAPONS; i++)
     {
-        if( _weaponAutofire[ i] && weaponLoaded( i))
+        if (_weaponAutofire[i] && weaponLoaded(i))
         {
-            weaponFire( true, i);
+            weaponFire(true, i);
         }
     }
 
-    spawnSparks( _shieldEnergy/3, pInfo->radius, *p);
-
+    spawnSparks(_shieldEnergy/3, pInfo->radius, *p);
     lastXPos = _xPos;
     lastYPos = _yPos;
-
     return true;
 }
 //----------------------------------------------------------------------------

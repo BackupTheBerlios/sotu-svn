@@ -59,19 +59,19 @@ void BitmapParticleType::LoadBitmaps( void)
     static bool bitmapsLoaded = false;
     if( !bitmapsLoaded)
     {
-	_bitmaps = BitmapManagerS::instance()->getBitmap( "bitmaps/ammo");
-	if( !_bitmaps)
-	{
-	    LOG_ERROR << "Unable to load bitmaps" << endl;
-	}
+        _bitmaps = BitmapManagerS::instance()->getBitmap( "bitmaps/ammo");
+        if( !_bitmaps)
+        {
+            LOG_ERROR << "Unable to load bitmaps" << endl;
+        }
         bitmapsLoaded = true;
     }
 }
 
 //------------------------------------------------------------------------------
 
-SingleBitmapParticle::SingleBitmapParticle( 
-    const string &name, const char *bitmapName) 
+SingleBitmapParticle::SingleBitmapParticle(
+    const string &name, const char *bitmapName)
     :BitmapParticleType(name)
 {
     XTRACE();
@@ -151,7 +151,7 @@ void SmokePuff::draw( ParticleInfo *p)
     //rotate towards the camera
     CameraS::instance()->billboard();
 
-//	LOG_ERROR << pi.extra.x << endl;
+//        LOG_ERROR << pi.extra.x << endl;
     glColor4f(1.0,1.0,1.0, pi.extra.z);
 
     bindTexture();
@@ -225,7 +225,7 @@ void MiniSmoke::draw( ParticleInfo *p)
     //rotate towards the camera
     CameraS::instance()->billboard();
 
-//	LOG_ERROR << pi.extra.x << endl;
+//        LOG_ERROR << pi.extra.x << endl;
     glColor4f(1.0,1.0,1.0, pi.extra.z);
 
     bindTexture();
@@ -385,7 +385,7 @@ FlankBurst::FlankBurst( const string &sp):
     XTRACE();
     if( sp == "FlankBurstLeft")
     {
-	_dir = -1.0;
+        _dir = -1.0;
     }
 }
 
@@ -424,18 +424,18 @@ bool FlankBurst::update( ParticleInfo *p)
     p->extra.y += p->extra.x;
     p->radius = _bmHalfWidth*p->extra.y*2.0f;
 
-    if( (fabs( p->position.x) > 68.0f)) 
+    if( (fabs( p->position.x) > 68.0f))
     {
-	return false;
+        return false;
     }
 
     return true;
 }
 
-void FlankBurst::hit( ParticleInfo * /*p*/, int /*damage*/, int /*radIndex*/) 
-{ 
+void FlankBurst::hit( ParticleInfo * /*p*/, int /*damage*/, int /*radIndex*/)
+{
     /*
-    p->tod = 0; 
+    p->tod = 0;
     */
     AudioS::instance()->playSample( "sounds/whoop.wav");
 }
@@ -471,7 +471,7 @@ void FlankBurst::draw( ParticleInfo *p)
 
 //------------------------------------------------------------------------------
 
-BallOfPoison::BallOfPoison( void): 
+BallOfPoison::BallOfPoison( void):
     SingleBitmapParticle( "BallOfPoison", "BallOfPoison")
 {
     XTRACE();
@@ -510,22 +510,22 @@ bool BallOfPoison::update( ParticleInfo *p)
     p->position.x += p->velocity.x;
     p->position.y += p->velocity.y;
 
-    if( (fabs( p->position.x) > 68.0)) 
+    if( (fabs( p->position.x) > 68.0))
     {
-	return false;
+        return false;
     }
 
-    if( (fabs( p->position.y) > 50.0)) 
+    if( (fabs( p->position.y) > 50.0))
     {
-	return false;
+        return false;
     }
 
     return true;
 }
 
-void BallOfPoison::hit( ParticleInfo *p, int /*damage*/, int /*radIndex*/) 
-{ 
-    p->tod = 0; 
+void BallOfPoison::hit( ParticleInfo *p, int /*damage*/, int /*radIndex*/)
+{
+    p->tod = 0;
     AudioS::instance()->playSample( "sounds/whoop.wav");
 }
 
@@ -598,22 +598,22 @@ bool BallOfIce::update( ParticleInfo *p)
     p->position.x += p->velocity.x;
     p->position.y += p->velocity.y;
 
-    if( (fabs( p->position.x) > 68.0)) 
+    if( (fabs( p->position.x) > 68.0))
     {
-	return false;
+        return false;
     }
 
-    if( (fabs( p->position.y) > 50.0)) 
+    if( (fabs( p->position.y) > 50.0))
     {
-	return false;
+        return false;
     }
 
     return true;
 }
 
-void BallOfIce::hit( ParticleInfo *p, int /*damage*/, int /*radIndex*/) 
-{ 
-    p->tod = 0; 
+void BallOfIce::hit( ParticleInfo *p, int /*damage*/, int /*radIndex*/)
+{
+    p->tod = 0;
     AudioS::instance()->playSample( "sounds/whoop.wav");
 }
 
@@ -673,9 +673,9 @@ void SwarmLeader::init( ParticleInfo *p)
     p->extra.x = 0.0f; //dt 0..1
     p->extra.y = 0.0f; //# of attached swarm elements
 
-    p->points[0] = Point3D( p->position.x, p->position.y, 0); 
+    p->points[0] = Point3D( p->position.x, p->position.y, 0);
     p->points[1] = p->points[0] + Point3D( p->velocity.x*30, p->velocity.y*30, 0);
-    p->points[3] = Point3D( HeroS::instance()->lastXPos, HeroS::instance()->lastYPos, 0); 
+    p->points[3] = Point3D( HeroS::instance()->lastXPos, HeroS::instance()->lastYPos, 0);
     p->points[2] = p->points[3] + Point3D( p->velocity.x*30, -p->velocity.y*30, 0);
 
     GameState::enemyBulletCount++;
@@ -689,8 +689,8 @@ bool SwarmLeader::update( ParticleInfo *p)
 //    XTRACE();
     if( (p->extra.y<0.5) && ((fabs(p->position.x) > 70.0) || (fabs(p->position.y) > 50.0)))
     {
-	GameState::enemyBulletCount--;
-	return false;
+        GameState::enemyBulletCount--;
+        return false;
     }
 
     //update previous values for interpolation
@@ -702,20 +702,20 @@ bool SwarmLeader::update( ParticleInfo *p)
     _toHero.SetControlPoint( 3, p->points[3]);
     if( p->extra.x <= 1.0f)
     {
-	Point3D pos;
-	_toHero.GetPos( p->extra.x, pos);
-	p->extra.x += 0.01 * GAME_STEP_SCALE;
-	p->position.x = pos.x;
-	p->position.y = pos.y;
+        Point3D pos;
+        _toHero.GetPos( p->extra.x, pos);
+        p->extra.x += 0.01 * GAME_STEP_SCALE;
+        p->position.x = pos.x;
+        p->position.y = pos.y;
     }
     else
     {
-	Point3D pos1,pos2;
-	_toHero.GetPos( 1.0, pos1);
-	_toHero.GetPos( 1.0-(0.01 * GAME_STEP_SCALE), pos2);
-	pos1 = pos1 - pos2;
-	p->position.x += pos1.x;
-	p->position.y += pos1.y;
+        Point3D pos1,pos2;
+        _toHero.GetPos( 1.0, pos1);
+        _toHero.GetPos( 1.0-(0.01 * GAME_STEP_SCALE), pos2);
+        pos1 = pos1 - pos2;
+        p->position.x += pos1.x;
+        p->position.y += pos1.y;
     }
 
     return true;
@@ -739,9 +739,9 @@ void SwarmLeader::draw( ParticleInfo *)
     v = v * 0.5;
     float d = dist(v);
     if( d>1.0)
-	v = v * (1.0/d);
+        v = v * (1.0/d);
     if( d<0.5)
-	v = v * (0.5/d);
+        v = v * (0.5/d);
 
     Point3D vp = Point3D(-v.y, v.x, 0);
 
@@ -813,14 +813,14 @@ void SwarmElement::init( ParticleInfo *p)
     p->tod = -1;
     p->damage = 1;
 
-    p->related->extra.y++; 
+    p->related->extra.y++;
 
     //init previous values for interpolation
     updatePrevs(p);
 }
 
-void SwarmElement::hit( ParticleInfo *p, int /*damage*/, int /*radIndex*/) 
-{ 
+void SwarmElement::hit( ParticleInfo *p, int /*damage*/, int /*radIndex*/)
+{
     p->tod = 0;
 //    AudioS::instance()->playSample( "sounds/whoop.wav");
 }
@@ -831,25 +831,25 @@ bool SwarmElement::update( ParticleInfo *p)
 
     if( (p->tod==0) || (fabs( p->position.x) > 70.0) || (fabs( p->position.y) > 50.0) )
     {
-	p->related->extra.y--; 
-	return false;
+        p->related->extra.y--;
+        return false;
     }
 
     vec3 a = p->related->position - p->position;
     Point3D a2( a.x+(Random::rangef0_1()-0.5), a.y+(Random::rangef0_1()-0.5), 0);
     if( dist(a2) > 0.0001)
     {
-	norm(a2);
-	a2 = a2 * 0.2;
-	Point3D v(p->velocity.x, p->velocity.y, 0);
-	v = v+a2;
-	float d = dist(v);
-	if( d > 2.0)
-	{
-	    v = v*(2.0/d);
-	}
-	p->velocity.x = v.x;
-	p->velocity.y = v.y;
+        norm(a2);
+        a2 = a2 * 0.2;
+        Point3D v(p->velocity.x, p->velocity.y, 0);
+        v = v+a2;
+        float d = dist(v);
+        if( d > 2.0)
+        {
+            v = v*(2.0/d);
+        }
+        p->velocity.x = v.x;
+        p->velocity.y = v.y;
     }
 
     //update previous values for interpolation
@@ -878,9 +878,9 @@ void SwarmElement::draw( ParticleInfo *p)
     v = v * 0.5;
     float d = dist(v);
     if( d>1.0)
-	v = v * (1.0/d);
+        v = v * (1.0/d);
     if( d<0.5)
-	v = v * (0.5/d);
+        v = v * (0.5/d);
 
     Point3D vp = Point3D(-v.y, v.x, 0);
 
@@ -945,22 +945,22 @@ bool Phaser::update( ParticleInfo *p)
     p->position.x += p->velocity.x;
     p->position.y += p->velocity.y;
 
-    if( (fabs( p->position.x) > 68.0f)) 
+    if( (fabs( p->position.x) > 68.0f))
     {
-	return false;
+        return false;
     }
 
-    if( (fabs( p->position.y) > 50.0f)) 
+    if( (fabs( p->position.y) > 50.0f))
     {
-	return false;
+        return false;
     }
 
     return true;
 }
 
-void Phaser::hit( ParticleInfo *p, int /*damage*/, int /*radIndex*/) 
-{ 
-    p->tod = 0; 
+void Phaser::hit( ParticleInfo *p, int /*damage*/, int /*radIndex*/)
+{
+    p->tod = 0;
     AudioS::instance()->playSample( "sounds/whoop.wav");
 }
 
@@ -1046,11 +1046,11 @@ void PlasmaBullet::init( ParticleInfo *p)
 bool PlasmaBullet::update( ParticleInfo *p)
 {
 //    XTRACE();
-    if( (p->tod == 0) || (fabs( p->position.y) > 50.0)) 
+    if( (p->tod == 0) || (fabs( p->position.y) > 50.0))
     {
-	//death or particle reaches bottom of screen, it dies
-	GameState::enemyBulletCount--;
-	return false;
+        //death or particle reaches bottom of screen, it dies
+        GameState::enemyBulletCount--;
+        return false;
     }
 
     //update previous values for interpolation
@@ -1064,9 +1064,9 @@ bool PlasmaBullet::update( ParticleInfo *p)
     return true;
 }
 
-void PlasmaBullet::hit( ParticleInfo *p, int /*damage*/, int /*radIndex*/) 
-{ 
-    p->tod = 0; 
+void PlasmaBullet::hit( ParticleInfo *p, int /*damage*/, int /*radIndex*/)
+{
+    p->tod = 0;
     AudioS::instance()->playSample( "sounds/whoop.wav");
 }
 
@@ -1137,9 +1137,9 @@ void BallOfFire::init( ParticleInfo *p)
     p->velocity.z = 0 * GAME_STEP_SCALE;
 
     if( dy < 0)
-	p->extra.y = 180.0f + (asin( dx)*180.0f/(float)M_PI);
+        p->extra.y = 180.0f + (asin( dx)*180.0f/(float)M_PI);
     else
-	p->extra.y = -(asin( dx)*180.0f/(float)M_PI);
+        p->extra.y = -(asin( dx)*180.0f/(float)M_PI);
 
     p->damage = 40;
     p->tod = -1;
@@ -1155,31 +1155,31 @@ void BallOfFire::init( ParticleInfo *p)
 bool BallOfFire::update( ParticleInfo *p)
 {
 //    XTRACE();
-    if( (p->tod == 0) || (fabs( p->position.y) > 50.0)) 
+    if( (p->tod == 0) || (fabs( p->position.y) > 50.0))
     {
-	//death or particle reaches bottom of screen, it dies
-	GameState::enemyBulletCount--;
-	return false;
+        //death or particle reaches bottom of screen, it dies
+        GameState::enemyBulletCount--;
+        return false;
     }
 
-    static ParticleGroup *effects = 
-	ParticleGroupManagerS::instance()->getParticleGroup( EFFECTS_GROUP2);
+    static ParticleGroup *effects =
+        ParticleGroupManagerS::instance()->getParticleGroup( EFFECTS_GROUP2);
     int sparkType = Random::random()%3;
     switch( sparkType)
     {
-	case 0:
-	    effects->newParticle( 
-		"FireSpark1", p->position.x, p->position.y, p->position.z);
-	    break;
-	case 1:
-	    effects->newParticle( 
-		"FireSpark2", p->position.x, p->position.y, p->position.z);
-	    break;
-	case 2:
-	default:
-	    effects->newParticle( 
-		"FireSpark3", p->position.x, p->position.y, p->position.z);
-	    break;
+        case 0:
+            effects->newParticle(
+                "FireSpark1", p->position.x, p->position.y, p->position.z);
+            break;
+        case 1:
+            effects->newParticle(
+                "FireSpark2", p->position.x, p->position.y, p->position.z);
+            break;
+        case 2:
+        default:
+            effects->newParticle(
+                "FireSpark3", p->position.x, p->position.y, p->position.z);
+            break;
     }
 
     //update previous values for interpolation
@@ -1191,9 +1191,9 @@ bool BallOfFire::update( ParticleInfo *p)
     return true;
 }
 
-void BallOfFire::hit( ParticleInfo *p, int /*damage*/, int /*radIndex*/) 
-{ 
-    p->tod = 0; 
+void BallOfFire::hit( ParticleInfo *p, int /*damage*/, int /*radIndex*/)
+{
+    p->tod = 0;
     AudioS::instance()->playSample( "sounds/whoop.wav");
 }
 
@@ -1285,8 +1285,8 @@ void StingerTrail::draw( ParticleInfo *p)
     interpolate( p, pi);
 
 //    XTRACE();
-//	glColor4f(0.9*pi.extra.y,0.6*pi.extra.y,0.2*pi.extra.y, pi.extra.y);
-//	glColor4f(0.9,0.6,0.2, pi.extra.y);
+//        glColor4f(0.9*pi.extra.y,0.6*pi.extra.y,0.2*pi.extra.y, pi.extra.y);
+//        glColor4f(0.9,0.6,0.2, pi.extra.y);
     glColor4f(0.3f,1.0f,0.2f, pi.extra.y);
 
     glPushMatrix();
@@ -1357,8 +1357,8 @@ void HeroStinger::draw( ParticleInfo *p)
     interpolate( p, pi);
 
     //get particle group for special effects
-    static ParticleGroup *effects = 
-	ParticleGroupManagerS::instance()->getParticleGroup( EFFECTS_GROUP2);
+    static ParticleGroup *effects =
+        ParticleGroupManagerS::instance()->getParticleGroup( EFFECTS_GROUP2);
 
 //Note that we don't want the interpolated extra.y here!
 //We want to start the trail at the current display position (pi)
@@ -1366,17 +1366,17 @@ void HeroStinger::draw( ParticleInfo *p)
     if( (pi.position.y - p->extra.y)*GameState::horsePower > (Random::random()&0xff))
     {
 
-	effects->newParticle( 
-	    "StingerTrail", pi.position.x, pi.position.y, pi.position.z);
-	p->extra.y = pi.position.y;
+        effects->newParticle(
+            "StingerTrail", pi.position.x, pi.position.y, pi.position.z);
+        p->extra.y = pi.position.y;
     }
-#else 
-//	LOG_ERROR << p->extra.y << endl;
+#else
+//        LOG_ERROR << p->extra.y << endl;
     if(  pi.position.y > p->extra.y)
-    { 
-	effects->newParticle( 
-	    "SmokePuff", pi.position.x, pi.position.y, pi.position.z);
-	p->extra.y = pi.position.y + 3.0f;
+    {
+        effects->newParticle(
+            "SmokePuff", pi.position.x, pi.position.y, pi.position.z);
+        p->extra.y = pi.position.y + 3.0f;
     }
 #endif
 
@@ -1391,7 +1391,7 @@ void HeroStinger::draw( ParticleInfo *p)
     glPopMatrix();
 }
 
-void HeroStinger::hit( ParticleInfo *p, int /*damage*/, int /*radIndex*/) 
+void HeroStinger::hit( ParticleInfo *p, int /*damage*/, int /*radIndex*/)
 {
 //    XTRACE();
     p->tod = 0;
@@ -1406,7 +1406,7 @@ StatusMessage::StatusMessage( void):
     _smallFont = FontManagerS::instance()->getFont( "bitmaps/arial-small");
     if( !_smallFont)
     {
-	LOG_ERROR << "Unable to get font... (arial-small)" << endl;
+        LOG_ERROR << "Unable to get font... (arial-small)" << endl;
     }
 }
 
@@ -1441,7 +1441,7 @@ bool StatusMessage::update( ParticleInfo *p)
 
     if( p->position.x < -(70.0f+p->extra.x))
     {
-	return false;
+        return false;
     }
 
     return true;
@@ -1462,7 +1462,7 @@ void StatusMessage::draw( ParticleInfo *p)
 
     glColor4f( p->color.x, p->color.y, p->color.z, 0.8f);
     _smallFont->DrawString(
-	    p->text.c_str(), 0 ,0 , p->extra.y, p->extra.z);
+            p->text.c_str(), 0 ,0 , p->extra.y, p->extra.z);
 
     glPopMatrix();
 
@@ -1582,20 +1582,20 @@ bool EnergyBlob::update( ParticleInfo *p)
     return true;
 }
 
-void EnergyBlob::hit( ParticleInfo *p, int /*damage*/, int /*radIndex*/) 
+void EnergyBlob::hit( ParticleInfo *p, int /*damage*/, int /*radIndex*/)
 {
     if( GameState::horsePower > 90.0)
     {
-	static ParticleGroup *effects = 
-	    ParticleGroupManagerS::instance()->getParticleGroup(EFFECTS_GROUP2);
+        static ParticleGroup *effects =
+            ParticleGroupManagerS::instance()->getParticleGroup(EFFECTS_GROUP2);
 
-	ParticleInfo pi;
-	pi.color.x = 0.5f;
-	pi.color.y = 0.5f;
-	pi.color.z = 1.0f;
-	pi.position = p->position;
-	pi.text = "Energy";
-	effects->newParticle( "ScoreHighlight", pi);
+        ParticleInfo pi;
+        pi.color.x = 0.5f;
+        pi.color.y = 0.5f;
+        pi.color.z = 1.0f;
+        pi.position = p->position;
+        pi.text = "Energy";
+        effects->newParticle( "ScoreHighlight", pi);
     }
 
     AudioS::instance()->playSample( "sounds/voiceEnergy.wav");
@@ -1664,20 +1664,20 @@ bool ShieldBoost::update( ParticleInfo *p)
     return true;
 }
 
-void ShieldBoost::hit( ParticleInfo *p, int /*damage*/, int /*radIndex*/) 
+void ShieldBoost::hit( ParticleInfo *p, int /*damage*/, int /*radIndex*/)
 {
     if( GameState::horsePower > 90.0)
     {
-	static ParticleGroup *effects = 
-	    ParticleGroupManagerS::instance()->getParticleGroup(EFFECTS_GROUP2);
+        static ParticleGroup *effects =
+            ParticleGroupManagerS::instance()->getParticleGroup(EFFECTS_GROUP2);
 
-	ParticleInfo pi;
-	pi.color.x = 1.0f;
-	pi.color.y = 1.0f;
-	pi.color.z = 0.0f;
-	pi.position = p->position;
-	pi.text = "Shield";
-	effects->newParticle( "ScoreHighlight", pi);
+        ParticleInfo pi;
+        pi.color.x = 1.0f;
+        pi.color.y = 1.0f;
+        pi.color.z = 0.0f;
+        pi.position = p->position;
+        pi.text = "Shield";
+        effects->newParticle( "ScoreHighlight", pi);
     }
 
     AudioS::instance()->playSample( "sounds/voiceShield.wav");
@@ -1746,20 +1746,20 @@ bool ArmorPierce::update( ParticleInfo *p)
     return true;
 }
 
-void ArmorPierce::hit( ParticleInfo *p, int /*damage*/, int /*radIndex*/) 
+void ArmorPierce::hit( ParticleInfo *p, int /*damage*/, int /*radIndex*/)
 {
     if( GameState::horsePower > 90.0)
     {
-	static ParticleGroup *effects = 
-	    ParticleGroupManagerS::instance()->getParticleGroup(EFFECTS_GROUP2);
+        static ParticleGroup *effects =
+            ParticleGroupManagerS::instance()->getParticleGroup(EFFECTS_GROUP2);
 
-	ParticleInfo pi;
-	pi.color.x = 0.0f;
-	pi.color.y = 1.0f;
-	pi.color.z = 1.0f;
-	pi.position = p->position;
-	pi.text = "ArmorPierce";
-	effects->newParticle( "ScoreHighlight", pi);
+        ParticleInfo pi;
+        pi.color.x = 0.0f;
+        pi.color.y = 1.0f;
+        pi.color.z = 1.0f;
+        pi.position = p->position;
+        pi.text = "ArmorPierce";
+        effects->newParticle( "ScoreHighlight", pi);
     }
 
     //FIXME: for now just give some points...
@@ -1831,20 +1831,20 @@ bool WeaponUpgrade::update( ParticleInfo *p)
     return true;
 }
 
-void WeaponUpgrade::hit( ParticleInfo *p, int /*damage*/, int /*radIndex*/) 
+void WeaponUpgrade::hit( ParticleInfo *p, int /*damage*/, int /*radIndex*/)
 {
     if( GameState::horsePower > 90.0)
     {
-	static ParticleGroup *effects = 
-	    ParticleGroupManagerS::instance()->getParticleGroup(EFFECTS_GROUP2);
+        static ParticleGroup *effects =
+            ParticleGroupManagerS::instance()->getParticleGroup(EFFECTS_GROUP2);
 
-	ParticleInfo pi;
-	pi.color.x = 1.0f;
-	pi.color.y = 0.0f;
-	pi.color.z = 0.0f;
-	pi.position = p->position;
-	pi.text = "WeaponUpgrade";
-	effects->newParticle( "ScoreHighlight", pi);
+        ParticleInfo pi;
+        pi.color.x = 1.0f;
+        pi.color.y = 0.0f;
+        pi.color.z = 0.0f;
+        pi.position = p->position;
+        pi.text = "WeaponUpgrade";
+        effects->newParticle( "ScoreHighlight", pi);
     }
 
     //FIXME: for now just give some points...
@@ -1907,10 +1907,10 @@ bool Bonus1::update( ParticleInfo *p)
 {
 //    XTRACE();
     if( p->tod == 0) return false;
-    if( fabs( p->position.y) > 50.0) 
+    if( fabs( p->position.y) > 50.0)
     {
-	ScoreKeeperS::instance()->incGoodiesMissed();
-	return false;
+        ScoreKeeperS::instance()->incGoodiesMissed();
+        return false;
     }
 
     //update previous values for interpolation
@@ -1922,14 +1922,14 @@ bool Bonus1::update( ParticleInfo *p)
     return true;
 }
 
-void Bonus1::hit( ParticleInfo *p, int /*damage*/, int /*radIndex*/) 
+void Bonus1::hit( ParticleInfo *p, int /*damage*/, int /*radIndex*/)
 {
 //    XTRACE();
-    static ParticleGroup *effects = 
-	ParticleGroupManagerS::instance()->getParticleGroup( EFFECTS_GROUP2);
+    static ParticleGroup *effects =
+        ParticleGroupManagerS::instance()->getParticleGroup( EFFECTS_GROUP2);
 
     static ParticleGroup *bonus =
-	ParticleGroupManagerS::instance()->getParticleGroup( BONUS_GROUP);
+        ParticleGroupManagerS::instance()->getParticleGroup( BONUS_GROUP);
 
     p->tod = 0;
 
@@ -1944,34 +1944,34 @@ void Bonus1::hit( ParticleInfo *p, int /*damage*/, int /*radIndex*/)
 
     if( newValue < 1000)
     {
-	AudioS::instance()->playSample( "sounds/pop.wav");
-	if( GameState::horsePower > 90.0)
-	{
-	    pi.color.x = 1.0f;
-	    pi.color.y = 1.0f;
-	    pi.color.z = 1.0f;
+        AudioS::instance()->playSample( "sounds/pop.wav");
+        if( GameState::horsePower > 90.0)
+        {
+            pi.color.x = 1.0f;
+            pi.color.y = 1.0f;
+            pi.color.z = 1.0f;
 
-	    effects->newParticle( "ScoreHighlight", pi);
-	}
+            effects->newParticle( "ScoreHighlight", pi);
+        }
     }
     else
     {
-	AudioS::instance()->playSample( "sounds/bonus.wav");
+        AudioS::instance()->playSample( "sounds/bonus.wav");
 
-	pi.color.x = 1.0f;
-	pi.color.y = 0.2f;
-	pi.color.z = 0.2f;
+        pi.color.x = 1.0f;
+        pi.color.y = 0.2f;
+        pi.color.z = 0.2f;
 
-	effects->newParticle( "ScoreHighlight", pi);
+        effects->newParticle( "ScoreHighlight", pi);
 
-	if( (Random::random() & 0xff) < 0x80)
-	    bonus->newParticle(
-		"ShieldBoost", p->position.x, 50.0f, p->position.z);
-	else
-	    bonus->newParticle(
-		"EnergyBlob", p->position.x, 50.0f, p->position.z);
+        if( (Random::random() & 0xff) < 0x80)
+            bonus->newParticle(
+                "ShieldBoost", p->position.x, 50.0f, p->position.z);
+        else
+            bonus->newParticle(
+                "EnergyBlob", p->position.x, 50.0f, p->position.z);
     }
-//	LOG_INFO << "Bonus: " << newValue << endl;
+//        LOG_INFO << "Bonus: " << newValue << endl;
 }
 
 void Bonus1::draw( ParticleInfo *p)
@@ -1997,7 +1997,7 @@ ScoreHighlight::ScoreHighlight( void):
     _font = FontManagerS::instance()->getFont("bitmaps/arial-small");
     if( !_font)
     {
-	LOG_ERROR << "Unable to get font... (arial-small)" << endl;
+        LOG_ERROR << "Unable to get font... (arial-small)" << endl;
     }
 }
 
