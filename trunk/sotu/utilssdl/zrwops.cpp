@@ -20,8 +20,8 @@
 
 int ziStream_seek(struct SDL_RWops * /*context*/,int offset,int whence)
 {
-    LOG_WARNING << "ziStream_seek not implemented!" << endl;
-    LOG_WARNING << "ziStream_seek attempt to seek to offset " <<  offset << " whence " << whence << endl;
+    //LOG_WARNING << "ziStream_seek not implemented!" << endl;
+    //LOG_WARNING << "ziStream_seek attempt to seek to offset " <<  offset << " whence " << whence << endl;
     return -1;
 }
 int ziStream_read(struct SDL_RWops *context, void *ptr, int size, int maxnum)
@@ -38,9 +38,9 @@ int ziStream_write(struct SDL_RWops *,const void *,int,int)
 }
 int ziStream_close(struct SDL_RWops *context)
 {
-    if( context) 
+    if( context)
     {
-	SDL_FreeRW( context);
+    SDL_FreeRW( context);
     }
     return(0);
 }
@@ -51,11 +51,11 @@ SDL_RWops *RWops_from_ziStream( ziStream &zi)
 
     rwops = SDL_AllocRW();
     if ( rwops != NULL ) {
-	rwops->seek = ziStream_seek;
-	rwops->read = ziStream_read;
-	rwops->write = ziStream_write;
-	rwops->close = ziStream_close;
-	rwops->hidden.unknown.data1 = &zi;
+    rwops->seek = ziStream_seek;
+    rwops->read = ziStream_read;
+    rwops->write = ziStream_write;
+    rwops->close = ziStream_close;
+    rwops->hidden.unknown.data1 = &zi;
     }
     return( rwops);
 }
