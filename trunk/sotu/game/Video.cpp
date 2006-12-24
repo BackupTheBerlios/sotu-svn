@@ -465,7 +465,13 @@ bool Video::update( void)
         }
         else
         {
-            if (GameS::instance()->getHyperspaceAvailable() == "OK")
+            if (GameS::instance()->_spaceStationApproach != 0)
+            {
+                glColor4f(1.0f,1.0f,0.3f,0.8f);
+                smallFont.DrawString("Approaching Space Station",
+                    500, 400, 1.0f, 1.0f, GLBitmapFont::alCenter);
+            }
+            else if (GameS::instance()->getHyperspaceAvailable() == "OK")
             {
                 glColor4f(1.0f,1.0f,1.0f,0.6f);
                 smallFont.DrawString("Press H for hyperspace jump",

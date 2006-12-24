@@ -157,14 +157,20 @@ void StageManager::update( void)
             activateLevel();
         else
         {
-            // reached space station
-            GameS::instance()->_landed = true;
-            GameS::instance()->switchContext(ePlanetMenu);
-
-            // TODO: show MessageBox -> successfully reached space station
-            //       ili jos bolje neku animaciju
-
-            SkillS::instance()->incrementSkill();
+            float& ssa = GameS::instance()->_spaceStationApproach;
+            if (ssa == 0)
+                ssa = GameState::stopwatch.getTime();
+            else
+            {
+                float ssadiff = GameState::stopwatch.getTime() - ssa;
+                if (ssadiff > 7.0f)     // reached space station
+                {
+                    ssa = 0;
+                    GameS::instance()->_landed = true;
+                    GameS::instance()->switchContext(ePlanetMenu);
+                    SkillS::instance()->incrementSkill();
+                }
+            }
         }
     }
 }

@@ -108,7 +108,7 @@ public:
 class Map
 {
 public:
-    ~Map();     // destroy planets
+    ~Map();             // destroy planets
     void recreate();    // creates planets
 
     void draw(float x, float y);                // renders galaxy as set of points
@@ -138,6 +138,7 @@ public:
     int _kills;
     bool _landed;
 
+    float _spaceStationApproach;
     float _hyperspaceCount;
     void hyperspaceJump();
     std::string getHyperspaceAvailable();   // returns "OK" is o.k.

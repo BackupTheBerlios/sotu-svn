@@ -366,13 +366,15 @@ void Game::hyperspaceJump()
     CargoItem* fuel = _cargo.findItem("Fuel");
     fuel->_quantity -= (int)(dist + 0.92);
     _currentPlanet = target;
+    _spaceStationApproach = 0;
     startNewGame();
-
-    // TODO: add particle: Successfully reached %s
 }
 //----------------------------------------------------------------------------
 std::string Game::getHyperspaceAvailable()
 {
+    if (_spaceStationApproach != 0)
+        return "Docking to space station";
+
     Planet *target = PlanetManagerS::instance()->getHyperspaceTarget();
     if (target == _currentPlanet)
         return "No hyperspace target";
