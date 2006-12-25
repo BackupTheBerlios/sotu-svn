@@ -87,13 +87,15 @@ int EnemyWaves::getNextWave(std::string& name)
     {
         _alienDone++;
         sprintf(buff, "Alien wave %d of %d", _alienDone, _alienTotal);
-        index = 0;  // TODO: more enemy types
+        index = 1;
+        while (index == 1 || index == 10)
+            index = Random::integer(18);
     }
     else if (type == 1)
     {
         _rebelDone++;
         sprintf(buff, "Rebel wave %d of %d", _rebelDone, _rebelTotal);
-        index = 2;
+        index = 10;
     }
     else // if (type == 2)
     {

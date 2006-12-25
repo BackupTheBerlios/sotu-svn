@@ -1,0 +1,20 @@
+ 0 - mouse
+ 1 - EMPIRE
+ 2 - yellow spider
+ 3 - biljka
+ 4 - airplane - flyby
+ 5 - two eyes
+ 6 - vipers
+ 7 - red, yellow spider
+ 8 - bubamara
+ 9 - viper + truck
+10 - buldozer REBELS
+11 - red, yellow, blue spider
+12 - triangles
+13 - truck
+14 - butterfly
+15 - airplane - green
+16 - dogs/letters
+17 - red spider - long wave
+18 - pumpkin
+19 - big boss
