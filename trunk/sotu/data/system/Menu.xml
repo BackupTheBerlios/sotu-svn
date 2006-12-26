@@ -141,35 +141,40 @@
         Position="500.0 440.0">
 
         <Bool
-        Text="Fullscreen"
-        Info="Toggle between fullscreen and windowed mode."
-        Position="220.0 460.0"
-        Variable="fullscreen" />
+            Text="Fullscreen"
+            Info="Toggle between fullscreen and windowed mode."
+            Position="220.0 460.0"
+            Variable="fullscreen" />
         <Resolution
-        Text="Resolution: "
-        Info="Change resolution. Click resolution to change and box to accept."
-        Position="220.0 420.0" />
+            Text="Resolution: "
+            Info="Change resolution. Click resolution to change and box to accept."
+            Position="220.0 420.0" />
         <Bool
-        Text="Allow Skewed Resolution"
-        Info="Allow resolutions that do not have an aspect ratio of 4:3."
-        Position="220.0 380.0"
-        Variable="allowAnyAspectRatio" />
+            Text="Allow Skewed Resolution"
+            Info="Allow resolutions that do not have an aspect ratio of 4:3."
+            Position="220.0 380.0"
+            Variable="allowAnyAspectRatio" />
 
         <Bool
-        Text="Show FPS"
-        Info="Show or hide frames per second counter."
-        Position="220.0 320.0"
-        Variable="showFPS" />
+             Text="Minimize CPU usage"
+             Info="The game would target 30 fps and give the rest CPU time to system."
+             Position="220.0 320.0"
+             Variable="minimizeCPU" />
         <Bool
-        Text="Show Nebulas"
-        Info="Show or hide nebulas."
-        Position="220.0 280.0"
-        Variable="showNebulas" />
+            Text="Show FPS"
+            Info="Show or hide frames per second counter."
+            Position="220.0 280.0"
+            Variable="showFPS" />
         <Bool
-        Text="Show Stars"
-        Info="Show or hide stars."
-        Position="220.0 240.0"
-        Variable="showStarfield" />
+            Text="Show Nebulas"
+            Info="Show or hide nebulas."
+            Position="220.0 240.0"
+            Variable="showNebulas" />
+        <Bool
+            Text="Show Stars"
+            Info="Show or hide stars."
+            Position="220.0 200.0"
+            Variable="showStarfield" />
     </Menu>
 
     <Menu
@@ -221,24 +226,18 @@
 
     <Bool
         Text="Vertical Ship Movement"
-        Info="Allow vertical ship movement for next new game."
+        Info="Allow vertical ship movement."
         Position="340.0 280.0"
         Variable="allowVerticalMovement" />
-    <Enum
-        Text="Skill Level: "
-        Info="Click to change skill level for next new game."
-        Position="340.0 240.0"
-        Variable="skill"
-        Values="ROOKIE NORMAL EXPERT INSANE"/>
     <Bool
         Text="Autofire"
-        Info="Click once, fire often, you lazy bastard!"
-        Position="340.0 200.0"
+        Info="Click and hold mouse button to fire."
+        Position="340.0 240.0"
         Variable="autofireOn" />
 
         <Bool
         Text="Online Check and News Scroller"
-        Info="Check for updates and news at startup."
+        Info="Check for updates (needs Internet connection)."
         Position="340.0 140.0"
         Variable="onlineCheck" />
     </Menu>
