@@ -220,6 +220,8 @@ void Hero::hit(ParticleInfo * p, int damage, int /*radIndex*/)
             "ExplosionPiece", p->position.x, p->position.y, p->position.z);
         }
         _isAlive = false;
+        GameS::instance()->_hyperspaceCount = 0;
+        GameS::instance()->_spaceStationApproach = 0;
     }
 }
 //----------------------------------------------------------------------------

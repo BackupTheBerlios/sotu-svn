@@ -443,7 +443,7 @@ bool Video::update( void)
     glDisable(GL_DEPTH_TEST);
     glDisable(GL_LIGHTING);
 
-    if (context == eInGame || context == ePaused)
+    if (HeroS::instance()->alive() && (context == eInGame || context == ePaused))
     {
         if (hyspace != 0)
         {

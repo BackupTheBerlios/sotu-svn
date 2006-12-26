@@ -135,8 +135,11 @@ void HyperSpaceJump::performAction(Trigger &, bool isDown)
     if (!isDown)
         return;
 
-    if (GameS::instance()->getContext() != eInGame)
+    if (GameS::instance()->getContext() != eInGame
+        || !HeroS::instance()->alive())
+    {
         return;
+    }
 
     std::string hsError = GameS::instance()->getHyperspaceAvailable();
     if (hsError == "OK")
