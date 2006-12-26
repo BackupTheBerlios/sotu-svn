@@ -279,13 +279,13 @@ void Game::updateInGameLogic()
         //LOG_WARNING << "Skipped " << stepCount << " frames in game." << endl;
         if (GameState::frameFraction > 1.0)
         {
-            //Our logic is still way behind where it should be at this
-            //point in time. If we get here we already ran through
-            //MAX_GAME_STEPS logic runs trying to catch up.
+            // Our logic is still way behind where it should be at this
+            // point in time. If we get here we already ran through
+            // MAX_GAME_STEPS logic runs trying to catch up.
 
-            //We clamp the value to 1.0, higher values would try
-            //to predict were we are visually. Maybe not a bad idead
-            //to allow values up to let's say 1.3...
+            // We clamp the value to 1.0, higher values would try
+            // to predict were we are visually. Maybe not a bad idea
+            // to allow values up to let's say 1.3...
             GameState::frameFraction = 1.0;
         }
     }
