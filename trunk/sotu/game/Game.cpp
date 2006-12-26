@@ -41,6 +41,8 @@
 #include <StageManager.hpp>
 #include <MenuManager.hpp>
 #include <ResourceManager.hpp>
+
+//#define MINIMAL_CPU_USAGE
 //----------------------------------------------------------------------------
 Game::Game(void):
     _currentPlanet(0), _spaceStationApproach(0),
@@ -234,11 +236,13 @@ void Game::updateOtherLogic()
             GameState::frameFractionOther = 1.0;
         }
     }
+#ifdef MINIMAL_CPU_USAGE
     else
     {   // give 80% of free CPU time back to system
         float extraTime = 800.0f * (GAME_STEP_SIZE - (currentTime - GameState::startOfStep));
         SDL_Delay((unsigned int)extraTime);
     }
+#endif
 }
 //----------------------------------------------------------------------------
 void Game::updateInGameLogic()
@@ -289,11 +293,13 @@ void Game::updateInGameLogic()
             GameState::frameFraction = 1.0;
         }
     }
+#ifdef MINIMAL_CPU_USAGE
     else
     {   // give 80% of free CPU time back to system
         float extraTime = 800.0f * (GAME_STEP_SIZE - (currentGameTime - GameState::startOfGameStep));
         SDL_Delay((unsigned int)extraTime);
     }
+#endif
 }
 //----------------------------------------------------------------------------
 void Game::run( void)
@@ -324,6 +330,9 @@ void Game::run( void)
         input.update();
         audio.update();
         video.update();
+#ifndef MINIMAL_CPU_USAGE
+        SDL_Delay(1);
+#endif
     }
 }
 //----------------------------------------------------------------------------
