@@ -429,7 +429,7 @@ bool Game::illegalTradeCheck()
     }
 
     std::string msg = who + " agents discovered that you are trading illegal goods ("
-        + what + "). If you do not surrender, you will become a FUGITIVE, and " + who
+        + what + "). If you do not surrender, you will become a fugitive, and " + who
         + " fleet will attack you whenever you are in orbit of " + who
         + " planets.\n\nWill you surrender and give up your cargo?";
 
