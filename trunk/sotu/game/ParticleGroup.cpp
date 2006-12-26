@@ -2,6 +2,7 @@
 //   Particles are grouped into ParticleGroups.
 //
 // Copyright (C) 2001 Frank Becker
+// Copyright (C) 2006 Milan Babuskov
 //
 // This program is free software; you can redistribute it and/or modify it under
 // the terms of the GNU General Public License as published by the Free Software
@@ -69,21 +70,19 @@ void ParticleGroup::reset( void)
     _usedList.next = 0;
     _aliveCount = 0;
 }
-
+//----------------------------------------------------------------------------
 bool ParticleGroup::init( void)
 {
     XTRACE();
 
     //FIXME: do we really need to restrict size?
     if( _numParticles > MAX_PARTICLES_PER_GROUP)
-    {
         _numParticles = MAX_PARTICLES_PER_GROUP;
-    }
 
     _particles = new ParticleInfo[ _numParticles];
     for( int i=0; i<_numParticles-1; i++)
     {
-    const vec3 zero(0,0,0);
+        const vec3 zero(0,0,0);
         _particles[i].position = zero;
         _particles[i].velocity = zero;
         _particles[i].color    = zero;
@@ -100,40 +99,40 @@ bool ParticleGroup::init( void)
     static bool initialized = false;
     if( !initialized)
     {
-    new HeroStinger();
-    new StingerTrail();
-    new SmokePuff();
-    new MiniSmoke();
-    new ExplosionPiece();
+        new HeroStinger();
+        new StingerTrail();
+        new SmokePuff();
+        new MiniSmoke();
+        new ExplosionPiece();
         new PlasmaBullet();
         new Bonus1( "SuperBonus", 1000);
         new Bonus1( "Bonus1", 100);
-    new ScoreHighlight();
+        new ScoreHighlight();
         new EnergyBlob();
         new ShieldBoost();
         new ArmorPierce();
         new WeaponUpgrade();
-    new StatusMessage();
-    new Spark();
-    new BallOfFire();
-    new BallOfIce();
-    new BallOfPoison();
-    new SwarmLeader();
-    new SwarmElement();
-    new Phaser();
-    new FireSpark( "FireSpark1");
-    new FireSpark( "FireSpark2");
-    new FireSpark( "FireSpark3");
-    new FlankBurst( "FlankBurstLeft");
-    new FlankBurst( "FlankBurstRight");
-    HeroS::instance();
+        new StatusMessage();
+        new Spark();
+        new BallOfFire();
+        new BallOfIce();
+        new BallOfPoison();
+        new SwarmLeader();
+        new SwarmElement();
+        new Phaser();
+        new FireSpark( "FireSpark1");
+        new FireSpark( "FireSpark2");
+        new FireSpark( "FireSpark3");
+        new FlankBurst( "FlankBurstLeft");
+        new FlankBurst( "FlankBurstRight");
+        HeroS::instance();
 
         initialized = true;
     }
 
     return true;
 }
-
+//----------------------------------------------------------------------------
 ParticleInfo *ParticleGroup::newParticle(
     const string & name, const ParticleInfo &pi)
 {
@@ -237,7 +236,7 @@ bool hasRadiusCollision( const float &minDist, const vec3 &pos1, const vec3 &pos
 //----------------------------------------------------------------------------
 void ParticleGroup::detectCollisions(ParticleGroup *pg)
 {
-//    XTRACE();
+    //    XTRACE();
 
     for (ParticleInfo *p1 = _usedList.next; p1; p1 = p1->next)
     {
@@ -276,11 +275,10 @@ void ParticleGroup::detectCollisions(ParticleGroup *pg)
             }
             else    // regular enemy
             {
-                if (hasRadiusCollision( p1->radius+p2->radius,
-                    p1->position, p2->position))
+                if (hasRadiusCollision(p1->radius+p2->radius, p1->position, p2->position))
                 {
-                    p1->particle->hit( p1, p2->damage);
-                    p2->particle->hit( p2, p1->damage);
+                    p1->particle->hit(p1, p2->damage);
+                    p2->particle->hit(p2, p1->damage);
                     if (p1->tod == 0)
                         p1->damage = 0;
                     if (p2->tod == 0)

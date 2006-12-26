@@ -94,6 +94,7 @@ void Hero::init(ParticleInfo *p)
 
     // set some reasonable damage when player collides with aliens
     p->damage = 30;
+    p->tod = -1;    // prevents reseting the damage
 
     vec3 minpt, maxpt;
     _model->getBoundingBox( minpt, maxpt);
@@ -163,8 +164,9 @@ void Hero::popMessage(const char *msg, float red, float green, float blue)
 #include "SimpleEnemy.hpp"
 void Hero::hit(ParticleInfo * p, int damage, int /*radIndex*/)
 {
-//    XTRACE();
-    if( !_isAlive) return;
+    //    XTRACE();
+    if( !_isAlive)
+        return;
     //cout << "Hero hit with " << damage << endl;
 
     if (damage > 0)
@@ -391,17 +393,8 @@ void Hero::upgradeWeapons( void)
 //----------------------------------------------------------------------------
 void Hero::weaponFire( bool isDown, int weapNum)
 {
-//    XTRACE();
-    if( !_isAlive)
-    {
-        /* MB: disabled right-click mouse to restart game
-        if( weapNum == 2)
-        {
-            GameS::instance()->startNewGame();
-        } */
-        return;
-    }
-    if( !_pInfo)
+    //    XTRACE();
+    if( !_isAlive || !_pInfo)
         return;
 
     float & _xPos = _pInfo->position.x;
@@ -409,70 +402,56 @@ void Hero::weaponFire( bool isDown, int weapNum)
     float & _zPos = _pInfo->position.z;
 
     static bool needButtonUp = false;
-    if( isDown == false)
-    {
+    if (isDown == false)
         needButtonUp = false;
-    }
-    if( needButtonUp)
-    {
+    if (needButtonUp)
         return;
-    }
 
-    _weaponAutofire[ weapNum] = isDown;
-    if( isDown && weaponLoaded( weapNum))
+    _weaponAutofire[weapNum] = isDown;
+    if (isDown && weaponLoaded(weapNum))
     {
-        if( !_weapon[ weapNum])
+        if (!_weapon[weapNum])
         {
             LOG_WARNING << "No weapon mounted in slot " << weapNum << endl;
             return;
         }
 
-        float er = _weapon[ weapNum]->energyRequired();
-        if( _weaponEnergy < er)
-        {
+        float er = _weapon[weapNum]->energyRequired();
+        if (_weaponEnergy < er)
             return;
-        }
 
         ConfigS::instance()->getBoolean( "autofireOn", _autofireOn);
-        if( ! _autofireOn)
-        {
+        if (!_autofireOn)
             needButtonUp = true;
-        }
         _weaponEnergy -= er;
 
         //FIXME: offset depending on where weapon is mounted
-        _weapon[ weapNum]->launch( _xPos, _yPos, _zPos);
+        _weapon[weapNum]->launch(_xPos, _yPos, _zPos);
 
-        _weaponReload[ weapNum] = _weapon[ weapNum]->reloadTime() +
+        _weaponReload[weapNum] = _weapon[weapNum]->reloadTime() +
             GameState::stopwatch.getTime();
-        if( _weaponAmmo[ weapNum] > 0)
-        {
-            _weaponAmmo[ weapNum]--;
-        }
+        if (_weaponAmmo[weapNum] > 0)
+            _weaponAmmo[weapNum]--;
     }
 }
 //----------------------------------------------------------------------------
 void Hero::setArmorPierce( float damageMultiplier)
 {
     _damageMultiplier = damageMultiplier;
-    for( int i=0; i<Hero::MAX_WEAPONS; i++)
-    {
-        _weapon[ i]->setDamageMultiplier( _damageMultiplier);
-    }
+    for (int i = 0; i < Hero::MAX_WEAPONS; i++)
+        _weapon[i]->setDamageMultiplier(_damageMultiplier);
 }
 //----------------------------------------------------------------------------
 void Hero::drawWeapon( unsigned int weapNum)
 {
-    if( (weapNum < Hero::MAX_WEAPONS) &&  _weapon[ weapNum])
+    if ((weapNum < Hero::MAX_WEAPONS) && _weapon[weapNum])
         _weapon[weapNum]->draw();
 }
 //----------------------------------------------------------------------------
 void Hero::draw( void)
 {
 //    XTRACE();
-    if( !_isAlive)
-        return;
-    if( !_pInfo)
+    if( !_isAlive || !_pInfo)
         return;
 
     ParticleInfo pi;

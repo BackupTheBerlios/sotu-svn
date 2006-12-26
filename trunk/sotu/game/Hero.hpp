@@ -2,6 +2,7 @@
 //   Our Hero!
 //
 // Copyright (C) 2001 Frank Becker
+// Copyright (C) 2006 Milan Babuskov
 //
 // This program is free software; you can redistribute it and/or modify it under
 // the terms of the GNU General Public License as published by the Free Software
@@ -20,9 +21,9 @@
 #include <Direction.hpp>
 #include <ParticleType.hpp>
 #include <Skill.hpp>
-
+//----------------------------------------------------------------------------
 class Weapon;
-
+//----------------------------------------------------------------------------
 class Hero: public ParticleType
 {
 friend class Singleton<Hero>;
@@ -129,7 +130,6 @@ private:
     float _sint[360];
     float _cost[360];
 };
-
+//----------------------------------------------------------------------------
 typedef Singleton<Hero> HeroS;
-
 #endif
