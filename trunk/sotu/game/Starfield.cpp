@@ -93,9 +93,9 @@ void Starfield::update( void)
             speed *= 5.0f;
         }
         if (diff > 20.0f)
-        {
-            hs = 0;
+        {   // order important!!!
             GameS::instance()->hyperspaceJump();
+            hs = 0;
         }
     }
 

@@ -53,7 +53,7 @@ Hero::Hero():
     reset();
 }
 //----------------------------------------------------------------------------
-void Hero::reset( void)
+void Hero::reset(bool leaveEnergy)
 {
     XTRACE();
     _isAlive = true;
@@ -61,8 +61,11 @@ void Hero::reset( void)
     _moveRight=0;
     _moveUp=0;
     _moveDown=0;
-    _energy=100;
-    _shieldEnergy=100;
+    if (!leaveEnergy)
+    {
+        _energy=100;
+        _shieldEnergy=100;
+    }
     _weaponEnergy=100.0;
     _damageMultiplier = 1.0;
 

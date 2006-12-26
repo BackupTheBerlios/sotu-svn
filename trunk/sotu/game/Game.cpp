@@ -146,15 +146,14 @@ bool Game::init( void)
     return result;
 }
 //----------------------------------------------------------------------------
-void Game::reset( void)
+void Game::reset()
 {
-    //reset in order to start new game
     ParticleGroupManagerS::instance()->reset();
-    HeroS::instance()->reset();
+    // don't change energy if we come from hyperspaceJump
+    HeroS::instance()->reset(_hyperspaceCount != 0);
     ParticleGroupManagerS::instance()->
         getParticleGroup(HERO_GROUP)->newParticle( string("Hero"), 0, 0, -100);
 
-    ScoreKeeperS::instance()->resetCurrentScore();
     GameState::stopwatch.reset();
     GameState::startOfGameStep = GameState::stopwatch.getTime();
     StageManagerS::instance()->reset();
@@ -162,11 +161,10 @@ void Game::reset( void)
 //----------------------------------------------------------------------------
 void Game::startNewGame()
 {
-    _hyperspaceCount = 0;
     reset();
+    _hyperspaceCount = 0;
     switchContext(eInGame);
     AudioS::instance()->playSample("sounds/voiceGo.wav");
-
     _landed = false;
 
     bool allowVerticalMovement = false;
@@ -188,6 +186,8 @@ void Game::startNewCampaign()
     ConfigS::instance()->updateKeyword("skill", SKILL_ROOKIE);
 
     // TODO: reset quests
+
+    ScoreKeeperS::instance()->resetCurrentScore();
 
     switchContext(ePlanetMenu);
 }

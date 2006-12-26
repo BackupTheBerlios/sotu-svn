@@ -36,7 +36,7 @@ public:
     };
 
     bool init( void);
-    void reset( void);
+    void reset(bool leaveEnergy = false);
 
 
     virtual void init( ParticleInfo *p);

@@ -145,7 +145,7 @@ public:
 
     bool init( void);
     void run( void);
-    void reset( void);
+    void reset();
     void startNewGame();
 
     void startNewCampaign();
