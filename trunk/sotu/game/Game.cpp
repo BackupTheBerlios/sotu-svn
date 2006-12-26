@@ -42,8 +42,9 @@
 #include <MenuManager.hpp>
 #include <ResourceManager.hpp>
 //----------------------------------------------------------------------------
-Game::Game(void)
-    :_currentPlanet(0), _context(eUnknown), _previousContext(eUnknown)
+Game::Game(void):
+    _currentPlanet(0), _spaceStationApproach(0),
+    _context(eUnknown), _previousContext(eUnknown)
 {
     XTRACE();
 }
@@ -196,7 +197,7 @@ void Game::updateOtherLogic()
 {
     int stepCount = 0;
     float currentTime = Timer::getTime();
-    while( (currentTime - GameState::startOfStep) > GAME_STEP_SIZE)
+    while ((currentTime - GameState::startOfStep) > GAME_STEP_SIZE)
     {
         StarfieldS::instance()->update();
 
@@ -220,8 +221,7 @@ void Game::updateOtherLogic()
 
     if( stepCount > 1)
     {
-        LOG_WARNING << "Skipped " << stepCount << " frames." << endl;
-
+        //LOG_WARNING << "Skipped " << stepCount << " frames outside game." << endl;
         if( GameState::frameFractionOther > 1.0)
         {
             //Our logic is still way behind where it should be at this
@@ -234,16 +234,22 @@ void Game::updateOtherLogic()
             GameState::frameFractionOther = 1.0;
         }
     }
+    else
+    {   // give 80% of free CPU time back to system
+        float extraTime = 800.0f * (GAME_STEP_SIZE - (currentTime - GameState::startOfStep));
+        SDL_Delay((unsigned int)extraTime);
+    }
 }
 //----------------------------------------------------------------------------
 void Game::updateInGameLogic()
 {
-    int stepCount = 0;
     float currentGameTime = GameState::stopwatch.getTime();
     float hyspace = 0;
     if (_hyperspaceCount != 0)
         hyspace = currentGameTime - _hyperspaceCount;
-    while( (currentGameTime - GameState::startOfGameStep) > GAME_STEP_SIZE)
+
+    int stepCount = 0;
+    while ((currentGameTime - GameState::startOfGameStep) > GAME_STEP_SIZE)
     {
         if (hyspace < 10)
         {
@@ -270,7 +276,8 @@ void Game::updateInGameLogic()
 
     if( stepCount > 1)
     {
-        if( GameState::frameFraction > 1.0)
+        //LOG_WARNING << "Skipped " << stepCount << " frames in game." << endl;
+        if (GameState::frameFraction > 1.0)
         {
             //Our logic is still way behind where it should be at this
             //point in time. If we get here we already ran through
@@ -281,6 +288,11 @@ void Game::updateInGameLogic()
             //to allow values up to let's say 1.3...
             GameState::frameFraction = 1.0;
         }
+    }
+    else
+    {   // give 80% of free CPU time back to system
+        float extraTime = 800.0f * (GAME_STEP_SIZE - (currentGameTime - GameState::startOfGameStep));
+        SDL_Delay((unsigned int)extraTime);
     }
 }
 //----------------------------------------------------------------------------
@@ -312,7 +324,6 @@ void Game::run( void)
         input.update();
         audio.update();
         video.update();
-        SDL_Delay(1);   // let the system breathe at least a little bit
     }
 }
 //----------------------------------------------------------------------------
