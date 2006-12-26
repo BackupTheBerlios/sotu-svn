@@ -1423,12 +1423,12 @@ void MessageBoxManager::setup(const std::string& title, const std::string& text,
     else
         r.min = Point2D(300, 100);
 
-    Selectable *s = new ActionSelectable(r, okAction, okText, "", 1.4f);
+    Selectable *s = new ActionSelectable(r, okAction, okText, "", 1.8f);
     _activeSelectables.insert(_activeSelectables.end(), s);
     if (cancelText != "")
     {
         r.min = Point2D(700, 100);
-        s = new ActionSelectable(r, cancelAction, cancelText, "", 1.4f);
+        s = new ActionSelectable(r, cancelAction, cancelText, "", 1.8f);
         _activeSelectables.insert(_activeSelectables.end(), s);
     }
 
