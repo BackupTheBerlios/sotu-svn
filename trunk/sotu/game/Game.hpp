@@ -75,6 +75,10 @@ class Cargo
 private:
     std::vector<CargoItem> _items;
 public:
+    typedef std::vector<CargoItem>::iterator iterator;
+    iterator begin();
+    iterator end();
+
     void clear();
     void create(Planet *p); // give zero to create player's cargo
     CargoItem* findItem(const std::string& itemName);
@@ -121,8 +125,8 @@ private:
     PlanetList _planets;
 };
 //----------------------------------------------------------------------------
-typedef enum { eUnknown, eMenu, eInGame, ePlanetMenu, ePaused, eCameraFlyby,
-        eLAST } ContextEnum;
+typedef enum { eUnknown, eMenu, eInGame, ePlanetMenu, eMessageBox, ePaused,
+    eCameraFlyby, eLAST } ContextEnum;
 typedef enum { psClean=0, psFugitive, psTerrorist } PlayerStatus;
 //----------------------------------------------------------------------------
 class Game
@@ -137,6 +141,9 @@ public:
     PlayerStatus _empireStatus;
     int _kills;
     bool _landed;
+
+    bool illegalTradeCheck();
+    void illegalTradeDecision(bool accept);
 
     float _spaceStationApproach;
     float _hyperspaceCount;

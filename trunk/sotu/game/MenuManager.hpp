@@ -140,4 +140,47 @@ private:
 
 typedef Singleton<PlanetManager> PlanetManagerS;
 //----------------------------------------------------------------------------
+class MessageBoxManager: public InterceptorI
+{
+friend class Singleton<MessageBoxManager>;
+public:
+    bool init();
+    bool update();
+    bool draw();
+
+    /*
+    void Up();
+    void Down();
+    void Left();
+    void Right();
+    void Enter();
+    */
+
+    virtual void input( const Trigger &trigger, const bool &isDown);
+
+    void setup(const std::string& title, const std::string& text,
+        const std::string& okText, const std::string& okAction,
+        const std::string& cancelText = "",
+        const std::string& cancelAction = "");
+
+private:
+    virtual ~MessageBoxManager();
+    MessageBoxManager();
+    MessageBoxManager( const MessageBoxManager&);
+    MessageBoxManager &operator=(const MessageBoxManager&);
+
+    list<Selectable*> _activeSelectables;
+    void clearSelectables();
+
+    int _pointer;
+    int _board;
+    float _mouseX, _mouseY;
+    float _angle, _prevAngle;
+
+    std::string _title;
+    std::vector<std::string> _text;
+};
+
+typedef Singleton<MessageBoxManager> MessageBoxManagerS;
+//----------------------------------------------------------------------------
 #endif

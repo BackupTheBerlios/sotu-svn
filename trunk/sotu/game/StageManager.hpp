@@ -37,6 +37,9 @@ public:
     EnemyWaves();
     void reset();
     int getNextWave(std::string& name);
+
+    bool _rebelsAreNext;
+    bool _empireIsNext;
 };
 //----------------------------------------------------------------------------
 class StageManager
@@ -56,6 +59,9 @@ public:
     {
         return _activeLevelName;
     }
+
+    void rebelsAreNext();
+    void empireIsNext();
 
 private:
     StageManager( void):

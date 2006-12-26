@@ -32,6 +32,7 @@ EnemyWaves::EnemyWaves():
     _alienTotal(-1), _rebelTotal(0), _empireTotal(0),
     _alienDone(0), _rebelDone(0), _empireDone(0)
 {
+    _rebelsAreNext = _empireIsNext = false;
 }
 //----------------------------------------------------------------------------
 void EnemyWaves::reset()
@@ -54,7 +55,11 @@ void EnemyWaves::reset()
     int empireStatus = (int)(GameS::instance()->_empireStatus);
     _alienTotal  = 4 + Random::integer(2) + (p->_alienActivity / 10);
     _rebelTotal  = ((p->_rebelSentiment - 50) / 10) * rebelStatus;
-    _empireTotal = ((50 - p->_rebelSentiment)/ 10) * empireStatus;
+    _empireTotal = ((50 - p->_rebelSentiment) / 10) * empireStatus;
+    if (_rebelTotal > 3)
+        _rebelTotal  = _rebelTotal  + 2 - Random::integer(5);
+    if (_empireTotal > 3)
+        _empireTotal = _empireTotal + 2 - Random::integer(5);
 }
 //----------------------------------------------------------------------------
 // returns -1 if no more
@@ -72,14 +77,27 @@ int EnemyWaves::getNextWave(std::string& name)
     int type;
     int index;
     char buff[200];
-    while (true)
+    if (_rebelsAreNext && _rebelDone < _rebelTotal)
     {
-        type = Random::integer(3);
-        if (type == 0 && _alienDone < _alienTotal ||
-            type == 1 && _rebelDone < _rebelTotal ||
-            type == 2 && _empireDone < _empireTotal)
+        type = 1;
+        _rebelsAreNext = false;
+    }
+    else if (_empireIsNext && _empireDone < _empireTotal)
+    {
+        type = 2;
+        _empireIsNext = false;
+    }
+    else
+    {
+        while (true)
         {
-            break;
+            type = Random::integer(3);
+            if (type == 0 && _alienDone < _alienTotal ||
+                type == 1 && _rebelDone < _rebelTotal ||
+                type == 2 && _empireDone < _empireTotal)
+            {
+                break;
+            }
         }
     }
 
@@ -108,6 +126,16 @@ int EnemyWaves::getNextWave(std::string& name)
 }
 //----------------------------------------------------------------------------
 // STAGE MANAGER *************************************************************
+//----------------------------------------------------------------------------
+void StageManager::rebelsAreNext()
+{
+    _enemies._rebelsAreNext = true;
+}
+//----------------------------------------------------------------------------
+void StageManager::empireIsNext()
+{
+    _enemies._empireIsNext = true;
+}
 //----------------------------------------------------------------------------
 bool StageManager::init( void)
 {

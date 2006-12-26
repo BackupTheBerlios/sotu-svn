@@ -227,10 +227,12 @@ void MenuManager::makeMenu( TiXmlNode *_node)
 //----------------------------------------------------------------------------
 bool MenuManager::update( void)
 {
+    /*
     static float nextTime = Timer::getTime()+0.5f;
     float thisTime = Timer::getTime();
     if( thisTime > nextTime)
         nextTime = thisTime + 0.5f;
+    */
 
     _onlineUpdateDisplay.update();
     _prevAngle = _angle;
@@ -1402,5 +1404,252 @@ PlanetManager::PlanetManager():
     _prevAngle(0.0)
 {
     _screenType = stMap;
+}
+//----------------------------------------------------------------------------
+// MessageBoxManager *********************************************************
+//----------------------------------------------------------------------------
+void MessageBoxManager::setup(const std::string& title, const std::string& text,
+    const std::string& okText, const std::string& okAction,
+    const std::string& cancelText, const std::string& cancelAction)
+{
+    _title = title;
+
+    // create selectables
+    clearSelectables();
+
+    BoundingBox r;
+    if (cancelText == "")
+        r.min = Point2D(500, 100);
+    else
+        r.min = Point2D(300, 100);
+
+    Selectable *s = new ActionSelectable(r, okAction, okText, "", 1.4f);
+    _activeSelectables.insert(_activeSelectables.end(), s);
+    if (cancelText != "")
+    {
+        r.min = Point2D(700, 100);
+        s = new ActionSelectable(r, cancelAction, cancelText, "", 1.4f);
+        _activeSelectables.insert(_activeSelectables.end(), s);
+    }
+
+    // break text into lines
+    GLBitmapFont &fontWhite =
+      *(FontManagerS::instance()->getFont( "bitmaps/menuWhite"));
+    const float textsize = 0.65f;
+    const float maxx = 600.0f;
+    _text.clear();
+    std::string tmp = text;
+    float currlinew = 0.0f;
+    const float spacew = fontWhite.GetWidth(" ", textsize);
+    std::string currline;
+    while (!tmp.empty())
+    {
+        std::string::size_type pos = tmp.find_first_of(" \n");
+        std::string word;
+        unsigned char c = 'x';
+        if (pos == std::string::npos)
+        {
+            word = tmp;
+            tmp = "";
+        }
+        else
+        {
+            c = tmp[pos];
+            word = tmp.substr(0, pos);
+            tmp.erase(0, pos+1);
+        }
+        // add word
+        float w = fontWhite.GetWidth(word.c_str(), textsize);
+        if (currlinew + w > maxx)
+        {
+            _text.push_back(currline);
+            currlinew = 0;
+            currline = "";
+        }
+
+        currline += word + " ";
+        currlinew += w + spacew;
+        if (c == '\n')
+        {
+            _text.push_back(currline);
+            currlinew = 0;
+            currline = "";
+        }
+    }
+    if (currline != "")             // last line
+        _text.push_back(currline);
+}
+//----------------------------------------------------------------------------
+void MessageBoxManager::clearSelectables()
+{
+    Selectable::reset();
+    for(list<Selectable*>::iterator i = _activeSelectables.begin();
+        i != _activeSelectables.end(); ++i)
+    {
+        delete (*i);
+    }
+    _activeSelectables.clear();
+}
+//----------------------------------------------------------------------------
+MessageBoxManager::~MessageBoxManager()
+{
+    XTRACE();
+
+    clearSelectables();
+    SelectableFactory::cleanup();
+}
+//----------------------------------------------------------------------------
+MessageBoxManager::MessageBoxManager():
+    _mouseX(200.0),
+    _mouseY(650.0),
+    _angle(0.0),
+    _prevAngle(0.0)
+{
+}
+//----------------------------------------------------------------------------
+bool MessageBoxManager::draw()
+{
+    GLBitmapCollection *menuBoard =
+        BitmapManagerS::instance()->getBitmap( "bitmaps/menuBoard");
+    menuBoard->bind();
+    glColor4f(1.0, 1.0, 1.0, 0.7f);
+    glEnable(GL_TEXTURE_2D);
+    menuBoard->Draw(_board, 100.0, 50.0, 800.0/256.0, 2.0);
+    glDisable(GL_TEXTURE_2D);
+
+    GLBitmapFont &fontWhite =
+      *(FontManagerS::instance()->getFont( "bitmaps/menuWhite"));
+
+    glColor4f(1.0, 1.0, 1.0, 1.0);
+    fontWhite.DrawString(_title.c_str(), 500, 600, 1.4f, 1.4f, GLBitmapFont::alCenter);
+
+    const float textsize = 0.65f;
+    const float lineh = 40.0f;
+    float yoffset = 440.0f;
+    for (std::vector<std::string>::iterator it = _text.begin(); it != _text.end(); ++it)
+    {
+        // shadow
+        glColor4f(0.0, 0.0, 0.0, 1.0);
+        fontWhite.DrawString((*it).c_str(), 502, yoffset-2, textsize, textsize, GLBitmapFont::alCenter);
+        glColor4f(1.0, 1.0, 1.0, 1.0);
+        fontWhite.DrawString((*it).c_str(), 500, yoffset, textsize, textsize, GLBitmapFont::alCenter);
+        yoffset -= lineh;
+    }
+
+    for (list<Selectable*>::iterator i = _activeSelectables.begin();
+        i != _activeSelectables.end(); ++i)
+    {
+        (*i)->draw();
+    }
+
+    glEnable(GL_TEXTURE_2D);
+    GLBitmapCollection *icons =
+        BitmapManagerS::instance()->getBitmap( "bitmaps/menuIcons");
+    icons->bind();
+    glColor4f(1.0, 1.0, 1.0, 1.0);
+    icons->Draw(_pointer, _mouseX, _mouseY, 0.5, 0.5);
+    glDisable(GL_TEXTURE_2D);
+    return true;
+}
+//----------------------------------------------------------------------------
+bool MessageBoxManager::update()
+{
+    _prevAngle = _angle;
+    _angle += 1.0f;
+
+    for(list<Selectable*>::iterator i = _activeSelectables.begin();
+        i != _activeSelectables.end(); ++i)
+    {
+        (*i)->update();
+    }
+    return true;
+}
+//----------------------------------------------------------------------------
+// load graphics and stuff
+bool MessageBoxManager::init()
+{
+    LOG_INFO << "MessageBoxManager::init()" << endl;
+
+    GLBitmapCollection *menuBoard =
+        BitmapManagerS::instance()->getBitmap( "bitmaps/menuBoard");
+    if( !menuBoard)
+    {
+        LOG_ERROR << "Unable to load menuBoard." << endl;
+        return false;
+    }
+    _board = menuBoard->getIndex( "MenuBoard");
+
+    GLBitmapCollection *icons =
+        BitmapManagerS::instance()->getBitmap( "bitmaps/menuIcons");
+    if( !icons)
+    {
+        LOG_ERROR << "Unable to load menuIcons." << endl;
+        return false;
+    }
+    _pointer = icons->getIndex("Pointer");
+    return true;
+}
+//----------------------------------------------------------------------------
+void MessageBoxManager::input(const Trigger &trigger, const bool &isDown)
+{
+    Trigger t = trigger;
+    if( isDown)
+    {
+        switch( trigger.type)
+        {
+            case eKeyTrigger:
+                switch( trigger.data1)
+                {
+                    //case SDLK_ESCAPE:   GameS::instance()->previousContext();  return;
+                    //case SDLK_UP:       Up();           break;
+                    //case SDLK_DOWN:     Down();         break;
+                    //case SDLK_LEFT:     Left();         break;
+                    //case SDLK_RIGHT:    Right();        break;
+                    case SDLK_F12:      VideoS::instance()->takeSnapshot();  break;
+                    default:                break;
+                }
+                break;
+
+            case eMotionTrigger:
+                _mouseX += (trigger.fData1*10.0f);
+                _mouseY += (trigger.fData2*10.0f);
+                Clamp( _mouseX, 0.0f, 1000.0f);
+                Clamp( _mouseY, 0.0f, 750.0f);
+                break;
+
+            default:
+                break;
+        }
+    }
+
+    //put the absolute mouse position into trigger
+    t.fData1 = _mouseX;
+    t.fData2 = _mouseY;
+
+    // handle mouse event on selectables
+    list<Selectable*>::iterator i;
+    list<Selectable*>::iterator check = _activeSelectables.begin();
+    for( i=_activeSelectables.begin(); i!=_activeSelectables.end(); i++)
+    {
+        Selectable *sel = *i;
+        if( !sel)
+        {
+            LOG_ERROR << "Selectable is 0 !!!" << endl;
+            continue;
+        }
+        const BoundingBox &r = sel->getInputBox();
+        if( (_mouseX >= r.min.x) && (_mouseX <= r.max.x) &&
+            (_mouseY >= r.min.y) && (_mouseY <= r.max.y))
+        {
+            sel->input( t, isDown);
+            //one of the selectables may trigger a loadMenuLevel and our
+            //iterator will be invalid. Drop out of this loop!
+            if( check != _activeSelectables.begin())
+            {
+                // LOG_INFO << "active selectables have changed..." << endl;
+                break;
+            }
+        }
+    }
 }
 //----------------------------------------------------------------------------

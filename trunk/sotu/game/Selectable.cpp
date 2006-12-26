@@ -879,17 +879,27 @@ void ActionSelectable::select( void)
 {
     LOG_INFO << "Selecting: " << _action << endl;
     if (_action == "NewCampaign")
-    {
         GameS::instance()->startNewCampaign();
-        return;
-    }
-    if (_action == "NewGame")
+    else if (_action == "NewGame")
     {
         if (GameS::instance()->_landed)
-            GameS::instance()->startNewGame();
+        {
+            if (GameS::instance()->illegalTradeCheck())
+                GameS::instance()->startNewGame();
+        }
         else
             GameS::instance()->switchContext(eInGame);
         return;
+    }
+    else if (_action == "IllegalTradeAccept")
+    {
+        GameS::instance()->illegalTradeDecision(true);
+        GameS::instance()->startNewGame();
+    }
+    else if (_action == "IllegalTradeRefuse")
+    {
+        GameS::instance()->illegalTradeDecision(false);
+        GameS::instance()->startNewGame();
     }
     else if (_action == "Quit")
        GameState::isAlive = false;

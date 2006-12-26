@@ -567,17 +567,14 @@ bool Video::update( void)
         glDisable(GL_TEXTURE_2D);
 
         MenuManagerS::instance()->draw();
-
-        /*
-        glColor4f(1.0,1.0,1.0,0.5);
-        string gVersion = "v"+GAMEVERSION;
-        float width = smallFont.GetWidth( gVersion.c_str(), 0.6f);
-        smallFont.DrawString( gVersion.c_str() , 995.0f-width, 5.0f, 0.6f, 0.4f);
-        */
     }
     else if (context == ePlanetMenu)
     {
         PlanetManagerS::instance()->draw();
+    }
+    else if (context == eMessageBox)
+    {
+        MessageBoxManagerS::instance()->draw();
     }
     else // InGame, Paused, MouseLook
     {

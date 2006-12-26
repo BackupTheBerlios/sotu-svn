@@ -70,6 +70,7 @@ Game::~Game()
     PlanetManagerS::cleanup();
     StageManagerS::cleanup();
     ModelManagerS::cleanup();
+    MessageBoxManagerS::cleanup();
     InputS::cleanup();
     AudioS::cleanup();
     VideoS::cleanup();  //Video calls SDL_Quit
@@ -96,6 +97,7 @@ bool Game::init( void)
     if( ! InputS::instance()->init()) return false;
     if( ! MenuManagerS::instance()->init()) return false;
     if( ! PlanetManagerS::instance()->init()) return false;
+    if( ! MessageBoxManagerS::instance()->init()) return false;
     if( ! HeroS::instance()->init()) return false;
 
     StarfieldS::instance()->init( -150.0);
@@ -206,6 +208,9 @@ void Game::updateOtherLogic()
 
         if (_context == ePlanetMenu)
             PlanetManagerS::instance()->update();
+
+        if (_context == eMessageBox)
+            MessageBoxManagerS::instance()->update();
 
         //advance to next start-of-game-step point in time
         GameState::startOfStep += GAME_STEP_SIZE;
@@ -367,6 +372,8 @@ void Game::switchContext(ContextEnum c)
         InputS::instance()->enableInterceptor(PlanetManagerS::instance());
     else if (c == eMenu)
         InputS::instance()->enableInterceptor(MenuManagerS::instance());
+    else if (c == eMessageBox)
+        InputS::instance()->enableInterceptor(MessageBoxManagerS::instance());
     else
         InputS::instance()->disableInterceptor();
 
@@ -378,6 +385,92 @@ void Game::previousContext()
 {
     if (_previousContext != eUnknown)
         switchContext(_previousContext);
+}
+//----------------------------------------------------------------------------
+// returns true if no illegal goods are found OR player is already fugitive
+bool Game::illegalTradeCheck()
+{
+    if (_currentPlanet->_rebelSentiment <= 50 && _empireStatus != psClean)
+        return true;
+    if (_currentPlanet->_rebelSentiment > 50 && _rebelStatus != psClean)
+        return true;
+
+    // if illegal goods are found, pop up message box
+    std::vector<CargoItemInfo *> illegal;
+    std::vector<CargoItemInfo>* info = CargoItemInfo::getCargoInfo();
+    for (std::vector<CargoItemInfo>::iterator it = info->begin();
+        it != info->end(); ++it)
+    {
+        if ((*it)._legalStatus == CargoItemInfo::lsiEmpire && _currentPlanet->_rebelSentiment <= 50 ||
+            (*it)._legalStatus == CargoItemInfo::lsiRebels && _currentPlanet->_rebelSentiment >  50 ||
+            (*it)._legalStatus == CargoItemInfo::lsiBoth)
+        {
+            CargoItem *c = _cargo.findItem((*it)._name);
+            if (c->_quantity > 0)
+                illegal.push_back(&(*it));
+        }
+    }
+
+    if (illegal.empty())
+        return true;
+
+    std::string who;
+    if (_currentPlanet->_rebelSentiment <= 50)
+        who = "Empire";
+    else
+        who = "Rebel";
+
+    std::string what;
+    for (std::vector<CargoItemInfo *>::iterator it = illegal.begin(); it != illegal.end(); ++it)
+    {
+        if (!what.empty())
+            what += ", ";
+        what += (*it)->_name;
+    }
+
+    std::string msg = who + " agents discovered that you are trading illegal goods ("
+        + what + "). If you do not surrender, you will become a FUGITIVE, and " + who
+        + " fleet will attack you whenever you are in orbit of " + who
+        + " planets.\n\nWill you surrender and give up your cargo?";
+
+    MessageBoxManagerS::instance()->setup("ILLEGAL TRADING", msg,
+        "Surrender",   "IllegalTradeAccept",
+        "Let's fight", "IllegalTradeRefuse");
+    switchContext(eMessageBox);
+    return false;
+}
+//----------------------------------------------------------------------------
+// accept = true if player accepted to loose all the cargo
+void Game::illegalTradeDecision(bool accept)
+{
+    if (accept)
+    {
+        std::vector<CargoItemInfo>* info = CargoItemInfo::getCargoInfo();
+        for (std::vector<CargoItemInfo>::iterator it = info->begin();
+            it != info->end(); ++it)
+        {
+            if ((*it)._legalStatus == CargoItemInfo::lsiEmpire && _currentPlanet->_rebelSentiment <= 50 ||
+                (*it)._legalStatus == CargoItemInfo::lsiRebels && _currentPlanet->_rebelSentiment >  50 ||
+                (*it)._legalStatus == CargoItemInfo::lsiBoth)
+            {
+                CargoItem *c = _cargo.findItem((*it)._name);
+                c->_quantity = 0;
+            }
+        }
+    }
+    else    // player refused
+    {
+        if (_currentPlanet->_rebelSentiment <= 50)
+        {
+            _empireStatus = psFugitive;
+            StageManagerS::instance()->empireIsNext();
+        }
+        else
+        {
+            _rebelStatus = psFugitive;
+            StageManagerS::instance()->rebelsAreNext();
+        }
+    }
 }
 //----------------------------------------------------------------------------
 void Game::hyperspaceJump()
@@ -431,7 +524,7 @@ std::vector<CargoItemInfo>* CargoItemInfo::getCargoInfo()
 
         info.push_back(CargoItemInfo(1.0f, "models/IceSpray", "Proton spread fire",    3,  400, 0,  1, pmNormal,
             "Secondary weapon - use right mouse button or CTRL key"));
-        info.push_back(CargoItemInfo(1.0f, "models/IceSprayPierce", "Proton enhancer", 6,  500, 0,  1, pmNormal,
+        info.push_back(CargoItemInfo(1.0f, "models/IceSprayPierce", "Proton enhancer", 6,  900, 0,  1, pmNormal,
             "Enhances primary and secondary weapon power"));
         info.push_back(CargoItemInfo(0.8f, "models/FlankBurster", "Wave emitter",      8, 1200, 0,  1, pmNormal,
             "Tertiary weapon - use middle mouse button or ALT key"));
@@ -464,7 +557,7 @@ void Cargo::create(Planet *p)
         if (p)
         {
             bool illegal =
-                ((*it)._legalStatus == CargoItemInfo::lsiEmpire && p->_rebelSentiment < 50 ||
+                ((*it)._legalStatus == CargoItemInfo::lsiEmpire && p->_rebelSentiment <= 50 ||
                  (*it)._legalStatus == CargoItemInfo::lsiRebels && p->_rebelSentiment > 50);
             float multiply = (illegal ? 2.0f : 1.0f);
             float tleffect = ((*it)._legalStatus == CargoItemInfo::lsiBoth ? 3.0f : 1.0f );
@@ -494,6 +587,16 @@ CargoItem *Cargo::findItem(const std::string& itemName)
 void Cargo::clear()
 {
     _items.clear();
+}
+//----------------------------------------------------------------------------
+Cargo::iterator Cargo::begin()
+{
+    return _items.begin();
+}
+//----------------------------------------------------------------------------
+Cargo::iterator Cargo::end()
+{
+    return _items.end();
 }
 //----------------------------------------------------------------------------
 // PLANET ********************************************************************
