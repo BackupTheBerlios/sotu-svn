@@ -901,6 +901,16 @@ void ActionSelectable::select( void)
         GameS::instance()->illegalTradeDecision(false);
         GameS::instance()->startNewGame();
     }
+    else if (_action == "PlanetMenu")
+    {
+        GameS::instance()->switchContext(ePlanetMenu);
+        // don't allow to go back to message box:
+        GameS::instance()->setPreviousContext(ePlanetMenu);
+    }
+    else if (_action == "UlegAccept")
+        GameS::instance()->ulegAccept();
+    else if (_action == "UlegRefuse")
+        GameS::instance()->ulegRefuse();
     else if (_action == "Quit")
        GameState::isAlive = false;
     else if (_action == "ShowMap")

@@ -75,6 +75,14 @@ private:
     int _numWeap;
 };
 //----------------------------------------------------------------------------
+class MegaBombFireAction: public Callback
+{
+public:
+    MegaBombFireAction(): Callback("MegaBomb") { XTRACE(); }
+    virtual ~MegaBombFireAction() { XTRACE(); }
+    virtual void performAction( Trigger &, bool isDown);
+};
+//----------------------------------------------------------------------------
 class SnapshotAction: public Callback
 {
 public:

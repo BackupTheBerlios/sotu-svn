@@ -72,7 +72,7 @@ void GuardDog::launch( float /*x*/, float /*y*/, float /*z*/)
 }
 //------------------------------------------------------------------------------
 Stinger::Stinger( void):
-    Weapon( 30.0f, 0.20f, WeaponSTINGER, "Not much punch")
+    Weapon( 30.0f, 0.20f, WeaponSTINGER, "Rockets")
 {
     XTRACE();
     _stinger = ModelManagerS::instance()->getModel("models/Stinger");
@@ -99,7 +99,7 @@ void Stinger::draw( void)
 }
 //------------------------------------------------------------------------------
 FlankBurster::FlankBurster( void):
-    Weapon( 80.0, 2.0, WeaponFLANKBURST, "Mr Proper says: it cleans your flanks, too!")
+    Weapon( 80.0, 2.0, WeaponFLANKBURST, "Horizontal plasma waves.")
 {
     XTRACE();
     _flankBurster = ModelManagerS::instance()->getModel("models/FlankBurster");
@@ -131,7 +131,7 @@ void FlankBurster::draw( void)
 }
 //------------------------------------------------------------------------------
 IceSpray::IceSpray( void):
-    Weapon( 45.0f, 0.4f, WeaponICESPRAY, "Shiver! Beware any shrinkage...")
+    Weapon( 45.0f, 0.4f, WeaponICESPRAY, "Ice spray")
 {
     XTRACE();
     _iceSpray = ModelManagerS::instance()->getModel("models/IceSpray");
@@ -215,7 +215,7 @@ void IceSpray::draw( void)
 }
 //------------------------------------------------------------------------------
 WingPhaser::WingPhaser( void):
-    Weapon( 35.0f, 0.3f, WeaponWINGPHASER, "A wing-mounted double blow.")
+    Weapon( 35.0f, 0.3f, WeaponWINGPHASER, "Vertical shot")
 {
     XTRACE();
     _wingPhaser = ModelManagerS::instance()->getModel("models/WingPhaser");

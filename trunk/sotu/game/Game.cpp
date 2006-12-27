@@ -180,17 +180,17 @@ void Game::startNewCampaign()
     _cargo.clear();
     _cargo.create(0);   // create empty cargo bay
     _cargo.findItem("Fuel")->_quantity += 30;
+    //_cargo.findItem("Smart bomb")->_quantity += 2000;
     _cargo.findItem("Proton spread fire")->_quantity += 1;
     _money = 2000;
     _landed = true;
     _galaxy.recreate();
     _questTargets.clear();
     _questTargets.push_back("TORRES");
+    _chapter = 1;
     _empireStatus = _rebelStatus = psClean;
     _kills = 0;
     ConfigS::instance()->updateKeyword("skill", SKILL_ROOKIE);
-
-    // TODO: reset quests
 
     ScoreKeeperS::instance()->resetCurrentScore();
 
@@ -383,6 +383,11 @@ void Game::switchContext(ContextEnum c)
     _context = c;
 }
 //----------------------------------------------------------------------------
+void Game::setPreviousContext(ContextEnum c)
+{
+    _previousContext = c;
+}
+//----------------------------------------------------------------------------
 void Game::previousContext()
 {
     if (_previousContext != eUnknown)
@@ -475,6 +480,218 @@ void Game::illegalTradeDecision(bool accept)
     }
 }
 //----------------------------------------------------------------------------
+void Game::ulegAccept()
+{   // add Armada to Map
+    _rebelStatus = psClean;
+    Planet *p = new Planet(30, 150, "ARMADA");
+    p->_rebelSentiment = 0;
+    p->_techLevel = 9;
+    p->_alienActivity = 0;
+    _galaxy.addPlanet(p);
+    _questTargets.push_back("ARMADA");
+    switchContext(ePlanetMenu);
+    setPreviousContext(ePlanetMenu);
+}
+//----------------------------------------------------------------------------
+void Game::ulegRefuse()
+{
+    _rebelStatus = psTerrorist;
+    _cargo.clear();
+    _cargo.create(0);   // create empty cargo bay
+    _cargo.findItem("Fuel")->_quantity += 300000;
+    _money = 2000;
+
+    Planet *p = new Planet(30, 570, "CYROS");
+    p->_rebelSentiment = 90;
+    _galaxy.addPlanet(p);
+    _questTargets.push_back("CYROS");
+    switchContext(ePlanetMenu);
+    setPreviousContext(ePlanetMenu);
+}
+//----------------------------------------------------------------------------
+void Game::reachedSpecialPlanet()
+{
+    //                dylka,jot,cir,arm,bor,liz,ris,cloaked
+    //int specialX[] = { 28, 21,  1,  1, 36,  4, 17, 35};
+    //int specialY[] = {  1, 27, 28,  7, 18,  5, 16, 29};
+
+    std::string msg;
+    std::string title;
+    std::string okButton = "OK";
+    std::string okAction = "PlanetMenu";
+    std::string cancelButton = "";
+    std::string cancelAction = "";
+    if (_currentPlanet->_name == "TORRES")
+    {
+        _chapter = 2;
+        title = "Chapter Two: On The Trail";
+        msg = "Asking around Torres space station, you learn that those two "
+            "pirates are known to cooperate with the rebel army. They were "
+            "here few days ago and went separate ways.\n\nOne of them went to "
+            "nearby planet Dylka, where he lives.\nThe other went to a distant "
+            "planet called Jothan.\nYour gallactic map is updated.";
+        Planet *p = new Planet(570, 30, "DYLKA");
+        _galaxy.addPlanet(p);
+        p = new Planet(430, 550, "JOTHAN");
+        p->_rebelSentiment = 100;
+        p->_techLevel = 9;
+        _galaxy.addPlanet(p);
+        _questTargets.clear();
+        _questTargets.push_back("DYLKA");
+        _questTargets.push_back("JOTHAN");
+    }
+    else if (_currentPlanet->_name == "DYLKA")
+    {
+        title = "Chapter Two: On The Trail";
+        msg = "Finally, you found one of the pirates. You managed to capture "
+            "him, but he hasn't got the crystal. Your learn that it has some "
+            "special imporance as the rebels hired the pirates to find it.\n\n"
+            "The other pirate went to planet Jothan to deliver the crystal "
+            "to the Rebels.";
+        _questTargets.clear();
+        _questTargets.push_back("JOTHAN");
+    }
+    else if (_currentPlanet->_name == "JOTHAN" && _chapter == 2)
+    {
+        _chapter = 3;
+        _questTargets.clear();
+        title = "Chapter Three: Uleg's Offer";
+        msg = "After docking to spacestation, the rebels capture you. While in"
+            " prison, you learn that the other pirate went to planet Cyros.\n\n"
+            "Rebel leader Uleg is amazed with your skills and offers to "
+            "free you if you would destroy Empire Armada. If you succeed, "
+            "you'll get 50000 credits. You may try to escape, but "
+            "rebels took all the cargo and weapons from your ship.";
+        okButton = "Accept Offer";
+        cancelButton = "Escape prison";
+        okAction =     "UlegAccept";
+        cancelAction = "UlegRefuse";
+    }
+    else if (_currentPlanet->_name == "JOTHAN" && _chapter == 3)
+    {
+        title = "Chapter Three: Uleg's Offer";
+        msg = "Looks like you won't be able to collect your reward as the "
+            "entire rebel compound has been destroyed by aliens.\n\n"
+            "In ruins you find one computer that still works. Searching "
+            "through the files you discover a secret document about planet "
+            "Border, where rebels and aliens are creating a special weapon to "
+            "destroy the Empire.";
+        _currentPlanet->_techLevel = 2;
+        _currentPlanet->_rebelSentiment = 60;
+        _currentPlanet->_alienActivity = 90;
+        Planet *p = new Planet(730, 370, "BORDER");
+        p->_rebelSentiment = 99;
+        p->_alienActivity = 99;
+        p->_techLevel = 9;
+        _galaxy.addPlanet(p);
+        _questTargets.clear();
+        _questTargets.push_back("BORDER");
+    }
+    else if (_currentPlanet->_name == "ARMADA")
+    {
+        _empireStatus = psTerrorist;
+        title = "Chapter Three: Uleg's Offer";
+        msg = "Well done. You have destroyed the Empire Armada and now you "
+            "can go back to Jothan to collect your reward.\n\nBe careful, "
+            "the Empire army has learned about this, and they now treat you "
+            "the same way they treat the rebels. You are considered a "
+            "terrorist and you will be violently attacked whenever you reach "
+            "orbit of any Empire planet.";
+        _questTargets.clear();
+        _questTargets.push_back("JOTHAN");
+        _currentPlanet->_name = "Armada";
+        _currentPlanet->_rebelSentiment = 90;
+    }
+    else if (_currentPlanet->_name == "CYROS")
+    {
+        title = "Chapter Three: Uleg's Offer";
+        msg = "Finally, you captured the other pirate. You learn that rebels "
+            " have joined with the aliens to create a weapon to destroy the "
+            "Empire. Crystal you found is one of key ingredients to that "
+            "weapon.\n\nThe weapon is being constructed on planet Border.";
+        Planet *p = new Planet(730, 370, "BORDER");
+        p->_rebelSentiment = 99;
+        p->_alienActivity = 99;
+        p->_techLevel = 9;
+        _galaxy.addPlanet(p);
+        _questTargets.clear();
+        _questTargets.push_back("BORDER");
+    }
+    else if (_currentPlanet->_name == "BORDER")
+    {
+        title = "Chapter Four: The Cloaked Planet";
+        msg = "Upon arriving, you see that all the rebels are dead. It looks "
+            "like the aliens only used them as help to create a weapon which "
+            "would destroy all the humans.\n\n"
+            "One of the survivors tells you that weapon is hidden "
+            "on a cloaked alien planet. Only way to discover it is to use a "
+            "special device which is produced on planet Lizdor.";
+        Planet *p = new Planet(90, 110, "LIZDOR");
+        p->_techLevel = 9;
+        _galaxy.addPlanet(p);
+        _questTargets.clear();
+        _questTargets.push_back("LIZDOR");
+    }
+    else if (_currentPlanet->_name == "LIZDOR" && _chapter == 3)
+    {
+        _chapter = 4;
+        title = "Chapter Four: The Cloaked Planet";
+        msg = "You found the people who are able to build the device which "
+            "would detect the hidden alien planet.\n\nHowever, they are "
+            "missing one ingredient - a rare metal Palladium, which is only "
+            "to be found on planet Risar.";
+        Planet *p = new Planet(350, 330, "RISAR");
+        p->_techLevel = 9;
+        _galaxy.addPlanet(p);
+        _questTargets.clear();
+        _questTargets.push_back("RISAR");
+    }
+    else if (_currentPlanet->_name == "RISAR")
+    {
+        title = "Chapter Four: The Cloaked Planet";
+        msg = "Friendly people on planet listened to your story and were so "
+            "thrilled, that they decided to give you as much Palladium as "
+            "you need at no cost.";
+        _questTargets.clear();
+        _questTargets.push_back("LIZDOR");
+    }
+    else if (_currentPlanet->_name == "LIZDOR" && _chapter == 4)
+    {
+        _chapter = 5;
+        title = "Chapter Five: Alien nest";
+        msg = "You brought back the needed metal, and scientists have created "
+            "the uncloaking device. As the device has unlimited range, "
+            "they started it and, few hours later, the location of hidden "
+            "alien planet has been revealed.\n\nNow you must travel there for "
+            "a final shootdown.";
+        Planet *p = new Planet(710, 590, "CLOAKED");
+        p->_techLevel = 1;
+        p->_alienActivity = 100;
+        _galaxy.addPlanet(p);
+        _questTargets.clear();
+        _questTargets.push_back("CLOAKED");
+    }
+    else if (_currentPlanet->_name == "CLOAKED")
+    {
+        title = "THE END";
+        msg = "The threat for human race is now eliminated.\n\nYou would "
+            "surely become a hero if there was anyone else alive who would "
+            "confirm your story. Unfortunately, all others who were involved "
+            "in this are dead, and war between Empire and Rebels is still "
+            "raging across the galaxy.";
+        okAction = "Quit";
+        okButton = "End game";
+        cancelButton = "Keep playing";
+        cancelAction = "PlanetMenu";
+        _questTargets.clear();
+        _currentPlanet->_name = "Cloaked";
+    }
+
+    MessageBoxManagerS::instance()->setup(title, msg, okButton, okAction,
+        cancelButton, cancelAction);
+    switchContext(eMessageBox);
+}
+//----------------------------------------------------------------------------
 void Game::hyperspaceJump()
 {
     Planet *target = PlanetManagerS::instance()->getHyperspaceTarget();
@@ -530,7 +747,7 @@ std::vector<CargoItemInfo>* CargoItemInfo::getCargoInfo()
             "Enhances primary and secondary weapon power"));
         info.push_back(CargoItemInfo(0.8f, "models/FlankBurster", "Wave emitter",      8, 1200, 0,  1, pmNormal,
             "Tertiary weapon - use middle mouse button or ALT key"));
-        info.push_back(CargoItemInfo(5.0f, "models/WeaponUpgrade", "Smart bomb",       8, 3000, 0, 10, pmNormal,
+        info.push_back(CargoItemInfo(5.0f, "models/WeaponUpgrade", "Smart bomb",       8, 1000, 0, 10, pmNormal,
             "Destroys all nearby enemies - press key D to detonate"));
         info.push_back(CargoItemInfo(1.0f, "models/Stinger", "Stinger rocket",         3,  500, 0, 20, pmNormal,
             "Ammo for rocket launcher - press key F to fire"));
@@ -756,6 +973,11 @@ void Planet::update()
 //----------------------------------------------------------------------------
 // PLANET ********************************************************************
 //----------------------------------------------------------------------------
+void Map::addPlanet(Planet *p)
+{
+    _planets.push_back(p);
+}
+//----------------------------------------------------------------------------
 void Map::recreate()
 {
     deletePlanets();
@@ -763,9 +985,9 @@ void Map::recreate()
     const int mapWidth = 760;
     const int mapHeight = 600;
     const int stepSize = 20;
-    //              dylka,jot,cir,arm,bor,liz,ris,cloacked
-    int specialX[] = { 28, 21,  1,  1, 36,  4, 17, 36};
-    int specialY[] = {  1, 18, 18,  5, 18,  5,  9, 19};
+    //              dylka,jot,cir,arm,bor,liz,ris,cloaked
+    int specialX[] = { 28, 21,  1,  1, 36,  4, 17, 35};
+    int specialY[] = {  1, 27, 28,  7, 18,  5, 16, 29};
     for (int x = 0; x < mapWidth; x += stepSize)
     {
         for (int y = 0; y < mapHeight; y += stepSize)
@@ -784,10 +1006,16 @@ void Map::recreate()
             }
             else
             {   // skip places of special planets
+                bool skip = false;
                 for (unsigned int i = 0; i < sizeof(specialX)/sizeof(int); ++i)
+                {
                     if (x == stepSize * specialX[i] && y == stepSize * specialY[i])
-                        continue;
-                if ((x+y)%50 == 0 && Random::integer(5) == 0)
+                    {
+                        skip = true;
+                        break;
+                    }
+                }
+                if (skip || (x+y)%50 == 0 && Random::integer(5) == 0)
                     continue;
                 p = new Planet( x + 2 + Random::integer(stepSize-4),
                                 y + 2 + Random::integer(stepSize-4));

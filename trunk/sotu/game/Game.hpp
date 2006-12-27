@@ -120,6 +120,7 @@ public:
     void draw(float x, float y);                // renders galaxy as set of points
     Planet* getPlanetAt(float x, float y);
     Planet* getNearest(float x, float y);
+    void addPlanet(Planet *p);
 
 private:
     void deletePlanets();
@@ -143,7 +144,12 @@ public:
     PlayerStatus _empireStatus;
     int _kills;
     bool _landed;
+    int _chapter;
+
     std::vector<std::string> _questTargets;
+    void reachedSpecialPlanet();
+    void ulegAccept();
+    void ulegRefuse();
 
     bool illegalTradeCheck();
     void illegalTradeDecision(bool accept);
@@ -161,6 +167,7 @@ public:
     void startNewCampaign();
     ContextEnum getContext();
     void switchContext(ContextEnum c);
+    void setPreviousContext(ContextEnum c);
     void previousContext();
 
 private:

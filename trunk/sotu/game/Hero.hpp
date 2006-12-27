@@ -55,6 +55,7 @@ public:
 
     bool weaponLoaded( int weapNum);
     void weaponFire( bool isDown, int weapNum=0);
+    void fireMegaBomb();
 
     bool alive( void)
     {

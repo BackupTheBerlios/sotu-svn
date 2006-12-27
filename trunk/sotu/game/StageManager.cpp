@@ -38,7 +38,6 @@ EnemyWaves::EnemyWaves():
 void EnemyWaves::reset()
 {
     _alienDone = _rebelDone = _empireDone = 0;
-
     // sledeci nivo
     // Odabir protivnika u zavisnosti od toga kakva
     // je planeta u pitanju. Faktori:
@@ -60,6 +59,17 @@ void EnemyWaves::reset()
         _rebelTotal  = _rebelTotal  + 2 - Random::integer(5);
     if (_empireTotal > 3)
         _empireTotal = _empireTotal + 2 - Random::integer(5);
+
+    if (p->_name == "ARMADA")
+    {
+        _alienTotal = _rebelTotal = 0;
+        _empireTotal = 35;
+    }
+    if (p->_name == "CLOAKED")
+    {
+        _rebelTotal = _empireTotal = 0;
+        _alienTotal = 99;
+    }
 }
 //----------------------------------------------------------------------------
 // returns -1 if no more
@@ -108,6 +118,8 @@ int EnemyWaves::getNextWave(std::string& name)
         index = 1;
         while (index == 1 || index == 10)
             index = Random::integer(18);
+        if (_alienDone == 99)
+            index = 19;         // big boss
     }
     else if (type == 1)
     {
@@ -187,6 +199,8 @@ void StageManager::update( void)
             activateLevel();
         else
         {
+            if (GameS::instance()->_hyperspaceCount != 0)
+                return;
             float& ssa = GameS::instance()->_spaceStationApproach;
             if (ssa == 0)
                 ssa = GameState::stopwatch.getTime();
@@ -197,8 +211,15 @@ void StageManager::update( void)
                 {
                     ssa = 0;
                     GameS::instance()->_landed = true;
-                    GameS::instance()->switchContext(ePlanetMenu);
-                    SkillS::instance()->incrementSkill();
+                    if (GameS::instance()->_currentPlanet->isSpecial())
+                        GameS::instance()->reachedSpecialPlanet();
+                    else
+                    {
+                        GameS::instance()->switchContext(ePlanetMenu);
+                        // don't allow to go back
+                        GameS::instance()->setPreviousContext(ePlanetMenu);
+                        SkillS::instance()->incrementSkill();
+                    }
                 }
             }
         }

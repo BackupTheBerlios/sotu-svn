@@ -145,6 +145,21 @@ void Hero::addShield(int val)
         _shieldEnergy = maxval;
 }
 //----------------------------------------------------------------------------
+void Hero::fireMegaBomb()
+{
+    Cargo& c = GameS::instance()->_cargo;
+    CargoItem *item = c.findItem("Smart bomb");
+    if (item->_quantity > 0)
+    {
+        item->_quantity--;
+        static ParticleGroup *bonus =
+            ParticleGroupManagerS::instance()->getParticleGroup( BONUS_GROUP);
+        bonus->newParticle("WeaponUpgrade",
+            _pInfo->position.x,
+            _pInfo->position.y, -100.0f);
+    }
+}
+//----------------------------------------------------------------------------
 void Hero::popMessage(const char *msg, float red, float green, float blue)
 {
     if( GameState::horsePower > 90.0)

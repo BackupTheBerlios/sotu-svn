@@ -1444,7 +1444,7 @@ void MessageBoxManager::setup(const std::string& title, const std::string& text,
     GLBitmapFont &fontWhite =
       *(FontManagerS::instance()->getFont( "bitmaps/menuWhite"));
     const float textsize = 0.65f;
-    const float maxx = 600.0f;
+    const float maxx = 630.0f;
     _text.clear();
     std::string tmp = text;
     float currlinew = 0.0f;

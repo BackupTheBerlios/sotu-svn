@@ -45,6 +45,7 @@ void CallbackManager::init( void)
     new WeaponFireAction( Hero::PRIMARY_WEAPON, "PrimaryFire");
     new WeaponFireAction( Hero::SECONDARY_WEAPON, "SecondaryFire");
     new WeaponFireAction( Hero::TERTIARY_WEAPON, "TertiaryFire");
+    new MegaBombFireAction();
     new SnapshotAction();
 
     new MotionAction();

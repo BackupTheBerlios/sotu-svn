@@ -1803,7 +1803,7 @@ WeaponUpgrade::~WeaponUpgrade()
 void WeaponUpgrade::init( ParticleInfo *p)
 {
 //    XTRACE();
-    p->velocity.y = -1.30f * GAME_STEP_SCALE;
+    p->velocity.y = 1.30f * GAME_STEP_SCALE;
     p->extra.x = Random::rangef0_1()*60.0f - 30.0f;
     p->extra.y = (Random::rangef0_1()*30.0f + 20.0f)*0.1f * GAME_STEP_SCALE;
 
@@ -1819,8 +1819,40 @@ void WeaponUpgrade::init( ParticleInfo *p)
 bool WeaponUpgrade::update( ParticleInfo *p)
 {
 //    XTRACE();
-    if( p->tod == 0) return false;
-    if( fabs( p->position.y) > 50.0) return false;
+    //LOG_INFO << "WEAPON UPGRADE x = " << p->position.x << " y = " << p->position.y << endl;
+    if (p->tod == 0)
+        return false;
+    if (fabs(p->position.y) > 50.0)
+        return false;
+
+    if (p->position.y > 10.0)
+    {
+        p->tod = 0;
+
+        static ParticleGroup *bullets =
+            ParticleGroupManagerS::instance()->getParticleGroup(HERO_BULLETS_GROUP);
+
+        for (float speed = 0.5f; speed < 2.0f; speed += 0.5f)
+        {
+            for( int i=0; i<360; i+= 10)
+            {
+                ParticleInfo pi;
+                pi.position.x = p->position.x;
+                pi.position.y = p->position.y;
+                pi.position.z = p->position.z;
+                pi.velocity.z = 0.0f;
+                float sinus = sin( i * ((float)M_PI/180.0f));
+                float cosinus = cos( i * ((float)M_PI/180.0f));
+
+                pi.velocity.x =  sinus * GAME_STEP_SCALE * speed;
+                pi.velocity.y =  cosinus * GAME_STEP_SCALE * speed;
+
+                pi.damage = 1000;
+                bullets->newParticle( "BallOfPoison", pi);
+            }
+        }
+        AudioS::instance()->playSample( "sounds/chrblub.wav");
+    }
 
     //update previous values for interpolation
     updatePrevs(p);
@@ -1831,8 +1863,9 @@ bool WeaponUpgrade::update( ParticleInfo *p)
     return true;
 }
 
-void WeaponUpgrade::hit( ParticleInfo *p, int /*damage*/, int /*radIndex*/)
+void WeaponUpgrade::hit( ParticleInfo * /* p */, int /*damage*/, int /*radIndex*/)
 {
+    /*
     if( GameState::horsePower > 90.0)
     {
         static ParticleGroup *effects =
@@ -1853,6 +1886,7 @@ void WeaponUpgrade::hit( ParticleInfo *p, int /*damage*/, int /*radIndex*/)
 //    AudioS::instance()->playSample( "sounds/voiceUpgrade.wav");
 //    HeroS::instance()->addShield( 50);
     p->tod = 0;
+    */
 }
 
 void WeaponUpgrade::draw( ParticleInfo *p)

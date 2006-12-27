@@ -149,3 +149,17 @@ void HyperSpaceJump::performAction(Trigger &, bool isDown)
         HeroS::instance()->popMessage(hsError.c_str(), 1.0f, 0.0f, 0.0f);
 }
 //----------------------------------------------------------------------------
+void MegaBombFireAction::performAction(Trigger &, bool isDown)
+{
+    if (!isDown)
+        return;
+
+    if (GameS::instance()->getContext() != eInGame
+        || !HeroS::instance()->alive())
+    {
+        return;
+    }
+
+    HeroS::instance()->fireMegaBomb();
+}
+//----------------------------------------------------------------------------
