@@ -9,34 +9,61 @@
          Position="500.0 440.0">
 
         <TextItem
-                 Text="Chapter One: The Pursuit"
+                 Text="Introduction"
                  Size="1.0"
                  Position="500.0 470.0" />
         <TextItem
-                 Text="One day, while wandering on abandoned planet you found a"
-                 Position="500.0 430.0" />
+                 Text="For thousands of years, people of planet Xen have colonized the"
+                 Position="500.0 410.0" />
         <TextItem
-                 Text="beautiful crystal. You took it hoping to sell it for a good price."
-                 Position="500.0 390.0" />
+                 Text="planets in their galaxy. As time went by, many colonies grew"
+                 Position="500.0 370.0" />
         <TextItem
-                 Text="However, on the way, you were attacked by three pirates who"
+                 Text="unhappy about their status, as everything was controlled by Xen."
                  Position="500.0 330.0" />
         <TextItem
-                 Text="looted your ship and took the crystal. You bearly managed to stay alive."
+                 Text="Some of them organized military units and declared independence."
                  Position="500.0 290.0" />
         <TextItem
-                 Text="So you decided to go after them. Today, your escape pod reached"
+                 Text="Beside the raging war between Xen Empire and the rebels there"
                  Position="500.0 230.0" />
         <TextItem
-                 Text="a nearby planet. You have 3000 credits in your pocket."
-                 Info="Credit is intergallactic money."
+                 Text="is increased activity of alien species, who destroy human ships."
                  Position="500.0 190.0" />
 
-        <ActionItem
-            Text="Begin Chapter One"
-            Action="NewCampaign"
-            Info="Start a new game!"
-            Position="500.0 110.0"/>
+        <Menu
+             Text="Continue"
+             Info="Start a new game!"
+             Position="500.0 110.0">
+            <TextItem
+                    Text="Chapter One: The Pursuit"
+                    Size="1.0"
+                    Position="500.0 470.0" />
+            <TextItem
+                    Text="One day, while wandering on abandoned planet you found a"
+                    Position="500.0 430.0" />
+            <TextItem
+                    Text="beautiful crystal. You took it hoping to sell it for a good price."
+                    Position="500.0 390.0" />
+            <TextItem
+                    Text="On the way, you were attacked by two pirates who looted"
+                    Position="500.0 330.0" />
+            <TextItem
+                    Text="your ship and took the crystal. You bearly managed to stay alive."
+                    Position="500.0 290.0" />
+            <TextItem
+                    Text="Today, your escape pod reached a nearby planet. You learned that"
+                    Position="500.0 230.0" />
+            <TextItem
+                    Text="pirates come from planet Torres and decided to go after them."
+                    Position="500.0 190.0" />
+
+            <ActionItem
+                Text="Begin Chapter One"
+                Action="NewCampaign"
+                Info="Start a new game!"
+                Position="500.0 110.0"/>
+        </Menu>
     </Menu>
 
     <Menu
