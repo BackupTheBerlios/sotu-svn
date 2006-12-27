@@ -168,31 +168,7 @@ void StageManager::reset( void)
 }
 //----------------------------------------------------------------------------
 void StageManager::update( void)
-{
-    // armor piercing se kupuje, i ako se izgubi moze jedino da ga kupi ako
-    // prezivi do sledece planete
-#if 0
-    static ParticleGroup *bonus =
-        ParticleGroupManagerS::instance()->getParticleGroup( BONUS_GROUP);
-
-    //no armor piercing needed for rookie
-    if( (GameState::skill != Skill::eRookie) &&
-        (HeroS::instance()->getArmorPierce() <= 1.0f))
-    {
-        if( Random::rangef0_1() < 0.001f)
-        {
-            LOG_INFO << "ArmorPierce" << endl;
-            float posX = (Random::rangef0_1()-0.5f) * 60.0f;
-            bonus->newParticle( "ArmorPierce", posX, 49.0f, -100.0f);
-        }
-    }
-
-    // TODO: ovo ce mi trebati kada ispali Mega Bomb
-    float posX = (Random::rangef0_1()-0.5f) * 60.0f;
-    bonus->newParticle( "WeaponUpgrade", posX, 49.0f, -100.0f);
-#endif
-
-    // pobio sve protivnike
+{   // pobio sve protivnike
     if( GameState::numObjects == 0)
     {
         if (selectLevel())
