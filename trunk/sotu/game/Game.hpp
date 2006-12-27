@@ -106,6 +106,8 @@ public:
     BuyStatus canBuy(CargoItemInfo& item);
     int getPrice(const std::string& itemName);
 
+    bool isSpecial();
+
     void update();
 };
 //----------------------------------------------------------------------------
@@ -141,6 +143,7 @@ public:
     PlayerStatus _empireStatus;
     int _kills;
     bool _landed;
+    std::vector<std::string> _questTargets;
 
     bool illegalTradeCheck();
     void illegalTradeDecision(bool accept);

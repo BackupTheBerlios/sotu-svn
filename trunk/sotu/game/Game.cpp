@@ -184,6 +184,8 @@ void Game::startNewCampaign()
     _money = 2000;
     _landed = true;
     _galaxy.recreate();
+    _questTargets.clear();
+    _questTargets.push_back("TORRES");
     _empireStatus = _rebelStatus = psClean;
     _kills = 0;
     ConfigS::instance()->updateKeyword("skill", SKILL_ROOKIE);
@@ -669,6 +671,15 @@ bool Planet::isAt(float x, float y)                // allow few pixels miss
         && (y >= _y-range) && (y <= _y + range);
 }
 //----------------------------------------------------------------------------
+bool Planet::isSpecial()
+{
+    std::vector<std::string>& t = GameS::instance()->_questTargets;
+    for (std::vector<std::string>::iterator it = t.begin(); it != t.end(); ++it)
+        if (_name == (*it))
+            return true;
+    return false;
+}
+//----------------------------------------------------------------------------
 float Planet::getDistance(float x, float y)
 {
     return sqrt((x-_x)*(x-_x) + (y-_y)*(y-_y));
@@ -699,7 +710,7 @@ Planet::BuyStatus Planet::canBuy(CargoItemInfo& item)
 void Planet::update()
 {
     // always rs=0, tl=9, aa=0
-    if (_name == "XEN")
+    if (_name == "XEN" || _name == "TORRES")
         return;
     int rs_before = _rebelSentiment;
     if (_rebelSentiment > 20)
@@ -752,6 +763,9 @@ void Map::recreate()
     const int mapWidth = 760;
     const int mapHeight = 600;
     const int stepSize = 20;
+    //              dylka,jot,cir,arm,bor,liz,ris,cloacked
+    int specialX[] = { 28, 21,  1,  1, 36,  4, 17, 36};
+    int specialY[] = {  1, 18, 18,  5, 18,  5,  9, 19};
     for (int x = 0; x < mapWidth; x += stepSize)
     {
         for (int y = 0; y < mapHeight; y += stepSize)
@@ -759,12 +773,20 @@ void Map::recreate()
             Planet *p;
             if (x == stepSize && y == stepSize)   // XEN (cell=1,1)
             {
-                p = new Planet(1.5*(float)stepSize, 1.5*(float)stepSize, "XEN");
+                p = new Planet(30, 30, "XEN");
                 PlanetManagerS::instance()->setHyperspaceTarget(p);
                 GameS::instance()->_currentPlanet = p;
             }
-            else
+            else if (x == stepSize*31 && y == stepSize*6 )   // TORRES (31,6)
             {
+                p = new Planet(630, 130, "TORRES");
+                p->_rebelSentiment = 99;
+            }
+            else
+            {   // skip places of special planets
+                for (unsigned int i = 0; i < sizeof(specialX)/sizeof(int); ++i)
+                    if (x == stepSize * specialX[i] && y == stepSize * specialY[i])
+                        continue;
                 if ((x+y)%50 == 0 && Random::integer(5) == 0)
                     continue;
                 p = new Planet( x + 2 + Random::integer(stepSize-4),
@@ -807,12 +829,14 @@ void Map::draw(float x, float y)
             case 1: default:
                 glColor3f(1.0, 1.0, 1.0); break;
         };
-        //if ((*it)->isSpecial())
-        // bigger or flashing or whaever
         glVertex3f(x+(*it)->_x, y+(*it)->_y, 0.0f);
     }
     glEnd();
     glDisable(GL_POINT_SMOOTH);
+
+    for (PlanetList::iterator it = _planets.begin(); it != _planets.end(); ++it)
+        if ((*it)->isSpecial())
+            PlanetManagerS::instance()->drawCursor(x+(*it)->_x, y+(*it)->_y, true);
 
     Planet *p = GameS::instance()->_currentPlanet;
     if (p)
@@ -826,15 +850,15 @@ void Map::draw(float x, float y)
         glScissor((int)(w*212.0f), (int)(h*62.0f), (int)(w*768.0f), (int)(h*608.0f));
         glEnable(GL_SCISSOR_TEST);
         glBegin(GL_POLYGON);
-        CargoItem *ci = GameS::instance()->_cargo.findItem("Fuel");
-        float radius = ci->_quantity;
-        for (float i = 0.0f; i < 360.0f; i+=5.0f)
-        {
-            float degInRad = i * 0.017453278f;
-            glVertex2f( x + p->_x + cos(degInRad) * radius,
-                        y + p->_y + sin(degInRad) * radius);
-        }
-        glEnd();
+            CargoItem *ci = GameS::instance()->_cargo.findItem("Fuel");
+            float radius = ci->_quantity;
+            for (float i = 0.0f; i < 360.0f; i+=5.0f)
+            {
+                float degInRad = i * 0.017453278f;
+                glVertex2f( x + p->_x + cos(degInRad) * radius,
+                            y + p->_y + sin(degInRad) * radius);
+            }
+            glEnd();
         glDisable(GL_SCISSOR_TEST);
     }
 }

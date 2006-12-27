@@ -420,7 +420,8 @@ void MenuManager::Enter( void)
     }
 }
 //----------------------------------------------------------------------------
-void MenuManager::exitMenu(bool allowQuitGame)
+// returns false when top level
+bool MenuManager::exitMenu(bool allowQuitGame)
 {
     XTRACE();
     if (_currentMenu != _topMenu)   // if not top level menu
@@ -428,9 +429,11 @@ void MenuManager::exitMenu(bool allowQuitGame)
         _currentMenu = _currentMenu->Parent();
         loadMenuLevel();
         AudioS::instance()->playSample( "sounds/humm.wav");
+        return true;
     }
     else if (allowQuitGame)
         GameState::isAlive = false;
+    return false;
 }
 //----------------------------------------------------------------------------
 // PLANET MANAGER ************************************************************
@@ -734,7 +737,7 @@ void PlanetManager::drawPlayer(float yoffset)
         if (sti[i] == psClean)
             glColor4f(0, 1, 0, 1);
         else if (sti[i] == psFugitive)
-            glColor4f(1, 1, 0, 1);
+            glColor4f(1, 0.6f, 0, 1);
         else
             glColor4f(1, 0, 0, 1);
         fontWhite.DrawString(stname[sti[i]].c_str(), 200.0f, yoffset, 0.5f, 0.5f, GLBitmapFont::alRight);
@@ -1063,11 +1066,11 @@ void PlanetManager::drawMap()
         }
 
         // Info text: distance from planet
+        GLBitmapFont &fontWhite = *(FontManagerS::instance()->getFont( "bitmaps/menuWhite"));
         Planet *p = GameS::instance()->_currentPlanet;
         if (p)
         {
             Selectable::reset();    // deactivate active node
-            GLBitmapFont &fontWhite = *(FontManagerS::instance()->getFont( "bitmaps/menuWhite"));
             if (p == pl)
             {
                 glColor4f(1.0f, 1.0f, 1.0f, 0.8f);
@@ -1106,6 +1109,11 @@ void PlanetManager::drawMap()
         }
 
         drawCursor(tmpx, tmpy, false);
+        if (pl && pl->isSpecial())
+        {
+            glColor4f(0.0f, 1.0f, 0.0f, 0.8f);
+            fontWhite.DrawString("MISSION TARGET", tmpx, tmpy - 60.0f, 0.7f, 0.65f, GLBitmapFont::alCenter);
+        }
     }
 }
 //----------------------------------------------------------------------------

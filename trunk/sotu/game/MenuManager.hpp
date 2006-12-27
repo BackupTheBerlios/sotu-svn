@@ -48,7 +48,7 @@ public:
     void Down( void);
     void Up( void);
     void Enter( void);
-    void exitMenu(bool allowQuitGame);
+    bool exitMenu(bool allowQuitGame);
 
 private:
     virtual ~MenuManager();
@@ -90,6 +90,7 @@ public:
     bool init();
     bool update();
     bool draw();
+    void drawCursor(float x, float y, bool special);
     void reload();
 
     void Up();
@@ -132,7 +133,6 @@ private:
     void drawPlanet(float x, float y, Planet *, const std::string& title);
     void drawItemIcon(CargoItemInfo& info, float offset);
     void drawPlayer(float yoffset);
-    void drawCursor(float x, float y, bool special);
 
     void planetClick();
     void tradeClick();

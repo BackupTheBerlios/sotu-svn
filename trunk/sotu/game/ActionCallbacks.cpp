@@ -124,8 +124,9 @@ void EscapeAction::performAction( Trigger &, bool isDown)
         GameS::instance()->switchContext(ePlanetMenu);
     else
     {
-        // get back to main menu
-        MenuManagerS::instance()->exitMenu(false);
+        // get back to main menu (false = don't exit game)
+        while (MenuManagerS::instance()->exitMenu(false))
+            ;
         GameS::instance()->switchContext(eMenu);
     }
 }
