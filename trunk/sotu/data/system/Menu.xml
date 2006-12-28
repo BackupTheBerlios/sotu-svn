@@ -66,17 +66,11 @@
         </Menu>
     </Menu>
 
-    <Menu
-         Text="Load game"
-         Info="If you saved it previously."
-         Position="500.0 380.0">
-        <LeaderBoard
-            Text="Select one of the saved games:"
-            Info="What ya waitin' for?"
-            Size="1.0"
-            Position="500.0 470.0" />
-    </Menu>
-
+    <ActionItem
+        Text="Load game"
+        Action="LoadGame"
+        Info="If you saved it previously."
+        Position="500.0 380.0"/>
 
     <Menu
         Text="Helpful tips"
