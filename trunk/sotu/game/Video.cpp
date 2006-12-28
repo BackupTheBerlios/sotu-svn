@@ -778,7 +778,7 @@ bool Video::update( void)
                     if ((*it)._maxQty != 1 && c->_quantity > 1)
                     {
                         sprintf(buff, "%d", c->_quantity);
-                        scoreFont.DrawString(buff, 952, yoffset - 14, 0.48f, 0.48f, GLBitmapFont::alRight);
+                        scoreFont.DrawString(buff, 952, yoffset - 13, 0.48f, 0.48f, GLBitmapFont::alRight);
                     }
                     yoffset += 45;
                 }
