@@ -416,6 +416,7 @@ bool Game::loadGame()
     LOG_INFO << "  defaults" << endl;
     // load other defaults
     _landed = true;
+    _spaceStationApproach = _hyperspaceCount = 0;
 
     _galaxy.load(zin);
     LOG_INFO << "  current planet" << endl;
@@ -450,6 +451,7 @@ bool Game::loadGame()
     PlanetManagerS::instance()->loadEvents(zin);
 
     switchContext(ePlanetMenu);
+    setPreviousContext(ePlanetMenu);
     return true;
 }
 //----------------------------------------------------------------------------

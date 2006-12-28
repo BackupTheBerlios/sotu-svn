@@ -578,92 +578,67 @@ bool Video::update( void)
     }
     else // InGame, Paused, MouseLook
     {
-        float boardWidth = (float)_board->getWidth( _boardIndex);
-
-        if( _boardVisible && (_boardPosX<0))
-        {
-            _boardPosX+=3;
-            if( _boardPosX > 0) _boardPosX = 0;
-        }
-
-        if( !_boardVisible && (_boardPosX>-boardWidth))
-        {
-            _boardPosX-=3;
-        }
-
-        //draw board if at least partially visible
-        if( _boardPosX > -boardWidth)
+        if (_boardVisible)
         {
             float size = 0.48f;
-            float tdy = -36.0f;
-            float ty = (float)VIDEO_ORTHO_HEIGHT-56.0f;
-            float tx = 28.0f+_boardPosX;
-
-            glEnable(GL_TEXTURE_2D);
-            _board->bind();
-            glColor4f(1.0,1.0,1.0,0.5);
-            _board->Draw(_boardIndex,_boardPosX,VIDEO_ORTHO_HEIGHT-256,1.0,1.0);
-            glDisable(GL_TEXTURE_2D);
-
-            sprintf( buff, "%d", ScoreKeeperS::instance()->getCurrentScore());
-            scoreFont.DrawString( buff, tx, ty, size, size);
-            ty+=tdy;
-
-            sprintf(buff, "%d", GameS::instance()->_kills);
-            scoreFont.DrawString( buff, tx, ty, size, size);
-            ty+=tdy;
+            glColor4f( 1.0f, 0.9f, 0.5f, 0.7f );
+            scoreFont.DrawString( "POINTS:", 5.0f, 725.0f, size, size);
+            scoreFont.DrawString( "KILLS:", 5.0f,  700.0f, size, size);
+            sprintf (buff, "%d", ScoreKeeperS::instance()->getCurrentScore());
+            scoreFont.DrawString( buff, 100.0f, 725.0f, size, size);
+            sprintf (buff, "%d", GameS::instance()->_kills);
+            scoreFont.DrawString( buff, 100.0f, 700.0f, size, size);
 
             float he = HeroS::instance()->getEnergy();
             if (he < 0.0f)
                 he = 0.0f;
-            glColor4f( 1.0f, 0.1f, 0.1f, 0.5f );
-            glBegin(GL_QUADS);
-                glVertex3f( tx        , ty+2, -1);
-                glVertex3f( tx+he*.97f, ty+2, -1);
-                glVertex3f( tx+he*.97f, ty+20, -1);
-                glVertex3f( tx        , ty+20, -1);
-            glEnd();
-            glColor4f(1.0,1.0,1.0,0.5);
-
             sprintf( buff, "%d", (int)he);
-            scoreFont.DrawString( buff, tx, ty, size, size);
-            ty+=tdy;
+
+            glColor4f( 1.0f, 1.0f, 1.0f, 0.3f );
+            glBegin(GL_QUADS);
+                glVertex3f( 45        , 15, -1);
+                glVertex3f( 142, 15, -1);
+                glVertex3f( 142, 33, -1);
+                glVertex3f( 45        , 33, -1);
+            glEnd();
+            if (he >= 100.0f)
+                glColor4f( 0.0f, 0.5f, 1.0f, 0.7f );
+            else
+                glColor4f( 1.0f, 0.0f, 0.0f, 0.7f );
+            glBegin(GL_QUADS);
+                glVertex3f( 45        , 15, -1);
+                glVertex3f( 45+he*.97f, 15, -1);
+                glVertex3f( 45+he*.97f, 33, -1);
+                glVertex3f( 45        , 33, -1);
+            glEnd();
+            glColor4f(1.0,1.0,1.0,0.9f);
+            scoreFont.DrawString( buff, 45, 13, size, size);
 
             float se = HeroS::instance()->getShieldEnergy();
             float seclip = se;
             CargoItem *item = GameS::instance()->_cargo.findItem("Shield upgrade");
             if (item && item->_quantity > 0)
                 seclip *= 0.5;
-            glColor4f( 1.0f, 0.8f, 0.0f, 0.5f );
-            glBegin(GL_QUADS);
-                glVertex3f( tx              , ty+2, -1);
-                glVertex3f( tx+seclip*.97f  , ty+2, -1);
-                glVertex3f( tx+seclip*.97f  , ty+20, -1);
-                glVertex3f( tx              , ty+20, -1);
-            glEnd();
-            glColor4f(1.0,1.0,1.0,0.5);
-
             sprintf( buff, "%d", (int)se);
-            scoreFont.DrawString( buff, tx, ty, size, size);
-            ty+=tdy;
-
-            float we = HeroS::instance()->getWeaponEnergy();
-            glColor4f( 0.2f, 1.0f, 0.2f, 0.5f );
+            glColor4f( 1.0f, 1.0f, 1.0f, 0.3f );
             glBegin(GL_QUADS);
-            glVertex3f( tx        , ty+2, -1);
-            glVertex3f( tx+we*.97f, ty+2, -1);
-            glVertex3f( tx+we*.97f, ty+20, -1);
-            glVertex3f( tx        , ty+20, -1);
+                glVertex3f( 45        , 47, -1);
+                glVertex3f( 142, 47, -1);
+                glVertex3f( 142, 65, -1);
+                glVertex3f( 45        , 65, -1);
             glEnd();
-            glColor4f(1.0,1.0,1.0,0.5);
-
-            sprintf( buff, "%d", (int)we);
-            scoreFont.DrawString( buff, tx, ty, size, size);
-            ty+=tdy;
-
-            SkillS::instance();
-            scoreFont.DrawString(GameS::instance()
-                ->getReputation(true).c_str(), tx, ty, size, size);
+            if (se >= 100.0f)
+                glColor4f( 1.0f, 0.7f, 0.0f, 0.6f );
+            else
+                glColor4f( 1.0f, 0.0f, 0.0f, 0.7f );
+            glBegin(GL_QUADS);
+                glVertex3f( 45              , 47, -1);
+                glVertex3f( 45+seclip*.97f  , 47, -1);
+                glVertex3f( 45+seclip*.97f  , 65, -1);
+                glVertex3f( 45              , 65, -1);
+            glEnd();
+            glColor4f(1.0,1.0,1.0,0.9f);
+            scoreFont.DrawString( buff, 45, 45, size, size);
 
             const float spacing = 40.0f;
             const float redge = 1020.0f;
@@ -700,22 +675,23 @@ bool Video::update( void)
 
             float iAngle = _prevAngle+(_angle-_prevAngle)*GameState::frameFraction;
 
+            // shield and energy
+            static Model *energy = ModelManagerS::instance()->getModel("models/EnergyBlob");
             glPushMatrix();
-            glTranslatef(154.0+_boardPosX, 675.0, -1.0);
-            glRotatef(iAngle, 0.0, 1.0, 0.0);
-            HeroS::instance()->drawWeapon(0);
+                glTranslatef(22, 22, 1.0);
+                //glRotatef(-90.0f, 1.0, 0.0, 0.0);
+                glRotatef(iAngle * 0.5, 1.0, 0.0, 0.0);
+                glScalef(4.5f, 4.5f, 4.5f);
+                energy->draw();
             glPopMatrix();
 
+            static Model *shield = ModelManagerS::instance()->getModel("models/ShieldBoost");
             glPushMatrix();
-            glTranslatef(154.0+_boardPosX, 621.0, -1.0);
-            glRotatef(iAngle, 0.0, 1.0, 0.0);
-            HeroS::instance()->drawWeapon(2);
-            glPopMatrix();
-
-            glPushMatrix();
-            glTranslatef(154.0+_boardPosX, 567.0, -1.0);
-            glRotatef(iAngle, 0.0, 1.0, 0.0);
-            HeroS::instance()->drawWeapon(1);
+                glTranslatef(22, 50, 1.0);
+                //glRotatef(-90.0f, 1.0, 0.0, 0.0);
+                glRotatef(iAngle * 0.5, 0.0, 1.0, 0.0);
+                glScalef(4.5f, 4.5f, 4.5f);
+                shield->draw();
             glPopMatrix();
 
             // draw weapons at the bottom of the screen
@@ -755,22 +731,22 @@ bool Video::update( void)
                 alien->draw();
             glPopMatrix();
 
-            static Model *rebel = ModelManagerS::instance()->getModel("models/BigFoot");
-            glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
-            glPushMatrix();
-                glTranslatef(redge - 2*spacing, top, 1.0);
-                glRotatef(iAngle, 0.0, 1.0, 0.0);
-                glScalef(6.0f, 6.0f, 6.0f);
-                rebel->draw();
-            glPopMatrix();
-
             static Model *empire = ModelManagerS::instance()->getModel("models/DarkAngel");
             glPushMatrix();
-                glTranslatef(redge - spacing, top, 1.0);
+                glTranslatef(redge - 2*spacing, top, 1.0);
                 glRotatef(-15.0f, 1.0, 0.0, 0.0);
                 glRotatef(iAngle, 0.0, 1.0, 0.0);
                 glScalef(6.0f, 6.0f, 6.0f);
                 empire->draw();
+            glPopMatrix();
+
+            static Model *rebel = ModelManagerS::instance()->getModel("models/BigFoot");
+            glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+            glPushMatrix();
+                glTranslatef(redge - spacing, top, 1.0);
+                glRotatef(iAngle, 0.0, 1.0, 0.0);
+                glScalef(6.0f, 6.0f, 6.0f);
+                rebel->draw();
             glPopMatrix();
         }
     }
