@@ -662,8 +662,34 @@ bool Video::update( void)
             ty+=tdy;
 
             SkillS::instance();
-            scoreFont.DrawString(
-                Skill::getString(GameState::skill).c_str(), tx, ty, size, size);
+            scoreFont.DrawString(GameS::instance()
+                ->getReputation(true).c_str(), tx, ty, size, size);
+
+            const float spacing = 40.0f;
+            const float redge = 1020.0f;
+            const float top = 730.0f;
+            int data[3];
+            StageManagerS::instance()->getCounts(data[0], data[1], data[2]);
+            glColor4f(1.0f, 1.0f, 1.0f, 0.9f);
+            for (int ix = 0; ix < 3; ++ix)
+            {
+                sprintf(buff, "%d", data[ix]);
+                scoreFont.DrawString(buff, redge - (3-ix)*spacing,
+                    top - 40, 0.48f, 0.48f, GLBitmapFont::alCenter);
+            }
+
+            CargoItem *bomb = GameS::instance()->_cargo.findItem("Space grenade");
+            if (bomb && bomb->_quantity > 0)
+            {
+                sprintf(buff, "%d", bomb->_quantity);
+                scoreFont.DrawString(buff, 500, 10, 0.48f, 0.48f, GLBitmapFont::alCenter);
+            }
+            CargoItem *rocket = GameS::instance()->_cargo.findItem("Stinger rocket");
+            if (rocket && rocket->_quantity > 0)
+            {
+                sprintf(buff, "%d", rocket->_quantity);
+                scoreFont.DrawString(buff, 550, 10, 0.48f, 0.48f, GLBitmapFont::alCenter);
+            }
 
             glEnable( GL_LIGHTING);
             glEnable( GL_DEPTH_TEST);
@@ -690,6 +716,61 @@ bool Video::update( void)
             glTranslatef(154.0+_boardPosX, 567.0, -1.0);
             glRotatef(iAngle, 0.0, 1.0, 0.0);
             HeroS::instance()->drawWeapon(1);
+            glPopMatrix();
+
+            // draw weapons at the bottom of the screen
+            if (bomb && bomb->_quantity > 0)
+            {
+                static Model *bomba = ModelManagerS::instance()->getModel("models/WeaponUpgrade");
+                glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+                glPushMatrix();
+                    glTranslatef(470, 20, 1.0);
+                    //glRotatef(-90.0f, 1.0, 0.0, 0.0);
+                    glRotatef(iAngle, 0.0, 0.0, 1.0);
+                    glScalef(5.0f, 5.0f, 5.0f);
+                    bomba->draw();
+                glPopMatrix();
+            }
+            if (rocket && rocket->_quantity > 0)
+            {
+                static Model *rocketm = ModelManagerS::instance()->getModel("models/Stinger");
+                glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+                glPushMatrix();
+                    glTranslatef(520, 20, 1.0);
+                    //glRotatef(-90.0f, 1.0, 0.0, 0.0);
+                    glRotatef(iAngle, 0.0, 1.0, 0.0);
+                    //glScalef(5.0f, 5.0f, 5.0f);
+                    rocketm->draw();
+                glPopMatrix();
+            }
+
+            // draw images of incoming enemies -------------------------------
+            static Model *alien = ModelManagerS::instance()->getModel("models/SixLegBugYellow");
+            glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+            glPushMatrix();
+                glTranslatef(redge - 3*spacing, top, 1.0);
+                glRotatef(-90.0f, 1.0, 0.0, 0.0);
+                glRotatef(iAngle, 0.0, 0.0, 1.0);
+                glScalef(6.0f, 6.0f, 6.0f);
+                alien->draw();
+            glPopMatrix();
+
+            static Model *rebel = ModelManagerS::instance()->getModel("models/BigFoot");
+            glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+            glPushMatrix();
+                glTranslatef(redge - 2*spacing, top, 1.0);
+                glRotatef(iAngle, 0.0, 1.0, 0.0);
+                glScalef(6.0f, 6.0f, 6.0f);
+                rebel->draw();
+            glPopMatrix();
+
+            static Model *empire = ModelManagerS::instance()->getModel("models/DarkAngel");
+            glPushMatrix();
+                glTranslatef(redge - spacing, top, 1.0);
+                glRotatef(-15.0f, 1.0, 0.0, 0.0);
+                glRotatef(iAngle, 0.0, 1.0, 0.0);
+                glScalef(6.0f, 6.0f, 6.0f);
+                empire->draw();
             glPopMatrix();
         }
     }

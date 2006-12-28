@@ -739,15 +739,9 @@ void PlanetManager::drawPlayer(float yoffset)
     }
 
     yoffset -= spacing;
-    int rep_kills[] = { 0, 500, 1000, 2500, 4500, 6500, 9000 };
-    std::string reputation[] = { "Harmless", "Poor", "Average", "Competent",
-        "Dangerous", "Deadly", "Elite" };
-    std::string reps;
+    std::string rep = GameS::instance()->getReputation();
     int kills = GameS::instance()->_kills;
-    for (unsigned int i = 0; i < sizeof(reputation)/sizeof(string); ++i)
-        if (kills >= rep_kills[i])
-            reps = reputation[i];
-    gauge("Reputation:", 20.0f, yoffset, 180.0f, 15, kills, 9000, reps.c_str());
+    gauge("Reputation:", 20.0f, yoffset, 180.0f, 15, kills, 9000, rep.c_str());
 }
 //----------------------------------------------------------------------------
 void PlanetManager::drawCargo()

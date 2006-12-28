@@ -40,6 +40,7 @@ public:
 
     bool _rebelsAreNext;
     bool _empireIsNext;
+    void getCounts(int& a, int& e, int&r);
 };
 //----------------------------------------------------------------------------
 class StageManager
@@ -62,6 +63,7 @@ public:
 
     void rebelsAreNext();
     void empireIsNext();
+    void getCounts(int& a, int& e, int&r);
 
 private:
     StageManager( void):

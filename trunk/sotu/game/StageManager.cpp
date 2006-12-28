@@ -72,6 +72,18 @@ void EnemyWaves::reset()
     }
 }
 //----------------------------------------------------------------------------
+void EnemyWaves::getCounts(int &a, int& e, int& r)
+{
+    if (_alienTotal == -1)
+        a = e = r = 0;
+    else
+    {
+        a = _alienTotal  - _alienDone;
+        e = _empireTotal - _empireDone;
+        r = _rebelTotal  - _rebelDone;
+    }
+}
+//----------------------------------------------------------------------------
 // returns -1 if no more
 int EnemyWaves::getNextWave(std::string& name)
 {
@@ -138,6 +150,11 @@ int EnemyWaves::getNextWave(std::string& name)
 }
 //----------------------------------------------------------------------------
 // STAGE MANAGER *************************************************************
+//----------------------------------------------------------------------------
+void StageManager::getCounts(int& a, int& e, int&r)
+{
+    _enemies.getCounts(a, e, r);
+}
 //----------------------------------------------------------------------------
 void StageManager::rebelsAreNext()
 {

@@ -164,6 +164,20 @@ void Game::reset()
     StageManagerS::instance()->reset();
 }
 //----------------------------------------------------------------------------
+std::string Game::getReputation(bool ucase)
+{
+    int rep_kills[] = { 0, 500, 1000, 2500, 4500, 6500, 9000 };
+    std::string reputation[] = { "Harmless", "Poor", "Average", "Competent",
+        "Dangerous", "Deadly", "Elite" };
+    std::string urep[] = { "HARMLESS", "POOR", "AVERAGE", "COMPETENT",
+        "DANGEROUS", "DEADLY", "ELITE" };
+    std::string reps;
+    for (unsigned int i = 0; i < sizeof(reputation)/sizeof(string); ++i)
+        if (_kills >= rep_kills[i])
+            reps = (ucase ? urep[i] : reputation[i]);
+    return reps;
+}
+//----------------------------------------------------------------------------
 void Game::startNewGame()
 {
     reset();

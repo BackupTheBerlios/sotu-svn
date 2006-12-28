@@ -20,6 +20,7 @@
 #include <Singleton.hpp>
 #include <map>
 #include <vector>
+#include <iostream>
 //----------------------------------------------------------------------------
 class CargoItemInfo
 {
@@ -68,8 +69,8 @@ public:
     {
     };
 
-    void save(ofstream& os);
-    bool load(ifstream& is);
+    void save(std::ofstream& os);
+    bool load(std::ifstream& is);
     std::string _name;
     int _quantity;
     int _price;
@@ -85,8 +86,8 @@ public:
     iterator begin();
     iterator end();
 
-    void save(ofstream& os);
-    void load(ifstream& is);
+    void save(std::ofstream& os);
+    void load(std::ifstream& is);
     void clear();
     void create(Planet *p); // give zero to create player's cargo
     CargoItem* findItem(const std::string& itemName);
@@ -117,8 +118,8 @@ public:
 
     bool isSpecial();
     void update();
-    void save(ofstream& os);
-    bool load(ifstream& is);
+    void save(std::ofstream& os);
+    bool load(std::ifstream& is);
 };
 //----------------------------------------------------------------------------
 class Map
@@ -133,8 +134,8 @@ public:
     void addPlanet(Planet *p);
     void update();
 
-    void save(ofstream& os);
-    void load(ifstream& is);
+    void save(std::ofstream& os);
+    void load(std::ifstream& is);
 
 private:
     void deletePlanets();
@@ -159,6 +160,7 @@ public:
     int _kills;
     bool _landed;
     int _chapter;
+    std::string getReputation(bool upcase = false);
 
     std::vector<std::string> _questTargets;
     void reachedSpecialPlanet();
