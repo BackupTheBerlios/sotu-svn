@@ -16,6 +16,7 @@
 #include <SimpleEnemy.hpp>
 
 #include <Point.hpp>
+#include "Game.hpp"
 #include <GameState.hpp>
 #include <Random.hpp>
 #include <LevelPack.hpp>
@@ -195,6 +196,9 @@ void SimpleEnemy::draw( ParticleInfo *p)
 void SimpleEnemy::hit( ParticleInfo *p, int damage, int /*radIndex*/)
 {
     //    XTRACE();
+    if (_energy <= 0)   // no need to explode multiple times
+        return;
+
     static ParticleGroup *effects =
         ParticleGroupManagerS::instance()->getParticleGroup( EFFECTS_GROUP2);
 
@@ -211,14 +215,16 @@ void SimpleEnemy::hit( ParticleInfo *p, int damage, int /*radIndex*/)
 
         p->tod = 0;
         if( _moveState == eAttack)
-            ScoreKeeperS::instance()->addToCurrentScore( 200);
-        else
             ScoreKeeperS::instance()->addToCurrentScore( 100);
+        else
+            ScoreKeeperS::instance()->addToCurrentScore(  50);
 
         if( (Random::random() & 0xff) > 10)
             bonus->newParticle("Bonus1", p->position.x, p->position.y, p->position.z);
         else
             bonus->newParticle("SuperBonus", p->position.x, p->position.y, p->position.z);
+
+        GameS::instance()->_kills++;
 
         //spawn explosion
         for( int i=0; i<(int)(GameState::horsePower/2.0); i++)
@@ -228,7 +234,7 @@ void SimpleEnemy::hit( ParticleInfo *p, int damage, int /*radIndex*/)
     else
     {
         //a hit but no kill
-        ScoreKeeperS::instance()->addToCurrentScore( 50);
+        ScoreKeeperS::instance()->addToCurrentScore(20);
         ParticleInfo pi;
         pi.position.x = p->position.x;
         pi.position.y = p->position.y;

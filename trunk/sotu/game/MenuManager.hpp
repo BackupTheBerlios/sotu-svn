@@ -33,6 +33,10 @@ class Planet;
 class CargoItemInfo;
 // class GLTextureCubeMap;
 //----------------------------------------------------------------------------
+// load/save helpers
+std::string removespaces(const std::string& str);
+std::string addspaces(const std::string& str);
+//----------------------------------------------------------------------------
 class MenuManager: public InterceptorI
 {
 friend class Singleton<MenuManager>;
@@ -83,6 +87,21 @@ private:
 };
 typedef Singleton<MenuManager> MenuManagerS;
 //----------------------------------------------------------------------------
+class QuestEvent
+{
+public:
+    typedef enum { qePlayer = 0, qeGlobal } QuestEventType;
+
+    QuestEventType _type;
+    std::string _text;
+
+    QuestEvent(QuestEventType type, const std::string& text)
+    {
+        _type = type;
+        _text = text;
+    }
+};
+//----------------------------------------------------------------------------
 class PlanetManager: public InterceptorI
 {
 friend class Singleton<PlanetManager>;
@@ -98,6 +117,12 @@ public:
     void Left();
     void Right();
     void Enter();
+
+    void addEvent(const QuestEvent& event);
+    void addEvent(QuestEvent::QuestEventType type, const std::string& text);
+    void clearEvents();
+    void saveEvents(ofstream& os);
+    void loadEvents(ifstream& is);
 
     typedef enum { stMap=0, stTrade, stQuests } ScreenType;
     void setActiveScreen(ScreenType newone);
@@ -126,6 +151,9 @@ private:
 
     Planet* _hyperspaceTarget;
 
+    typedef std::list<QuestEvent> QuestList;
+    QuestList _questEvents;
+
     ScreenType _screenType;
     void drawCargo();
     void drawMap();
@@ -136,6 +164,7 @@ private:
 
     void planetClick();
     void tradeClick();
+    void saveClick();
 };
 
 typedef Singleton<PlanetManager> PlanetManagerS;

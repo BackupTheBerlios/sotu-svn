@@ -75,6 +75,14 @@ private:
     int _numWeap;
 };
 //----------------------------------------------------------------------------
+class RocketFireAction: public Callback
+{
+public:
+    RocketFireAction(): Callback("Rocket") { XTRACE(); }
+    virtual ~RocketFireAction() { XTRACE(); }
+    virtual void performAction( Trigger &, bool isDown);
+};
+//----------------------------------------------------------------------------
 class MegaBombFireAction: public Callback
 {
 public:

@@ -103,7 +103,6 @@ MenuManager::MenuManager():
     _currentMenu(0),
     _mouseX(200.0),
     _mouseY(650.0),
-    //_delayedExit(false),
     _angle(0.0),
     _prevAngle(0.0)
 {
@@ -227,13 +226,6 @@ void MenuManager::makeMenu( TiXmlNode *_node)
 //----------------------------------------------------------------------------
 bool MenuManager::update( void)
 {
-    /*
-    static float nextTime = Timer::getTime()+0.5f;
-    float thisTime = Timer::getTime();
-    if( thisTime > nextTime)
-        nextTime = thisTime + 0.5f;
-    */
-
     _onlineUpdateDisplay.update();
     _prevAngle = _angle;
     _angle += 10.0f;
@@ -257,15 +249,15 @@ bool MenuManager::draw( void)
 
     float iAngle = _prevAngle+(_angle-_prevAngle)*GameState::frameFractionOther;
     glPushMatrix();
-    glTranslatef( 820.0, 620.0, 0.0);
-    glRotatef(iAngle/7.0, 2.0, 3.0, 5.0);
-    _mapleLeaf->draw();
+        glTranslatef( 820.0, 620.0, 0.0);
+        glRotatef(iAngle/7.0, 2.0, 3.0, 5.0);
+        _mapleLeaf->draw();
     glPopMatrix();
 
     glPushMatrix();
-    glTranslatef( 200.0, 620.0, 0.0);
-    glRotatef(-iAngle/10.0, 2.0,3.0,5.0);
-    _nextGenShippy->draw();
+        glTranslatef( 200.0, 620.0, 0.0);
+        glRotatef(-iAngle/10.0, 2.0,3.0,5.0);
+        _nextGenShippy->draw();
     glPopMatrix();
 
     glDisable( GL_DEPTH_TEST);
@@ -274,7 +266,7 @@ bool MenuManager::draw( void)
     _onlineUpdateDisplay.draw();
 
     GLBitmapCollection *menuBoard =
-        BitmapManagerS::instance()->getBitmap( "bitmaps/menuBoard");
+        BitmapManagerS::instance()->getBitmap("bitmaps/menuBoard");
     menuBoard->bind();
     glColor4f(1.0, 1.0, 1.0, 0.7f);
     glEnable(GL_TEXTURE_2D);
@@ -579,6 +571,8 @@ void drawGun()
 //----------------------------------------------------------------------------
 void drawButton(float x, float y, float w, float h, bool highlight)
 {
+    static float lastx = 0;
+    static float lasty = 0;
     if (highlight)
     {
         glColor4f(0.0f, 0.0f, 0.6f, 1.0f);
@@ -589,8 +583,6 @@ void drawButton(float x, float y, float w, float h, bool highlight)
             glVertex2f( x,   y);
         glEnd();
 
-        static float lastx = 0;
-        static float lasty = 0;
         if (lastx != x || lasty != y)
         {
             AudioS::instance()->playSample( "sounds/beep.wav");
@@ -598,6 +590,9 @@ void drawButton(float x, float y, float w, float h, bool highlight)
             lasty = y;
         }
     }
+    else if (lastx == x && lasty == y)
+        lastx = lasty = 0;
+
     if (highlight)
         glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
     else
@@ -1120,6 +1115,54 @@ void PlanetManager::drawMap()
 void PlanetManager::drawQuests()
 {
     drawPlayer(650);
+
+    float fsize = 0.65f;
+    GLBitmapFont &fontWhite = *(FontManagerS::instance()->getFont( "bitmaps/menuWhite"));
+
+    // draw SAVE GAME button
+    if (GameS::instance()->_landed)
+    {
+        bool highlight = (_mouseX >= 30 && _mouseX <= 190
+            && _mouseY >= 70 && _mouseY <= 120);
+        drawButton(30, 70, 160, 50, highlight);
+        glColor4f(1.0f, 1.0f, 0.0f, 1.0f);
+        const float sgsize = 0.8f;
+        fontWhite.DrawString("SAVE GAME", 110.0f, 75.0f, sgsize, sgsize, GLBitmapFont::alCenter);
+    }
+
+    // draw quest boundary
+    setMinLineSize(2.0f);
+    glColor3f(0.0f, 0.7f, 0.0f);    // darker green color
+    glBegin(GL_LINE_LOOP);
+        glVertex2f( 980.0f,  60.0f);
+        glVertex2f( 980.0f, 670.0f);
+        glVertex2f( 210.0f, 670.0f);
+        glVertex2f( 210.0f,  60.0f);
+    glEnd();
+
+    // draw a list of quests
+    float yoffset = 660.0f;
+    setMinLineSize(1.0f);
+    for (QuestList::iterator it = _questEvents.begin(); it != _questEvents.end(); ++it)
+    {
+        yoffset -= 35.0f;
+        if (yoffset < 60)
+            break;
+
+        if (it != _questEvents.begin())
+        {
+            glColor4f(1.0f, 0.8f, 0.0f, 0.8f);
+            glBegin(GL_LINE_STRIP);
+                glVertex2f( 220.0f, yoffset + 35.0f);
+                glVertex2f( 970.0f, yoffset + 35.0f);
+            glEnd();
+        }
+        if ((*it)._type == QuestEvent::qeGlobal)
+            glColor4f(0.8f, 0.8f, 1.0f, 1.0f);
+        else
+            glColor4f(0.8f, 1.0f, 0.8f, 1.0f);
+        fontWhite.DrawString((*it)._text.c_str(), 220.0f, yoffset, fsize, fsize);
+    }
 }
 //----------------------------------------------------------------------------
 bool PlanetManager::draw()
@@ -1240,7 +1283,8 @@ void PlanetManager::tradeClick()
         it != info->end(); ++it)
     {
         CargoItem *c = pc.findItem((*it)._name);
-        total += c->_quantity * (*it)._weight;
+        if ((*it)._weight > 0)
+            total += c->_quantity * (*it)._weight;
     }
 
     Planet *pl = GameS::instance()->_currentPlanet;
@@ -1285,6 +1329,30 @@ void PlanetManager::tradeClick()
         GameS::instance()->_money -= price;
         AudioS::instance()->playSample("sounds/whoop.wav");
     }
+}
+//----------------------------------------------------------------------------
+void PlanetManager::saveClick()
+{
+    if (!GameS::instance()->_landed)
+        return;
+    if ( _mouseX < 30 || _mouseX > 190 || _mouseY < 70 || _mouseY > 120)
+        return;
+
+    if (GameS::instance()->_money >= 1000)
+    {
+        MessageBoxManagerS::instance()->setup("SAVE GAME",
+            "Saving the game costs 1000 credits. There is only "
+            "one save game slot, so any previous save will be lost.\n\n"
+            "Do you want to save the game?",
+            "Save", "SaveGame", "Cancel", "PlanetMenu");
+    }
+    else
+    {
+        MessageBoxManagerS::instance()->setup("SAVE GAME",
+            "Saving the game costs 1000 credits.\n\n"
+            "You don't have enough money.", "OK", "PlanetMenu");
+    }
+    GameS::instance()->switchContext(eMessageBox);
 }
 //----------------------------------------------------------------------------
 void PlanetManager::Up()
@@ -1337,6 +1405,8 @@ void PlanetManager::input(const Trigger &trigger, const bool &isDown)
                     planetClick();
                 if (_screenType == stTrade)
                     tradeClick();
+                if (_screenType == stQuests)
+                    saveClick();
                 break;
             default:
                 break;
@@ -1412,6 +1482,61 @@ PlanetManager::PlanetManager():
     _prevAngle(0.0)
 {
     _screenType = stMap;
+}
+//----------------------------------------------------------------------------
+void PlanetManager::addEvent(QuestEvent::QuestEventType type, const std::string& text)
+{
+    _questEvents.push_back(QuestEvent(type, text));
+    if (_questEvents.size() > 17)
+        _questEvents.pop_front();
+}
+//----------------------------------------------------------------------------
+void PlanetManager::addEvent(const QuestEvent& ev)
+{
+    _questEvents.push_back(ev);
+}
+//----------------------------------------------------------------------------
+void PlanetManager::clearEvents()
+{
+    _questEvents.clear();
+}
+//----------------------------------------------------------------------------
+std::string removespaces(const std::string& str)
+{
+    string out(str);
+    while (string::npos != out.find(" "))
+        out.replace(out.find(" "), 1, "_");
+    return out;
+}
+//----------------------------------------------------------------------------
+std::string addspaces(const std::string& str)
+{
+    string out(str);
+    while (string::npos != out.find("_"))
+        out.replace(out.find("_"), 1, " ");
+    return out;
+}
+//----------------------------------------------------------------------------
+void PlanetManager::saveEvents(ofstream& os)
+{
+    for (QuestList::iterator it = _questEvents.begin(); it != _questEvents.end(); ++it)
+        os << "" << (int)(*it)._type << " " << removespaces((*it)._text) << " ";
+    os << "" << -1;
+}
+//----------------------------------------------------------------------------
+void PlanetManager::loadEvents(ifstream& is)
+{
+    _questEvents.clear();
+    while (!is.eof())
+    {
+        int type;
+        is >> type;
+        if (type == -1)
+            return;
+        std::string s;
+        is >> s;
+        addEvent((QuestEvent::QuestEventType)type, addspaces(s));
+    }
 }
 //----------------------------------------------------------------------------
 // MessageBoxManager *********************************************************

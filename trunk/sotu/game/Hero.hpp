@@ -30,7 +30,7 @@ friend class Singleton<Hero>;
 public:
     enum MountedWeapon
     {
-       PRIMARY_WEAPON,
+       PRIMARY_WEAPON = 0,
        SECONDARY_WEAPON,
        TERTIARY_WEAPON,
        MAX_WEAPONS
@@ -56,6 +56,7 @@ public:
     bool weaponLoaded( int weapNum);
     void weaponFire( bool isDown, int weapNum=0);
     void fireMegaBomb();
+    void fireRocket();
 
     bool alive( void)
     {

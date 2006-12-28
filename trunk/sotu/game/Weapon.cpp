@@ -90,7 +90,7 @@ void Stinger::launch( float x, float y, float z)
     //        LOG_INFO << "Launching stinger..." << endl;
     static ParticleGroup *bullets =
     ParticleGroupManagerS::instance()->getParticleGroup(HERO_BULLETS_GROUP);
-    bullets->newParticle( name(), x, y, z);
+    bullets->newParticle( WeaponSTINGER, x, y, z);
 }
 //------------------------------------------------------------------------------
 void Stinger::draw( void)

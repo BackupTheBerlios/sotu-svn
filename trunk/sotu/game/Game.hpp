@@ -24,8 +24,8 @@
 class CargoItemInfo
 {
 public:
-    typedef enum { pmNormal, pmProTech, pmContraTech, pmRandom } PriceModel;
-    typedef enum { lsLegal, lsiEmpire, lsiRebels, lsiBoth } LegalStatus;
+    typedef enum { pmNormal=0, pmProTech, pmContraTech, pmRandom } PriceModel;
+    typedef enum { lsLegal=0, lsiEmpire, lsiRebels, lsiBoth } LegalStatus;
 
     CargoItemInfo(float scale, const std::string& mName, const std::string& name,
         int tl, int price, int weight = 1, int maxQty = 0,
@@ -63,7 +63,13 @@ public:
         _name = other._name;
         _quantity = other._quantity;
         _price = other._price;
-    }
+    };
+    CargoItem()     // just from loading
+    {
+    };
+
+    void save(ofstream& os);
+    bool load(ifstream& is);
     std::string _name;
     int _quantity;
     int _price;
@@ -79,6 +85,8 @@ public:
     iterator begin();
     iterator end();
 
+    void save(ofstream& os);
+    void load(ifstream& is);
     void clear();
     void create(Planet *p); // give zero to create player's cargo
     CargoItem* findItem(const std::string& itemName);
@@ -98,6 +106,7 @@ public:
     float _x;
     float _y;
 
+    Planet();
     Planet(float x, float y, const std::string& name = "");
     bool isAt(float x, float y);                // allow few pixels miss
     float getDistance(float x, float y);
@@ -107,8 +116,9 @@ public:
     int getPrice(const std::string& itemName);
 
     bool isSpecial();
-
     void update();
+    void save(ofstream& os);
+    bool load(ifstream& is);
 };
 //----------------------------------------------------------------------------
 class Map
@@ -121,6 +131,10 @@ public:
     Planet* getPlanetAt(float x, float y);
     Planet* getNearest(float x, float y);
     void addPlanet(Planet *p);
+    void update();
+
+    void save(ofstream& os);
+    void load(ifstream& is);
 
 private:
     void deletePlanets();
@@ -163,6 +177,9 @@ public:
     void run( void);
     void reset();
     void startNewGame();
+
+    bool saveGame();
+    bool loadGame();
 
     void startNewCampaign();
     ContextEnum getContext();

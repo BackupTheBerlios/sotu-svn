@@ -274,9 +274,17 @@ void BaseEnemy::getNextPath( void)
 void BaseEnemy::hit( ParticleInfo *p, int damage, int /*radIndex*/)
 {
     //    XTRACE();
+    if (_energy <= 0)   // no need to explode multiple times
+        return;
+
     static ParticleGroup *effects =
     ParticleGroupManagerS::instance()->getParticleGroup( EFFECTS_GROUP2);
 
+    if (damage < 0)
+    {
+        LOG_WARNING << "BE: NEGATIVE DAMAGE: " << damage << endl;
+        damage = 30;
+    }
     _energy -= damage;
     if (_energy <= 0)
     {
@@ -286,11 +294,11 @@ void BaseEnemy::hit( ParticleInfo *p, int damage, int /*radIndex*/)
         p->tod = 0;
         if( _moveState == eAttack)
         {
-            ScoreKeeperS::instance()->addToCurrentScore( 200);
+            ScoreKeeperS::instance()->addToCurrentScore( 100);
         }
         else
         {
-            ScoreKeeperS::instance()->addToCurrentScore( 100);
+            ScoreKeeperS::instance()->addToCurrentScore(  50);
         }
 
         if( (Random::random() & 0xff) > 10)
@@ -309,7 +317,7 @@ void BaseEnemy::hit( ParticleInfo *p, int damage, int /*radIndex*/)
     else
     {
         //a hit but no kill
-        ScoreKeeperS::instance()->addToCurrentScore( 50);
+        ScoreKeeperS::instance()->addToCurrentScore( 20);
         ParticleInfo pi;
         pi.position.x = p->position.x;
         pi.position.y = p->position.y;

@@ -609,7 +609,7 @@ bool Video::update( void)
             scoreFont.DrawString( buff, tx, ty, size, size);
             ty+=tdy;
 
-            sprintf( buff, "%d", ScoreKeeperS::instance()->getHighScore());
+            sprintf(buff, "%d", GameS::instance()->_kills);
             scoreFont.DrawString( buff, tx, ty, size, size);
             ty+=tdy;
 
@@ -630,12 +630,16 @@ bool Video::update( void)
             ty+=tdy;
 
             float se = HeroS::instance()->getShieldEnergy();
+            float seclip = se;
+            CargoItem *item = GameS::instance()->_cargo.findItem("Shield upgrade");
+            if (item && item->_quantity > 0)
+                seclip *= 0.5;
             glColor4f( 1.0f, 0.8f, 0.0f, 0.5f );
             glBegin(GL_QUADS);
-            glVertex3f( tx        , ty+2, -1);
-            glVertex3f( tx+se*.97f, ty+2, -1);
-            glVertex3f( tx+se*.97f, ty+20, -1);
-            glVertex3f( tx        , ty+20, -1);
+                glVertex3f( tx              , ty+2, -1);
+                glVertex3f( tx+seclip*.97f  , ty+2, -1);
+                glVertex3f( tx+seclip*.97f  , ty+20, -1);
+                glVertex3f( tx              , ty+20, -1);
             glEnd();
             glColor4f(1.0,1.0,1.0,0.5);
 
@@ -679,17 +683,16 @@ bool Video::update( void)
             glPushMatrix();
             glTranslatef(154.0+_boardPosX, 621.0, -1.0);
             glRotatef(iAngle, 0.0, 1.0, 0.0);
-            HeroS::instance()->drawWeapon(1);
+            HeroS::instance()->drawWeapon(2);
             glPopMatrix();
 
             glPushMatrix();
             glTranslatef(154.0+_boardPosX, 567.0, -1.0);
             glRotatef(iAngle, 0.0, 1.0, 0.0);
-            HeroS::instance()->drawWeapon(2);
+            HeroS::instance()->drawWeapon(1);
             glPopMatrix();
         }
     }
-
 
     SDL_GL_SwapBuffers( );
     return true;
@@ -713,7 +716,7 @@ void Video::takeSnapshot( void)
     LOG_INFO << "Writing snapshot: " << filename << endl;
     if( !PNG::Snapshot( img, filename))
     {
-    LOG_ERROR << "Failed to save snapshot." << endl;
+        LOG_ERROR << "Failed to save snapshot." << endl;
     }
 
     SDL_FreeSurface( img);

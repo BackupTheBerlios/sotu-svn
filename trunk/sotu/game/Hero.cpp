@@ -145,10 +145,32 @@ void Hero::addShield(int val)
         _shieldEnergy = maxval;
 }
 //----------------------------------------------------------------------------
+void Hero::fireRocket()
+{
+    Cargo& c = GameS::instance()->_cargo;
+    CargoItem *item = c.findItem("Stinger rocket");
+    if (item->_quantity > 0)
+    {
+        item->_quantity--;
+        AudioS::instance()->playSample( "sounds/laser.wav");
+        static ParticleGroup *bullets =
+            ParticleGroupManagerS::instance()->getParticleGroup(HERO_BULLETS_GROUP);
+        bullets->newParticle( WeaponSTINGER,
+            _pInfo->position.x,
+            _pInfo->position.y, -100.0f);
+        bullets->newParticle( WeaponSTINGER,
+            _pInfo->position.x + 4.2f,
+            _pInfo->position.y, -100.0f);
+        bullets->newParticle( WeaponSTINGER,
+            _pInfo->position.x - 4.2f,
+            _pInfo->position.y, -100.0f);
+    }
+}
+//----------------------------------------------------------------------------
 void Hero::fireMegaBomb()
 {
     Cargo& c = GameS::instance()->_cargo;
-    CargoItem *item = c.findItem("Smart bomb");
+    CargoItem *item = c.findItem("Space grenade");
     if (item->_quantity > 0)
     {
         item->_quantity--;
@@ -204,7 +226,7 @@ void Hero::hit(ParticleInfo * p, int damage, int /*radIndex*/)
             // remove some of the weapons
             Cargo &c = GameS::instance()->_cargo;
             std::string toLose[] = { "Proton spread fire", "Proton enhancer",
-                "Wave emitter", "Smart bomb", "Shield upgrade" };
+                "Wave emitter", "Shield upgrade" };
             for (int tries = 0; tries < 3; tries++)
             {
                 int rnd = Random::integer(sizeof(toLose)/sizeof(std::string));

@@ -2,6 +2,7 @@
 //   All kinds of particles.
 //
 // Copyright (C) 2001 Frank Becker
+// Copyright (C) 2006 Milan Babuskov
 //
 // This program is free software; you can redistribute it and/or modify it under
 // the terms of the GNU General Public License as published by the Free Software
@@ -21,6 +22,7 @@
 #include <ParticleGroup.hpp>
 #include <ParticleGroupManager.hpp>
 #include <Hero.hpp>
+#include "Game.hpp"
 #include <Audio.hpp>
 #include <FontManager.hpp>
 #include <BitmapManager.hpp>
@@ -619,7 +621,7 @@ void BallOfIce::hit( ParticleInfo *p, int /*damage*/, int /*radIndex*/)
 
 void BallOfIce::draw( ParticleInfo *p)
 {
-//    XTRACE();
+    //    XTRACE();
     ParticleInfo pi;
     interpolate( p, pi);
 
@@ -628,17 +630,11 @@ void BallOfIce::draw( ParticleInfo *p)
     glDisable(GL_DEPTH_TEST);
 
     glPushMatrix();
-
-    glTranslatef( pi.position.x, pi.position.y, pi.position.z);
-
-    //rotate towards the camera
-    CameraS::instance()->billboard();
-
-    glColor4f(1.0,1.0,1.0, 1.0);
-
-    bindTexture();
-    _bitmaps->DrawC( _bmIndex, 0, 0, 0.2f, 0.2f);
-
+        glTranslatef( pi.position.x, pi.position.y, pi.position.z);
+        CameraS::instance()->billboard();   //rotate towards the camera
+        glColor4f(1.0,1.0,1.0, 1.0);
+        bindTexture();
+        _bitmaps->DrawC( _bmIndex, 0, 0, 0.2f, 0.2f);
     glPopMatrix();
 
     glEnable(GL_DEPTH_TEST);
@@ -1365,7 +1361,6 @@ void HeroStinger::draw( ParticleInfo *p)
 #ifdef TRAIL_3D
     if( (pi.position.y - p->extra.y)*GameState::horsePower > (Random::random()&0xff))
     {
-
         effects->newParticle(
             "StingerTrail", pi.position.x, pi.position.y, pi.position.z);
         p->extra.y = pi.position.y;
@@ -1381,20 +1376,17 @@ void HeroStinger::draw( ParticleInfo *p)
 #endif
 
     glColor4f(0.8f,0.8f,0.2f, 1.0f);
-
     glPushMatrix();
-
-    glTranslatef( pi.position.x, pi.position.y, pi.position.z);
-
-    _stinger->draw();
-
+        glTranslatef( pi.position.x, pi.position.y, pi.position.z);
+        _stinger->draw();
     glPopMatrix();
 }
 
-void HeroStinger::hit( ParticleInfo *p, int /*damage*/, int /*radIndex*/)
+void HeroStinger::hit( ParticleInfo * /* p */, int /*damage*/, int /*radIndex*/)
 {
-//    XTRACE();
-    p->tod = 0;
+    //    XTRACE();
+    // stinger rockets keep going
+    //p->tod = 0;
 }
 
 //------------------------------------------------------------------------------
@@ -1787,22 +1779,21 @@ void ArmorPierce::draw( ParticleInfo *p)
 }
 
 //------------------------------------------------------------------------------
-
 WeaponUpgrade::WeaponUpgrade( void):
     ParticleType( "WeaponUpgrade")
 {
     XTRACE();
     _upgrade = ModelManagerS::instance()->getModel("models/WeaponUpgrade");
 }
-
+//----------------------------------------------------------------------------
 WeaponUpgrade::~WeaponUpgrade()
 {
     XTRACE();
 }
-
+//----------------------------------------------------------------------------
 void WeaponUpgrade::init( ParticleInfo *p)
 {
-//    XTRACE();
+    //    XTRACE();
     p->velocity.y = 1.30f * GAME_STEP_SCALE;
     p->extra.x = Random::rangef0_1()*60.0f - 30.0f;
     p->extra.y = (Random::rangef0_1()*30.0f + 20.0f)*0.1f * GAME_STEP_SCALE;
@@ -1815,11 +1806,10 @@ void WeaponUpgrade::init( ParticleInfo *p)
     //init previous values for interpolation
     updatePrevs(p);
 }
-
+//----------------------------------------------------------------------------
 bool WeaponUpgrade::update( ParticleInfo *p)
 {
 //    XTRACE();
-    //LOG_INFO << "WEAPON UPGRADE x = " << p->position.x << " y = " << p->position.y << endl;
     if (p->tod == 0)
         return false;
     if (fabs(p->position.y) > 50.0)
@@ -1832,21 +1822,19 @@ bool WeaponUpgrade::update( ParticleInfo *p)
         static ParticleGroup *bullets =
             ParticleGroupManagerS::instance()->getParticleGroup(HERO_BULLETS_GROUP);
 
-        for (float speed = 0.5f; speed < 2.0f; speed += 0.5f)
+        for( int i=0; i<360; i+= 10)
         {
-            for( int i=0; i<360; i+= 10)
+            float sinus = sin( i * ((float)M_PI/180.0f));
+            float cosinus = cos( i * ((float)M_PI/180.0f));
+            for (float speed = 0.5f; speed < 2.0f; speed += 0.5f)
             {
                 ParticleInfo pi;
                 pi.position.x = p->position.x;
                 pi.position.y = p->position.y;
                 pi.position.z = p->position.z;
                 pi.velocity.z = 0.0f;
-                float sinus = sin( i * ((float)M_PI/180.0f));
-                float cosinus = cos( i * ((float)M_PI/180.0f));
-
                 pi.velocity.x =  sinus * GAME_STEP_SCALE * speed;
                 pi.velocity.y =  cosinus * GAME_STEP_SCALE * speed;
-
                 pi.damage = 1000;
                 bullets->newParticle( "BallOfPoison", pi);
             }
@@ -1862,36 +1850,14 @@ bool WeaponUpgrade::update( ParticleInfo *p)
 
     return true;
 }
-
+//----------------------------------------------------------------------------
 void WeaponUpgrade::hit( ParticleInfo * /* p */, int /*damage*/, int /*radIndex*/)
 {
-    /*
-    if( GameState::horsePower > 90.0)
-    {
-        static ParticleGroup *effects =
-            ParticleGroupManagerS::instance()->getParticleGroup(EFFECTS_GROUP2);
-
-        ParticleInfo pi;
-        pi.color.x = 1.0f;
-        pi.color.y = 0.0f;
-        pi.color.z = 0.0f;
-        pi.position = p->position;
-        pi.text = "WeaponUpgrade";
-        effects->newParticle( "ScoreHighlight", pi);
-    }
-
-    //FIXME: for now just give some points...
-    ScoreKeeperS::instance()->addToCurrentScore( 1000);
-
-//    AudioS::instance()->playSample( "sounds/voiceUpgrade.wav");
-//    HeroS::instance()->addShield( 50);
-    p->tod = 0;
-    */
 }
-
+//----------------------------------------------------------------------------
 void WeaponUpgrade::draw( ParticleInfo *p)
 {
-//    XTRACE();
+    //    XTRACE();
     ParticleInfo pi;
     interpolate( p, pi);
 
@@ -1904,7 +1870,6 @@ void WeaponUpgrade::draw( ParticleInfo *p)
     glPopMatrix();
 
 }
-
 //------------------------------------------------------------------------------
 
 Bonus1::Bonus1( string modelName, int value):
@@ -2004,6 +1969,10 @@ void Bonus1::hit( ParticleInfo *p, int /*damage*/, int /*radIndex*/)
         else
             bonus->newParticle(
                 "EnergyBlob", p->position.x, 50.0f, p->position.z);
+
+        CargoItem *item = GameS::instance()->_cargo.findItem("Alien artifacts");
+        if (item)
+            item->_quantity++;
     }
 //        LOG_INFO << "Bonus: " << newValue << endl;
 }

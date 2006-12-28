@@ -41,6 +41,8 @@
 #include <StageManager.hpp>
 #include <MenuManager.hpp>
 #include <ResourceManager.hpp>
+
+//#define TRAINER
 //----------------------------------------------------------------------------
 Game::Game(void):
     _currentPlanet(0), _spaceStationApproach(0),
@@ -179,8 +181,12 @@ void Game::startNewCampaign()
 {
     _cargo.clear();
     _cargo.create(0);   // create empty cargo bay
+#ifdef TRAINER
+    _cargo.findItem("Fuel")->_quantity += 300000;
+    _cargo.findItem("Space grenade")->_quantity += 2000;
+#else
     _cargo.findItem("Fuel")->_quantity += 30;
-    //_cargo.findItem("Smart bomb")->_quantity += 2000;
+#endif
     _cargo.findItem("Proton spread fire")->_quantity += 1;
     _money = 2000;
     _landed = true;
@@ -193,6 +199,13 @@ void Game::startNewCampaign()
     ConfigS::instance()->updateKeyword("skill", SKILL_ROOKIE);
 
     ScoreKeeperS::instance()->resetCurrentScore();
+    PlanetManagerS::instance()->clearEvents();
+    PlanetManagerS::instance()->addEvent(QuestEvent::qeGlobal,
+        "War between empire and rebels has started.");
+    PlanetManagerS::instance()->addEvent(QuestEvent::qePlayer,
+        "Two pirates destroyed my ship and took the crystal.");
+    PlanetManagerS::instance()->addEvent(QuestEvent::qePlayer,
+        "Started trip to planet Torres to find the pirates.");
 
     switchContext(ePlanetMenu);
 }
@@ -307,6 +320,123 @@ void Game::updateInGameLogic()
         float extraTime = 800.0f * (GAME_STEP_SIZE - (currentGameTime - GameState::startOfGameStep));
         SDL_Delay((unsigned int)extraTime);
     }
+}
+//----------------------------------------------------------------------------
+void savePlanetCoords(ofstream& out, Planet *p)
+{
+    out << "" << p->_x << " " << p->_y << " ";
+}
+//----------------------------------------------------------------------------
+Planet *loadPlanetCoords(ifstream& in)
+{
+    float x, y;
+    in >> x;
+    in >> y;
+    return GameS::instance()->_galaxy.getPlanetAt(x, y);
+}
+//----------------------------------------------------------------------------
+bool Game::saveGame()
+{
+    string fileName = ConfigS::instance()->getConfigDirectory();
+    fileName += "savegame";
+    LOG_INFO << "Saving game to " << fileName << endl;
+
+    //Save in a compressed file to make it a bit tougher to cheat...
+#ifdef COMPRESS_SAVEGAME
+    ofstream outfile( fileName.c_str(), ios::out | ios::binary);
+    if (!outfile.good())
+        return false;
+    zoStream zout(outfile);
+#else
+    ofstream zout( fileName.c_str(), ios::out | ios::binary);
+    if (!zout.good())
+        return false;
+#endif
+
+    _money -= 1000;
+
+    zout << "#------ SOTU Saved Game -----#\n";
+    _galaxy.save(zout);
+    LOG_INFO << "Saving current planet coords" << endl;
+    savePlanetCoords(zout, _currentPlanet);
+    LOG_INFO << "Saving player's cargo" << endl;
+    _cargo.save(zout);
+    LOG_INFO << "Saving money, kills, etc." << endl;
+    zout << "" << _money << " " << (int)_rebelStatus << " " << (int)_empireStatus
+        << " " << _kills << " " << _chapter << " " << (int)GameState::skill
+        << " ";
+    LOG_INFO << "Saving Quest Targets" << endl;
+    for (std::vector<std::string>::iterator it = _questTargets.begin(); it != _questTargets.end(); ++it)
+        zout << (*it) << " ";
+    zout << "QUEST_TARGETS_END ";
+
+    LOG_INFO << "Saving hyperspace target coords" << endl;
+    savePlanetCoords(zout, PlanetManagerS::instance()->getHyperspaceTarget());
+    LOG_INFO << "Saving events" << endl;
+    PlanetManagerS::instance()->saveEvents(zout);
+    return true;
+}
+//----------------------------------------------------------------------------
+bool Game::loadGame()
+{
+    string fileName = ConfigS::instance()->getConfigDirectory();
+    fileName += "savegame";
+    LOG_INFO << "Loading game from " << fileName << endl;
+
+    //Save in a compressed file to make it a bit tougher to cheat...
+#ifdef COMPRESS_SAVEGAME
+    ifstream infile( fileName.c_str(), ios::in | ios::binary);
+    if (!infile.good())
+        return false;
+    ziStream zin(infile);
+#else
+    ifstream zin( fileName.c_str(), ios::in | ios::binary);
+    if (!zin.good())
+        return false;
+#endif
+
+    std::string line;
+    if (getline(zin, line).eof() || line != "#------ SOTU Saved Game -----#")
+        return false;
+
+    LOG_INFO << "  defaults" << endl;
+    // load other defaults
+    _landed = true;
+
+    _galaxy.load(zin);
+    LOG_INFO << "  current planet" << endl;
+    _currentPlanet = loadPlanetCoords(zin);
+    LOG_INFO << "  cargo" << endl;
+    _cargo.load(zin);
+    LOG_INFO << "  money, kills, etc." << endl;
+    int tmpi;
+    zin >> _money;
+    zin >> tmpi;
+    _rebelStatus = (PlayerStatus)tmpi;
+    zin >> tmpi;
+    _empireStatus = (PlayerStatus)tmpi;
+    zin >> _kills;
+    zin >> _chapter;
+    zin >> tmpi;
+    GameState::skill = (Skill::SkillEnum)tmpi;
+    LOG_INFO << "  quest targets" << endl;
+    _questTargets.clear();
+    while (!zin.eof())
+    {
+        std::string s;
+        zin >> s;
+        if (s == "QUEST_TARGETS_END")
+            break;
+        _questTargets.push_back(s);
+    }
+    LOG_INFO << "   hyperspace target" << endl;
+    Planet *p = loadPlanetCoords(zin);
+    PlanetManagerS::instance()->setHyperspaceTarget(p);
+    LOG_INFO << "   events" << endl;
+    PlanetManagerS::instance()->loadEvents(zin);
+
+    switchContext(ePlanetMenu);
+    return true;
 }
 //----------------------------------------------------------------------------
 void Game::run( void)
@@ -482,6 +612,11 @@ void Game::illegalTradeDecision(bool accept)
 //----------------------------------------------------------------------------
 void Game::ulegAccept()
 {   // add Armada to Map
+    if (_rebelStatus != psClean)
+    {
+        PlanetManagerS::instance()->addEvent(QuestEvent::qePlayer,
+        "Rebels agreed to forget my previous illegal trading.");
+    }
     _rebelStatus = psClean;
     Planet *p = new Planet(30, 150, "ARMADA");
     p->_rebelSentiment = 0;
@@ -491,15 +626,21 @@ void Game::ulegAccept()
     _questTargets.push_back("ARMADA");
     switchContext(ePlanetMenu);
     setPreviousContext(ePlanetMenu);
+    PlanetManagerS::instance()->addEvent(QuestEvent::qePlayer,
+        "I accepted Uleg's offer, and must now try to destroy the Armada.");
+    PlanetManagerS::instance()->addEvent(QuestEvent::qePlayer,
+        "Uleg will give me 50000 credits when I return to Jothan.");
 }
 //----------------------------------------------------------------------------
 void Game::ulegRefuse()
 {
     _rebelStatus = psTerrorist;
+#ifndef TRAINER
     _cargo.clear();
     _cargo.create(0);   // create empty cargo bay
-    _cargo.findItem("Fuel")->_quantity += 300000;
+    _cargo.findItem("Fuel")->_quantity += 30;
     _money = 2000;
+#endif
 
     Planet *p = new Planet(30, 570, "CYROS");
     p->_rebelSentiment = 90;
@@ -507,6 +648,11 @@ void Game::ulegRefuse()
     _questTargets.push_back("CYROS");
     switchContext(ePlanetMenu);
     setPreviousContext(ePlanetMenu);
+
+    PlanetManagerS::instance()->addEvent(QuestEvent::qePlayer,
+        "I managed to find an empty ship and escape the rebels.");
+    PlanetManagerS::instance()->addEvent(QuestEvent::qePlayer,
+        "Rebels consider me a traitor of their cause now.");
 }
 //----------------------------------------------------------------------------
 void Game::reachedSpecialPlanet()
@@ -539,6 +685,10 @@ void Game::reachedSpecialPlanet()
         _questTargets.clear();
         _questTargets.push_back("DYLKA");
         _questTargets.push_back("JOTHAN");
+        PlanetManagerS::instance()->addEvent(QuestEvent::qePlayer,
+            "Pirates cooperate with rebel army.");
+        PlanetManagerS::instance()->addEvent(QuestEvent::qePlayer,
+            "Pirates separated in Torres and went to Dylka and Jothan.");
     }
     else if (_currentPlanet->_name == "DYLKA")
     {
@@ -546,10 +696,11 @@ void Game::reachedSpecialPlanet()
         msg = "Finally, you found one of the pirates. You managed to capture "
             "him, but he hasn't got the crystal. Your learn that it has some "
             "special imporance as the rebels hired the pirates to find it.\n\n"
-            "The other pirate went to planet Jothan to deliver the crystal "
-            "to the Rebels.";
+            "The other pirate has the crystal and he went to planet Jothan.";
         _questTargets.clear();
         _questTargets.push_back("JOTHAN");
+        PlanetManagerS::instance()->addEvent(QuestEvent::qePlayer,
+            "Pirate on Dylka doesn't have the crystal. I must go to Jothan.");
     }
     else if (_currentPlanet->_name == "JOTHAN" && _chapter == 2)
     {
@@ -566,6 +717,12 @@ void Game::reachedSpecialPlanet()
         cancelButton = "Escape prison";
         okAction =     "UlegAccept";
         cancelAction = "UlegRefuse";
+        PlanetManagerS::instance()->addEvent(QuestEvent::qePlayer,
+            "I am captured by the rebels at Jothan space station.");
+        PlanetManagerS::instance()->addEvent(QuestEvent::qePlayer,
+            "Jothan is one of the key rebel planets.");
+        PlanetManagerS::instance()->addEvent(QuestEvent::qePlayer,
+            "Rebels want me to destroy Empire Armada.");
     }
     else if (_currentPlanet->_name == "JOTHAN" && _chapter == 3)
     {
@@ -586,6 +743,12 @@ void Game::reachedSpecialPlanet()
         _galaxy.addPlanet(p);
         _questTargets.clear();
         _questTargets.push_back("BORDER");
+        PlanetManagerS::instance()->addEvent(QuestEvent::qePlayer,
+            "Aliens destroyed rebel compound at Jothan.");
+        PlanetManagerS::instance()->addEvent(QuestEvent::qePlayer,
+            "Rebels were working together with aliens.");
+        PlanetManagerS::instance()->addEvent(QuestEvent::qePlayer,
+            "Rebels and aliens are creating a super weapon on planet Border.");
     }
     else if (_currentPlanet->_name == "ARMADA")
     {
@@ -601,6 +764,8 @@ void Game::reachedSpecialPlanet()
         _questTargets.push_back("JOTHAN");
         _currentPlanet->_name = "Armada";
         _currentPlanet->_rebelSentiment = 90;
+        PlanetManagerS::instance()->addEvent(QuestEvent::qePlayer,
+            "I have destroyed biggest Empire fleet - The Armada.");
     }
     else if (_currentPlanet->_name == "CYROS")
     {
@@ -616,6 +781,10 @@ void Game::reachedSpecialPlanet()
         _galaxy.addPlanet(p);
         _questTargets.clear();
         _questTargets.push_back("BORDER");
+        PlanetManagerS::instance()->addEvent(QuestEvent::qePlayer,
+            "Rebels are working together with aliens.");
+        PlanetManagerS::instance()->addEvent(QuestEvent::qePlayer,
+            "Rebels and aliens are creating a super weapon on planet Border.");
     }
     else if (_currentPlanet->_name == "BORDER")
     {
@@ -631,6 +800,12 @@ void Game::reachedSpecialPlanet()
         _galaxy.addPlanet(p);
         _questTargets.clear();
         _questTargets.push_back("LIZDOR");
+        PlanetManagerS::instance()->addEvent(QuestEvent::qePlayer,
+            "Aliens betrayed the Rebels and want to destroy us all.");
+        PlanetManagerS::instance()->addEvent(QuestEvent::qePlayer,
+            "The super-weapon is on a cloaked alien planet.");
+        PlanetManagerS::instance()->addEvent(QuestEvent::qePlayer,
+            "To detect the planet I need the device from Lizdor");
     }
     else if (_currentPlanet->_name == "LIZDOR" && _chapter == 3)
     {
@@ -645,6 +820,8 @@ void Game::reachedSpecialPlanet()
         _galaxy.addPlanet(p);
         _questTargets.clear();
         _questTargets.push_back("RISAR");
+        PlanetManagerS::instance()->addEvent(QuestEvent::qePlayer,
+            "Rare metal Palladium is required to build the device.");
     }
     else if (_currentPlanet->_name == "RISAR")
     {
@@ -654,6 +831,8 @@ void Game::reachedSpecialPlanet()
             "you need at no cost.";
         _questTargets.clear();
         _questTargets.push_back("LIZDOR");
+        PlanetManagerS::instance()->addEvent(QuestEvent::qePlayer,
+            "I got Palladium for free. Going back to Lizdor.");
     }
     else if (_currentPlanet->_name == "LIZDOR" && _chapter == 4)
     {
@@ -670,6 +849,12 @@ void Game::reachedSpecialPlanet()
         _galaxy.addPlanet(p);
         _questTargets.clear();
         _questTargets.push_back("CLOAKED");
+        PlanetManagerS::instance()->addEvent(QuestEvent::qePlayer,
+            "We have discovered cloaked alien planet.");
+        PlanetManagerS::instance()->addEvent(QuestEvent::qePlayer,
+            "I must go there and destroy the super weapon.");
+        PlanetManagerS::instance()->addEvent(QuestEvent::qePlayer,
+            "Super Weapon is actually a big alien spaceship.");
     }
     else if (_currentPlanet->_name == "CLOAKED")
     {
@@ -685,6 +870,8 @@ void Game::reachedSpecialPlanet()
         cancelAction = "PlanetMenu";
         _questTargets.clear();
         _currentPlanet->_name = "Cloaked";
+        PlanetManagerS::instance()->addEvent(QuestEvent::qePlayer,
+            "The human race is safe now.");
     }
 
     MessageBoxManagerS::instance()->setup(title, msg, okButton, okAction,
@@ -701,6 +888,9 @@ void Game::hyperspaceJump()
     _currentPlanet = target;
     _spaceStationApproach = 0;
     startNewGame();
+
+    PlanetManagerS::instance()->addEvent(QuestEvent::qePlayer,
+        "Jumped hyperspace to planet " + _currentPlanet->_name);
 }
 //----------------------------------------------------------------------------
 std::string Game::getHyperspaceAvailable()
@@ -747,9 +937,9 @@ std::vector<CargoItemInfo>* CargoItemInfo::getCargoInfo()
             "Enhances primary and secondary weapon power"));
         info.push_back(CargoItemInfo(0.8f, "models/FlankBurster", "Wave emitter",      8, 1200, 0,  1, pmNormal,
             "Tertiary weapon - use middle mouse button or ALT key"));
-        info.push_back(CargoItemInfo(5.0f, "models/WeaponUpgrade", "Smart bomb",       8, 1000, 0, 10, pmNormal,
-            "Destroys all nearby enemies - press key D to detonate"));
-        info.push_back(CargoItemInfo(1.0f, "models/Stinger", "Stinger rocket",         3,  500, 0, 20, pmNormal,
+        info.push_back(CargoItemInfo(5.0f, "models/WeaponUpgrade", "Space grenade",    8, 1000, 0, 10, pmNormal,
+            "Destroys multiple enemies - press key D to detonate"));
+        info.push_back(CargoItemInfo(1.0f, "models/Stinger", "Stinger rocket",         1,   50, 0, 20, pmNormal,
             "Ammo for rocket launcher - press key F to fire"));
         info.push_back(CargoItemInfo(3.0f, "models/ShieldBoost", "Shield upgrade",     7, 2000, 0,  1, pmNormal,
             "Allows your ship to have 200 shield energy"));
@@ -757,6 +947,23 @@ std::vector<CargoItemInfo>* CargoItemInfo::getCargoInfo()
             "Needed for hyperspace travel between planets"));
     }
     return &info;
+}
+//----------------------------------------------------------------------------
+void CargoItem::save(ofstream& os)
+{
+    os << removespaces(_name) << " " << _quantity << " " << _price << " ";
+}
+//----------------------------------------------------------------------------
+bool CargoItem::load(ifstream& is)
+{
+    std::string s;
+    is >> s;
+    if (is.eof() || s == "CARGOEND")
+        return false;
+    _name = addspaces(s);
+    is >> _quantity;
+    is >> _price;
+    return true;
 }
 //----------------------------------------------------------------------------
 void Cargo::create(Planet *p)
@@ -818,7 +1025,51 @@ Cargo::iterator Cargo::end()
     return _items.end();
 }
 //----------------------------------------------------------------------------
+void Cargo::save(ofstream& os)
+{
+    for (std::vector<CargoItem>::iterator it = _items.begin(); it != _items.end(); ++it)
+        (*it).save(os);
+    os << "CARGOEND ";
+}
+//----------------------------------------------------------------------------
+void Cargo::load(ifstream& is)
+{
+    clear();
+    CargoItem c;
+    while (c.load(is))
+        _items.push_back(c);
+}
+//----------------------------------------------------------------------------
 // PLANET ********************************************************************
+//----------------------------------------------------------------------------
+void Planet::save(ofstream& os)
+{
+    os << _name << " " << _x << " " << _y << " " << _radius << " "
+        << _textureIndex << " " << _techLevel << " " << _rebelSentiment << " "
+        << _alienActivity << " ";
+    _marketplace.save(os);
+}
+//----------------------------------------------------------------------------
+bool Planet::load(ifstream& is)
+{
+    is >> _name;
+    if (_name == "GALAXY_END")
+        return false;
+    is >> _x;
+    is >> _y;
+    is >> _radius;
+    is >> _textureIndex;
+    is >> _techLevel;
+    is >> _rebelSentiment;
+    is >> _alienActivity;
+    _marketplace.load(is);
+    return true;
+}
+//----------------------------------------------------------------------------
+Planet::Planet()
+{
+    // used only for loading
+}
 //----------------------------------------------------------------------------
 Planet::Planet(float x, float y, const std::string& name)
     :_x(x), _y(y)
@@ -899,7 +1150,9 @@ bool Planet::isSpecial()
 //----------------------------------------------------------------------------
 float Planet::getDistance(float x, float y)
 {
-    return sqrt((x-_x)*(x-_x) + (y-_y)*(y-_y));
+    float retval = 10.0f * sqrt((x-_x)*(x-_x) + (y-_y)*(y-_y));
+    int conv = (int)retval;
+    return 0.1f * (float)conv;
 }
 //----------------------------------------------------------------------------
 int Planet::getPrice(const std::string& itemName)
@@ -923,12 +1176,18 @@ Planet::BuyStatus Planet::canBuy(CargoItemInfo& item)
     return bsOk;
 }
 //----------------------------------------------------------------------------
-// called once each 5 turns or so
+// called once each 10 turns or so
 void Planet::update()
 {
-    // always rs=0, tl=9, aa=0
-    if (_name == "XEN" || _name == "TORRES")
+    // always the same
+    if (_name == "XEN" || _name == "TORRES" || _name == "CLOAKED")
         return;
+
+    static int counter = 0;
+    if (counter++ % 10 != 0)
+        return;
+
+    bool changed = false;
     int rs_before = _rebelSentiment;
     if (_rebelSentiment > 20)
         _rebelSentiment += -5 + Random::integer(11);
@@ -940,38 +1199,53 @@ void Planet::update()
         _rebelSentiment = 0;
     if (rs_before < 50 && _rebelSentiment > 50) // civil war - rebels take over
     {
+        changed = true;
         _rebelSentiment = 70;
-        // TODO: NewsManagerS::instance()->addItem("Civil war in " + _name + ". Rebels take over the planet.");
+        std::string msg = "Civil war on " + _name + ". Rebels take over the planet.";
         if (_techLevel > 1)
         {
             _techLevel -= 4;
-            // TODO: NewsManagerS::instance()->addItem("Civil war in " + _name + ". Technology level reduced.");
+            msg += " Tech.level reduced.";
         }
+        PlanetManagerS::instance()->addEvent(QuestEvent::qeGlobal, msg);
     }
     if (rs_before > 50 && _rebelSentiment < 50)
     {
+        changed = true;
         _rebelSentiment = 40;
-        _techLevel -= 2;
-        // TODO: NewsManagerS::instance()->addItem("Empire has taken " + _name + " into their power.");
+        std::string msg = "Empire army has conquered planet " + _name + " back.";
+        if (_techLevel > 1)
+        {
+            _techLevel -= 2;
+            msg += " Tech.level reduced.";
+        }
+        PlanetManagerS::instance()->addEvent(QuestEvent::qeGlobal, msg);
     }
     if (_techLevel < 1)
         _techLevel = 1;
     if (_techLevel < 9 && _rebelSentiment > 70 || _rebelSentiment < 30)   // planet of stable government
     {
         _techLevel += 0.1f;
-        //if ((float)((int)_techLevel) == _techLevel)
-        //    NewsManagerS::instance()->addItem("Tech. level of " + _name + " has increased.");
+        if ((float)((int)_techLevel) == _techLevel)
+        {
+            changed = true;
+            PlanetManagerS::instance()->addEvent(QuestEvent::qeGlobal,
+                "Tech. level of " + _name + " has increased.");
+        }
 
         if (_techLevel > 9)
             _techLevel = 9;
     }
 
     // update prices
-    _marketplace.clear();
-    _marketplace.create(this);
+    if (changed)
+    {
+        _marketplace.clear();
+        _marketplace.create(this);
+    }
 }
 //----------------------------------------------------------------------------
-// PLANET ********************************************************************
+// MAP ***********************************************************************
 //----------------------------------------------------------------------------
 void Map::addPlanet(Planet *p)
 {
@@ -1025,6 +1299,12 @@ void Map::recreate()
     }
 }
 //----------------------------------------------------------------------------
+void Map::update()
+{
+    for (PlanetList::iterator it = _planets.begin(); it != _planets.end(); ++it)
+        (*it)->update();
+}
+//----------------------------------------------------------------------------
 void Map::deletePlanets()
 {
     LOG_INFO << "DESTROYING PLANETS" << endl;
@@ -1036,6 +1316,32 @@ void Map::deletePlanets()
 Map::~Map()
 {
     deletePlanets();
+}
+//----------------------------------------------------------------------------
+void Map::save(ofstream& os)
+{
+    for (PlanetList::iterator it = _planets.begin(); it != _planets.end(); ++it)
+        (*it)->save(os);
+    os << "GALAXY_END ";
+}
+//----------------------------------------------------------------------------
+void Map::load(ifstream& is)
+{
+    deletePlanets();
+    while (!is.eof())
+    {
+        Planet *p = new Planet;
+        if (p->load(is))
+        {
+            //LOG_INFO << "Loaded planet: " << p->_name << endl;
+            addPlanet(p);
+        }
+        else
+        {
+            delete p;
+            return;
+        }
+    }
 }
 //----------------------------------------------------------------------------
 // renders galaxy as set of points

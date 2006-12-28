@@ -163,3 +163,17 @@ void MegaBombFireAction::performAction(Trigger &, bool isDown)
     HeroS::instance()->fireMegaBomb();
 }
 //----------------------------------------------------------------------------
+void RocketFireAction::performAction(Trigger &, bool isDown)
+{
+    if (!isDown)
+        return;
+
+    if (GameS::instance()->getContext() != eInGame
+        || !HeroS::instance()->alive())
+    {
+        return;
+    }
+
+    HeroS::instance()->fireRocket();
+}
+//----------------------------------------------------------------------------

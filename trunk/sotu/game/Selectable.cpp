@@ -891,6 +891,25 @@ void ActionSelectable::select( void)
             GameS::instance()->switchContext(eInGame);
         return;
     }
+    else if (_action == "LoadGame")
+    {
+        GameS::instance()->loadGame();
+    }
+    else if (_action == "SaveGame")
+    {
+        std::string msg = "GAME SAVED SUCCESSFULLY\n\n"
+            "You can load it from the main menu.\n\n"
+            "Note: To prevent players from load-and-retry tactics, only a single "
+            "game position can be saved at a time.";
+        if (!GameS::instance()->saveGame())
+        {
+            msg = "SAVE FAILED\n\nProbable reasons are:\n\n1. You don't have "
+                "enough disk space.\n2. You can't write to game directory\n"
+                "3. Some other software is preventing writing.";
+        }
+        MessageBoxManagerS::instance()->setup("SAVE GAME", msg,
+            "OK", "PlanetMenu");
+    }
     else if (_action == "IllegalTradeAccept")
     {
         GameS::instance()->illegalTradeDecision(true);
@@ -922,7 +941,7 @@ void ActionSelectable::select( void)
     else if (_action == "MainMenu")
         GameS::instance()->switchContext(eMenu);
     else
-        LOG_ERROR << "Unknown action" << _action << "endl";
+        LOG_ERROR << "Unknown action" << _action << endl;
     AudioS::instance()->playSample( "sounds/confirm.wav");
 }
 //------------------------------------------------------------------------------

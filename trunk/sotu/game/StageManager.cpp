@@ -187,6 +187,7 @@ void StageManager::update( void)
                 {
                     ssa = 0;
                     GameS::instance()->_landed = true;
+                    GameS::instance()->_galaxy.update();
                     if (GameS::instance()->_currentPlanet->isSpecial())
                         GameS::instance()->reachedSpecialPlanet();
                     else
@@ -194,7 +195,12 @@ void StageManager::update( void)
                         GameS::instance()->switchContext(ePlanetMenu);
                         // don't allow to go back
                         GameS::instance()->setPreviousContext(ePlanetMenu);
-                        SkillS::instance()->incrementSkill();
+                        static int counter = 0;
+                        if (counter++ > 10)
+                        {
+                            counter = 0;
+                            SkillS::instance()->incrementSkill();
+                        }
                     }
                 }
             }
