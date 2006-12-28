@@ -653,6 +653,7 @@ bool Video::update( void)
                     top - 40, 0.48f, 0.48f, GLBitmapFont::alCenter);
             }
 
+            /*
             CargoItem *bomb = GameS::instance()->_cargo.findItem("Space grenade");
             if (bomb && bomb->_quantity > 0)
             {
@@ -664,7 +665,7 @@ bool Video::update( void)
             {
                 sprintf(buff, "%d", rocket->_quantity);
                 scoreFont.DrawString(buff, 550, 10, 0.48f, 0.48f, GLBitmapFont::alCenter);
-            }
+            }*/
 
             glEnable( GL_LIGHTING);
             glEnable( GL_DEPTH_TEST);
@@ -694,6 +695,7 @@ bool Video::update( void)
                 shield->draw();
             glPopMatrix();
 
+            /*
             // draw weapons at the bottom of the screen
             if (bomb && bomb->_quantity > 0)
             {
@@ -718,7 +720,7 @@ bool Video::update( void)
                     //glScalef(5.0f, 5.0f, 5.0f);
                     rocketm->draw();
                 glPopMatrix();
-            }
+            }*/
 
             // draw images of incoming enemies -------------------------------
             static Model *alien = ModelManagerS::instance()->getModel("models/SixLegBugYellow");
@@ -748,6 +750,39 @@ bool Video::update( void)
                 glScalef(6.0f, 6.0f, 6.0f);
                 rebel->draw();
             glPopMatrix();
+
+            // draw weapons
+            float yoffset = 22;
+            bool weaponsStarted = false;
+            std::vector<CargoItemInfo> *info = CargoItemInfo::getCargoInfo();
+            for (std::vector<CargoItemInfo>::iterator it = info->begin();
+                it != info->end(); ++it)
+            {
+                if ((*it)._name == "Shield upgrade")
+                    break;
+                if ((*it)._name == "Proton spread fire")
+                    weaponsStarted = true;
+                if (!weaponsStarted)
+                    continue;
+                CargoItem *c = GameS::instance()->_cargo.findItem((*it)._name);
+                if (c && c->_quantity > 0)
+                {
+                    Model *m = ModelManagerS::instance()->getModel((*it)._modelName);
+                    glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+                    glPushMatrix();
+                        glTranslatef(975, yoffset, 1.0);
+                        glRotatef(iAngle * 0.5f + yoffset, 0.0, 1.0, 0.0);
+                        glScalef((*it)._scale, (*it)._scale, (*it)._scale);
+                        m->draw();
+                    glPopMatrix();
+                    if ((*it)._maxQty != 1 && c->_quantity > 1)
+                    {
+                        sprintf(buff, "%d", c->_quantity);
+                        scoreFont.DrawString(buff, 952, yoffset - 14, 0.48f, 0.48f, GLBitmapFont::alRight);
+                    }
+                    yoffset += 45;
+                }
+            }
         }
     }
 
