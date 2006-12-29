@@ -148,7 +148,7 @@ void Hero::fireRocket()
     if (item->_quantity > 0)
     {
         item->_quantity--;
-        AudioS::instance()->playSample( "sounds/laser.wav");
+        AudioS::instance()->playSample("sounds/laser.wav");
         static ParticleGroup *bullets =
             ParticleGroupManagerS::instance()->getParticleGroup(HERO_BULLETS_GROUP);
         bullets->newParticle( WeaponSTINGER,
@@ -161,6 +161,8 @@ void Hero::fireRocket()
             _pInfo->position.x - 4.2f,
             _pInfo->position.y, -100.0f);
     }
+    else
+        AudioS::instance()->playSample("sounds/bark.wav");
 }
 //----------------------------------------------------------------------------
 void Hero::fireMegaBomb()
@@ -170,12 +172,15 @@ void Hero::fireMegaBomb()
     if (item->_quantity > 0)
     {
         item->_quantity--;
+        AudioS::instance()->playSample("sounds/phaser1.wav");
         static ParticleGroup *bonus =
             ParticleGroupManagerS::instance()->getParticleGroup( BONUS_GROUP);
         bonus->newParticle("WeaponUpgrade",
             _pInfo->position.x,
             _pInfo->position.y, -100.0f);
     }
+    else
+        AudioS::instance()->playSample("sounds/bark.wav");
 }
 //----------------------------------------------------------------------------
 void Hero::popMessage(const char *msg, float red, float green, float blue)
