@@ -505,30 +505,9 @@ bool Video::update( void)
             smallFont.DrawString( "You are fried by the Scum of the Universe" ,
             170, 260, 1.0f, 1.0f);
 
-            /*
-            if( ScoreKeeperS::instance()->currentIsTopTen())
-            {
-                if( !_textInput.isOn())
-                {
-                    _textInput.turnOn();
-                }
-
-                glColor4f(1.0f,1.0f,1.0f,1.0f);
-                smallFont.DrawString( "Top Ten Finish! RIP",215,200, 1.0f, 1.0f);
-
-                string pname = "Enter Pilot name: ";
-                pname += _textInput.getText()+"_";
-                glColor4f(1.0f,0.852f,0.0f,1.0f);
-                smallFont.DrawString( pname.c_str() , 215, 140, 1.0f, 1.0f);
-
-                ScoreKeeperS::instance()->setName( _textInput.getText());
-            }*/
-            //else
-            //{
-                string escmsg = "Press ESC to exit";
-                glColor4f(1.0f,0.852f,0.0f,1.0f);
-                smallFont.DrawString(escmsg.c_str() , 500, 140, 1.0f, 1.0f, GLBitmapFont::alCenter);
-            //}
+            string escmsg = "Press ESC to exit";
+            glColor4f(1.0f,0.852f,0.0f,1.0f);
+            smallFont.DrawString(escmsg.c_str() , 500, 140, 1.0f, 1.0f, GLBitmapFont::alCenter);
             glColor4f(1.0f,1.0f,1.0f,1.0f);
         }
     }

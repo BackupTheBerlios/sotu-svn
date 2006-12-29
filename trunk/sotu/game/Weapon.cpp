@@ -68,7 +68,7 @@ void GuardDog::launch( float /*x*/, float /*y*/, float /*z*/)
 {
     XTRACE();
     AudioS::instance()->playSample( "sounds/bark.wav");
-    LOG_INFO << "...<Bark>... :-)" << endl;
+    //LOG_INFO << "...<Bark>... :-)" << endl;
 }
 //------------------------------------------------------------------------------
 Stinger::Stinger( void):
@@ -264,7 +264,7 @@ void WingPhaser::launch( float x, float y, float z)
     pi.position.z = z;
     bullets->newParticle( "WingPhaser1", pi);
 
-    AudioS::instance()->playSample( "sounds/phaser1.wav");
+    AudioS::instance()->playSample("sounds/phaser1.wav");
 }
 //------------------------------------------------------------------------------
 void WingPhaser::draw( void)
