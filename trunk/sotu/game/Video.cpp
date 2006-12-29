@@ -486,7 +486,12 @@ bool Video::update( void)
         bool showFPS = false;
         ConfigS::instance()->getBoolean( "showFPS", showFPS);
         if (showFPS)
-            smallFont.DrawString( FPS::GetFPSString(), 0, 0,  0.6f, 0.6f);
+        {
+            float ypos = 3.0f;
+            if (context == eInGame || context == ePaused)
+                ypos = 70.0f;
+            smallFont.DrawString(FPS::GetFPSString(), 3.0f, ypos,  0.6f, 0.6f, GLBitmapFont::alLeft);
+        }
     }
 
     if (context == eInGame || context == ePaused)
