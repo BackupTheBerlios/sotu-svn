@@ -83,23 +83,23 @@
         Size="1.0"
         Position="500.0 450.0" />
         <TextItem
-        Text="* Using the keyboard is much harder than using the mouse"
+        Text="* Using the keyboard is much harder than using the mouse."
         Info="If it gets too easy, try using the keyboard!"
         Position="500.0 400.0" />
         <TextItem
-        Text="* Use both left and right mouse button for firing"
-        Info="Or left ALT and left CTRL."
+        Text="* All mouse buttons fire some weapons."
+        Info="On keyboard use left ALT and CTRL and SPACE, D and F keys."
         Position="500.0 360.0" />
         <TextItem
         Text="* Shoot some then move to other side of screen. Rinse and repeat."
         Info="It's sounds almost too simple now, doesn't it?"
         Position="500.0 320.0" />
         <TextItem
-        Text="* Buy cheap food at low tech. planets, and sell at high tech. ones"
+        Text="* Buy cheap food at low tech. planets, and sell at high tech. ones."
         Info="Vice versa for electronics"
         Position="500.0 270.0" />
         <TextItem
-        Text="* If you run out of money, kill some aliens in planet's orbit"
+        Text="* If you run out of money, kill some aliens in planet's orbit."
         Info="Some drop artifacts which are worth 20 credits each."
         Position="500.0 230.0" />
         <TextItem
@@ -120,27 +120,22 @@
 
         <TextItem
         Text="Scum of the Universe"
-        Info="Are you or are they?"
+        Info="Cool name, ain't it?"
         Size="1.2"
         Position="500.0 440.0"/>
         <TextItem
-        Text="Copyright (C) 2005 Frank Becker"
-        Info="Frank's personal homepage: www3.telus.net/fb"
+        Text="a space adventure"
+        Info="Be a trader, smuggler, freedom fighter or mercenary"
         Size="0.85"
         Position="500.0 400.0" />
         <TextItem
-        Text="Copyright (C) 2006 Milan Babuskov"
-        Info="See also: http://njam.sourceforge.net"
-        Size="0.85"
-        Position="500.0 360.0" />
+            Text="This game is based on Critter game"
+            Info="Long live GPL license."
+            Position="500.0 280.0" />
         <TextItem
-        Text="This game is based on Critter game"
-        Info="Long live GPL license."
-        Position="500.0 280.0" />
-        <TextItem
-        Text="found at  http://criticalmass.sourceforge.net"
-        Info="Hosted by SourceForge.net. OK, you knew that..."
-        Position="500.0 240.0" />
+            Text="found at  http://criticalmass.sourceforge.net"
+            Info="Critter is pure space shooter - no strategy stuff"
+            Position="500.0 240.0" />
         <TextItem
         Text="So a special thanks to:"
         Info="Hey, more than special."
