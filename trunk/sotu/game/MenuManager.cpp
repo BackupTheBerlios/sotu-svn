@@ -1092,7 +1092,10 @@ void PlanetManager::drawMap()
                 glColor4f(1.0f, 1.0f, 1.0f, 0.8f);
                 char ok[] = "Click to set as hyperspace target.";
                 char too_far[] = "Planet is out of range.";
+                char already_set[] = "Hyperspace jump will take you there.";
                 char *text = (c->_quantity >= dist ? ok : too_far);
+                if (c->_quantity >= dist && pl == _hyperspaceTarget)
+                    text = already_set;
                 fontWhite.DrawString(text, w + 20.0f, 17.0f, 0.7f, 0.65f);
             }
         }
