@@ -48,46 +48,46 @@ public:
 
     int getCurrentScore( void)
     {
-	return _leaderBoard[_currentIndex].score;
+    return _leaderBoard[_currentIndex].score;
     }
 
     void resetCurrentScore( void);
-
     int addToCurrentScore( int value);
+    void setScore(int value);
 
     void incGoodiesCaught( void);
     void incGoodiesMissed( void);
 
     int getScore( unsigned int index)
     {
-	if( index < _leaderBoard.size())
-	{
-	    return _leaderBoard[ index].score;
-	}
+    if( index < _leaderBoard.size())
+    {
+        return _leaderBoard[ index].score;
+    }
 
-	return 0;
+    return 0;
     }
 
     const string getInfoText( unsigned int index);
 
     int getHighScore( void)
     {
-	return _leaderBoard[0].score;
+    return _leaderBoard[0].score;
     }
 
     int boardSize( void)
     {
-	return (int)_leaderBoard.size();
+    return (int)_leaderBoard.size();
     }
 
     bool currentIsTopTen( void)
     {
-	return  _currentIndex < 10;
+    return  _currentIndex < 10;
     }
 
     void setName( const string &name)
     {
-	_leaderBoard[_currentIndex].name = name;
+    _leaderBoard[_currentIndex].name = name;
     }
 
     void load( void);

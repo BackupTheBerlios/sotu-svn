@@ -201,7 +201,6 @@ void Game::startNewCampaign()
 #else
     _cargo.findItem("Fuel")->_quantity += 30;
 #endif
-    _cargo.findItem("Proton spread fire")->_quantity += 1;
     _money = 2000;
     _landed = true;
     _galaxy.recreate();
@@ -378,7 +377,7 @@ bool Game::saveGame()
     LOG_INFO << "Saving money, kills, etc." << endl;
     zout << "" << _money << " " << (int)_rebelStatus << " " << (int)_empireStatus
         << " " << _kills << " " << _chapter << " " << (int)GameState::skill
-        << " ";
+        << " " << ScoreKeeperS::instance()->getCurrentScore() << " ";
     LOG_INFO << "Saving Quest Targets" << endl;
     for (std::vector<std::string>::iterator it = _questTargets.begin(); it != _questTargets.end(); ++it)
         zout << (*it) << " ";
@@ -433,7 +432,10 @@ bool Game::loadGame()
     zin >> _kills;
     zin >> _chapter;
     zin >> tmpi;
-    GameState::skill = (Skill::SkillEnum)tmpi;
+    Skill::SkillEnum sk = (Skill::SkillEnum)tmpi;
+    SkillS::instance()->updateSkill(sk);
+    zin >> tmpi;
+    ScoreKeeperS::instance()->setScore(tmpi);
     LOG_INFO << "  quest targets" << endl;
     _questTargets.clear();
     while (!zin.eof())
@@ -940,20 +942,18 @@ std::vector<CargoItemInfo>* CargoItemInfo::getCargoInfo()
             "Some of the aliens you shoot might drop it"));
         info.push_back(CargoItemInfo(6.0f, "models/Bonus1", "Jewelry",                 3,  400, 1,  0, pmRandom,
             "Price of this item varies randomly"));
-        info.push_back(CargoItemInfo(1.0f, "GUN", "Firearms",                          4,  300, 1,  0, pmNormal,
+        info.push_back(CargoItemInfo(1.0f, "GUN", "Firearms",                          4,  600, 1,  0, pmNormal,
             "Trading this item is illegal on Empire planets", lsiEmpire));
         info.push_back(CargoItemInfo(2.0f, "models/Boss1_Teeth", "Narcotics",          3,  395, 1,  0, pmProTech,
             "Trading this item is illegal on all planets",    lsiBoth));
-        info.push_back(CargoItemInfo(5.0f, "models/Boss1_Eye1", "Slaves",              1,  195, 1,  0, pmProTech,
+        info.push_back(CargoItemInfo(5.0f, "models/Boss1_Eye1", "Slaves",              1,  400, 1,  0, pmNormal,
             "Trading this item is illegal on Rebel planets",  lsiRebels));
 
-        info.push_back(CargoItemInfo(1.0f, "models/IceSpray", "Proton spread fire",    3,  400, 0,  1, pmNormal,
-            "Secondary weapon - use right mouse button or CTRL key"));
         info.push_back(CargoItemInfo(1.0f, "models/IceSprayPierce", "Proton enhancer", 6,  900, 0,  1, pmNormal,
             "Enhances primary and secondary weapon power"));
         info.push_back(CargoItemInfo(0.8f, "models/FlankBurster", "Wave emitter",      8, 1200, 0,  1, pmNormal,
             "Tertiary weapon - use middle mouse button or ALT key"));
-        info.push_back(CargoItemInfo(5.0f, "models/WeaponUpgrade", "Space grenade",    8, 1000, 0, 10, pmNormal,
+        info.push_back(CargoItemInfo(5.0f, "models/WeaponUpgrade", "Space grenade",    8, 1000, 0, 20, pmNormal,
             "Destroys multiple enemies - press key D to detonate"));
         info.push_back(CargoItemInfo(1.0f, "models/Stinger", "Stinger rocket",         1,   50, 0, 20, pmNormal,
             "Ammo for rocket launcher - press key F to fire"));
@@ -1001,7 +1001,7 @@ void Cargo::create(Planet *p)
             bool illegal =
                 ((*it)._legalStatus == CargoItemInfo::lsiEmpire && p->_rebelSentiment <= 50 ||
                  (*it)._legalStatus == CargoItemInfo::lsiRebels && p->_rebelSentiment > 50);
-            float multiply = (illegal ? 2.0f : 1.0f);
+            float multiply = (illegal ? 0.5f : 1.0f);
             float tleffect = ((*it)._legalStatus == CargoItemInfo::lsiBoth ? 3.0f : 1.0f );
             if ((*it)._priceModel == CargoItemInfo::pmProTech)
                 multiply += ((p->_techLevel * tleffect - 5.0f)*0.1f); // 0.6 - 1.4 of original price
@@ -1220,7 +1220,7 @@ void Planet::update()
         std::string msg = "Civil war on " + _name + ". Rebels take over the planet.";
         if (_techLevel > 1)
         {
-            _techLevel -= 4;
+            _techLevel -= 2;
             msg += " Tech.level reduced.";
         }
         PlanetManagerS::instance()->addEvent(QuestEvent::qeGlobal, msg);
@@ -1230,18 +1230,13 @@ void Planet::update()
         changed = true;
         _rebelSentiment = 40;
         std::string msg = "Empire army has conquered planet " + _name + " back.";
-        if (_techLevel > 1)
-        {
-            _techLevel -= 2;
-            msg += " Tech.level reduced.";
-        }
         PlanetManagerS::instance()->addEvent(QuestEvent::qeGlobal, msg);
     }
     if (_techLevel < 1)
         _techLevel = 1;
     if (_techLevel < 9 && _rebelSentiment > 70 || _rebelSentiment < 30)   // planet of stable government
     {
-        _techLevel += 0.1f;
+        _techLevel += 0.3f;
         if ((float)((int)_techLevel) == _techLevel)
         {
             changed = true;

@@ -74,17 +74,23 @@ void ScoreKeeper::resetCurrentScore( void)
     _leaderBoard[ _currentIndex].time = 0;
 }
 //----------------------------------------------------------------------------
+void ScoreKeeper::setScore(int value)
+{
+    resetCurrentScore();
+    _leaderBoard[_currentIndex].score = value;
+}
+//----------------------------------------------------------------------------
 int ScoreKeeper::addToCurrentScore( int value)
 {
     XTRACE();
-    int newValue = value * 3;
+    //int newValue = value;
 
-    _leaderBoard[ _currentIndex].score += newValue;
+    _leaderBoard[ _currentIndex].score += value;
     time( & _leaderBoard[ _currentIndex].time);
     updateLeaderBoard();
 
     //return the real value;
-    return newValue;
+    return value;
 }
 //----------------------------------------------------------------------------
 void ScoreKeeper::incGoodiesCaught( void)

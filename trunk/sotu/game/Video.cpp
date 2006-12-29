@@ -475,7 +475,7 @@ bool Video::update( void)
             {
                 glColor4f(1.0f,1.0f,1.0f,0.6f);
                 smallFont.DrawString("Press H for hyperspace jump",
-                    500, 30, 1.0f, 1.0f, GLBitmapFont::alCenter);
+                    500, 600, 1.0f, 1.0f, GLBitmapFont::alCenter);
             }
         }
     }
@@ -580,8 +580,13 @@ bool Video::update( void)
     {
         if (_boardVisible)
         {
-            float size = 0.48f;
-            glColor4f( 1.0f, 0.9f, 0.5f, 0.7f );
+            const float size = 0.48f;
+
+            // classic
+            const float weapon_start_x = 975.0f;
+            const float weapon_start_y = 22.0f;
+
+            glColor4f( 1.0f, 0.7f, 0.0f, 0.6f );
             scoreFont.DrawString( "POINTS:", 5.0f, 725.0f, size, size);
             scoreFont.DrawString( "KILLS:", 5.0f,  700.0f, size, size);
             sprintf (buff, "%d", ScoreKeeperS::instance()->getCurrentScore());
@@ -592,53 +597,52 @@ bool Video::update( void)
             float he = HeroS::instance()->getEnergy();
             if (he < 0.0f)
                 he = 0.0f;
-            sprintf( buff, "%d", (int)he);
-
             glColor4f( 1.0f, 1.0f, 1.0f, 0.3f );
             glBegin(GL_QUADS);
-                glVertex3f( 45        , 15, -1);
-                glVertex3f( 142, 15, -1);
-                glVertex3f( 142, 33, -1);
-                glVertex3f( 45        , 33, -1);
+                glVertex3f( 45.0f,  15.0f, -1);
+                glVertex3f( 142.0f, 15.0f, -1);
+                glVertex3f( 142.0f, 33.0f, -1);
+                glVertex3f( 45.0f,  33.0f, -1);
             glEnd();
             if (he >= 100.0f)
                 glColor4f( 0.0f, 0.5f, 1.0f, 0.7f );
             else
                 glColor4f( 1.0f, 0.0f, 0.0f, 0.7f );
             glBegin(GL_QUADS);
-                glVertex3f( 45        , 15, -1);
-                glVertex3f( 45+he*.97f, 15, -1);
-                glVertex3f( 45+he*.97f, 33, -1);
-                glVertex3f( 45        , 33, -1);
+                glVertex3f( 45.0f        , 15.0f, -1);
+                glVertex3f( 45.0f+he*.97f, 15.0f, -1);
+                glVertex3f( 45.0f+he*.97f, 33.0f, -1);
+                glVertex3f( 45.0f        , 33.0f, -1);
             glEnd();
             glColor4f(1.0,1.0,1.0,0.9f);
-            scoreFont.DrawString( buff, 45, 13, size, size);
+            sprintf( buff, "%d", (int)he);
+            scoreFont.DrawString( buff, 45.0f, 13.0f, size, size);
 
             float se = HeroS::instance()->getShieldEnergy();
             float seclip = se;
             CargoItem *item = GameS::instance()->_cargo.findItem("Shield upgrade");
             if (item && item->_quantity > 0)
                 seclip *= 0.5;
-            sprintf( buff, "%d", (int)se);
             glColor4f( 1.0f, 1.0f, 1.0f, 0.3f );
             glBegin(GL_QUADS);
-                glVertex3f( 45        , 47, -1);
-                glVertex3f( 142, 47, -1);
-                glVertex3f( 142, 65, -1);
-                glVertex3f( 45        , 65, -1);
+                glVertex3f( 45.0f,  47.0f, -1);
+                glVertex3f( 142.0f, 47.0f, -1);
+                glVertex3f( 142.0f, 65.0f, -1);
+                glVertex3f( 45.0f,  65.0f, -1);
             glEnd();
             if (se >= 100.0f)
                 glColor4f( 1.0f, 0.7f, 0.0f, 0.6f );
             else
                 glColor4f( 1.0f, 0.0f, 0.0f, 0.7f );
             glBegin(GL_QUADS);
-                glVertex3f( 45              , 47, -1);
-                glVertex3f( 45+seclip*.97f  , 47, -1);
-                glVertex3f( 45+seclip*.97f  , 65, -1);
-                glVertex3f( 45              , 65, -1);
+                glVertex3f( 45.0f              , 47.0f, -1);
+                glVertex3f( 45.0f+seclip*.97f  , 47.0f, -1);
+                glVertex3f( 45.0f+seclip*.97f  , 65.0f, -1);
+                glVertex3f( 45.0f              , 65.0f, -1);
             glEnd();
             glColor4f(1.0,1.0,1.0,0.9f);
-            scoreFont.DrawString( buff, 45, 45, size, size);
+            sprintf( buff, "%d", (int)se);
+            scoreFont.DrawString( buff, 45.0f, 45.0f, size, size);
 
             const float spacing = 40.0f;
             const float redge = 1020.0f;
@@ -653,22 +657,34 @@ bool Video::update( void)
                     top - 40, 0.48f, 0.48f, GLBitmapFont::alCenter);
             }
 
-            /*
-            CargoItem *bomb = GameS::instance()->_cargo.findItem("Space grenade");
-            if (bomb && bomb->_quantity > 0)
+            float xoffset1 = weapon_start_x;
+            bool weaponsStarted1 = false;
+            std::vector<CargoItemInfo> *info = CargoItemInfo::getCargoInfo();
+            for (std::vector<CargoItemInfo>::iterator it = info->begin();
+                it != info->end(); ++it)
             {
-                sprintf(buff, "%d", bomb->_quantity);
-                scoreFont.DrawString(buff, 500, 10, 0.48f, 0.48f, GLBitmapFont::alCenter);
+                if ((*it)._name == "Shield upgrade")
+                    break;
+                if ((*it)._name == "Proton enhancer")
+                    weaponsStarted1 = true;
+                if (!weaponsStarted1)
+                    continue;
+                CargoItem *c = GameS::instance()->_cargo.findItem((*it)._name);
+                if (c && c->_quantity > 0)
+                {
+                    if ((*it)._maxQty > 1)
+                    {
+                        glColor4f(1.0f, 1.0f, 1.0f, 0.9f);
+                        sprintf(buff, "%d", c->_quantity);
+                        scoreFont.DrawString(buff, xoffset1, 40.0f,
+                            0.48f, 0.48f, GLBitmapFont::alCenter);
+                    }
+                    xoffset1 -= 45;
+                }
             }
-            CargoItem *rocket = GameS::instance()->_cargo.findItem("Stinger rocket");
-            if (rocket && rocket->_quantity > 0)
-            {
-                sprintf(buff, "%d", rocket->_quantity);
-                scoreFont.DrawString(buff, 550, 10, 0.48f, 0.48f, GLBitmapFont::alCenter);
-            }*/
 
-            glEnable( GL_LIGHTING);
-            glEnable( GL_DEPTH_TEST);
+            glEnable (GL_LIGHTING);
+            glEnable (GL_DEPTH_TEST);
 
             GLfloat light_position2[] = { 820.0, 620.0, 500.0, 0.0 };
             glLightfv(GL_LIGHT0, GL_POSITION, light_position2);
@@ -679,7 +695,7 @@ bool Video::update( void)
             // shield and energy
             static Model *energy = ModelManagerS::instance()->getModel("models/EnergyBlob");
             glPushMatrix();
-                glTranslatef(22, 22, 1.0);
+                glTranslatef(22.0f, 22.0f, 1.0);
                 //glRotatef(-90.0f, 1.0, 0.0, 0.0);
                 glRotatef(iAngle * 0.5, 1.0, 0.0, 0.0);
                 glScalef(4.5f, 4.5f, 4.5f);
@@ -688,39 +704,12 @@ bool Video::update( void)
 
             static Model *shield = ModelManagerS::instance()->getModel("models/ShieldBoost");
             glPushMatrix();
-                glTranslatef(22, 50, 1.0);
+                glTranslatef(22.0f, 50.0f, 1.0);
                 //glRotatef(-90.0f, 1.0, 0.0, 0.0);
                 glRotatef(iAngle * 0.5, 0.0, 1.0, 0.0);
                 glScalef(4.5f, 4.5f, 4.5f);
                 shield->draw();
             glPopMatrix();
-
-            /*
-            // draw weapons at the bottom of the screen
-            if (bomb && bomb->_quantity > 0)
-            {
-                static Model *bomba = ModelManagerS::instance()->getModel("models/WeaponUpgrade");
-                glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
-                glPushMatrix();
-                    glTranslatef(470, 20, 1.0);
-                    //glRotatef(-90.0f, 1.0, 0.0, 0.0);
-                    glRotatef(iAngle, 0.0, 0.0, 1.0);
-                    glScalef(5.0f, 5.0f, 5.0f);
-                    bomba->draw();
-                glPopMatrix();
-            }
-            if (rocket && rocket->_quantity > 0)
-            {
-                static Model *rocketm = ModelManagerS::instance()->getModel("models/Stinger");
-                glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
-                glPushMatrix();
-                    glTranslatef(520, 20, 1.0);
-                    //glRotatef(-90.0f, 1.0, 0.0, 0.0);
-                    glRotatef(iAngle, 0.0, 1.0, 0.0);
-                    //glScalef(5.0f, 5.0f, 5.0f);
-                    rocketm->draw();
-                glPopMatrix();
-            }*/
 
             // draw images of incoming enemies -------------------------------
             static Model *alien = ModelManagerS::instance()->getModel("models/SixLegBugYellow");
@@ -752,15 +741,15 @@ bool Video::update( void)
             glPopMatrix();
 
             // draw weapons
-            float yoffset = 22;
+            float yoffset = weapon_start_y;
+            float xoffset = weapon_start_x;
             bool weaponsStarted = false;
-            std::vector<CargoItemInfo> *info = CargoItemInfo::getCargoInfo();
             for (std::vector<CargoItemInfo>::iterator it = info->begin();
                 it != info->end(); ++it)
             {
                 if ((*it)._name == "Shield upgrade")
                     break;
-                if ((*it)._name == "Proton spread fire")
+                if ((*it)._name == "Proton enhancer")
                     weaponsStarted = true;
                 if (!weaponsStarted)
                     continue;
@@ -770,17 +759,12 @@ bool Video::update( void)
                     Model *m = ModelManagerS::instance()->getModel((*it)._modelName);
                     glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
                     glPushMatrix();
-                        glTranslatef(975, yoffset, 1.0);
+                        glTranslatef(xoffset, yoffset, 1.0);
                         glRotatef(iAngle * 0.5f + yoffset, 0.0, 1.0, 0.0);
                         glScalef((*it)._scale, (*it)._scale, (*it)._scale);
                         m->draw();
                     glPopMatrix();
-                    if ((*it)._maxQty != 1 && c->_quantity > 1)
-                    {
-                        sprintf(buff, "%d", c->_quantity);
-                        scoreFont.DrawString(buff, 952, yoffset - 13, 0.48f, 0.48f, GLBitmapFont::alRight);
-                    }
-                    yoffset += 45;
+                    xoffset -= 45;
                 }
             }
         }

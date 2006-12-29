@@ -746,7 +746,7 @@ void PlanetManager::drawPlayer(float yoffset)
 //----------------------------------------------------------------------------
 void PlanetManager::drawCargo()
 {
-    float offset = 630.0f;
+    float offset = 620.0f;
 
     Planet *pl = GameS::instance()->_currentPlanet;
     drawPlanet(10.0f, 590.0f, pl, "CURRENT PLANET");
@@ -853,7 +853,7 @@ void PlanetManager::drawCargo()
                 glVertex2f( 210.0f, offset + 35.0f);
             glEnd();
             glColor4f(3.0f, 1.0f, 3.0f, 0.8f);
-            fontWhite.DrawString((*it)._info.c_str(), 595.0f, 70.0f, 0.6f, 0.6f, GLBitmapFont::alCenter);
+            fontWhite.DrawString((*it)._info.c_str(), 595.0f, 75.0f, 0.6f, 0.6f, GLBitmapFont::alCenter);
 
             if (landed && _mouseX > 820.0f && _mouseX < 880.0f)
             {
@@ -915,7 +915,7 @@ void PlanetManager::drawCargo()
     if (landed && total >= 20)
     {
         glPushMatrix();
-            glTranslatef(870.0f, 500.0f, 0.0f);
+            glTranslatef(870.0f, 510.0f, 0.0f);
             glRotatef(90.0f, 0, 0, 1);
             glColor4f(1.0f, 0.852f, 0.0f, 1.0f);
             fontWhite.DrawString("SHIP FULL", 0.0f, 0.0f, 1.0f, 1.0f, GLBitmapFont::alCenter);
@@ -924,10 +924,10 @@ void PlanetManager::drawCargo()
     if (!landed)
     {
         glColor4f(1.0f, 0.852f, 0.0f, 1.0f);
-        fontWhite.DrawString("TRADE NOT",   800.0f, 510.0f, 1.0f, 1.0f, GLBitmapFont::alCenter);
-        fontWhite.DrawString("POSSIBLE",    800.0f, 390.0f, 1.0f, 1.0f, GLBitmapFont::alCenter);
-        fontWhite.DrawString("WHILE IN",    800.0f, 270.0f, 1.0f, 1.0f, GLBitmapFont::alCenter);
-        fontWhite.DrawString("OUTER SPACE", 800.0f, 150.0f, 1.0f, 1.0f, GLBitmapFont::alCenter);
+        fontWhite.DrawString("TRADE NOT",   800.0f, 520.0f, 1.0f, 1.0f, GLBitmapFont::alCenter);
+        fontWhite.DrawString("POSSIBLE",    800.0f, 400.0f, 1.0f, 1.0f, GLBitmapFont::alCenter);
+        fontWhite.DrawString("WHILE IN",    800.0f, 280.0f, 1.0f, 1.0f, GLBitmapFont::alCenter);
+        fontWhite.DrawString("OUTER SPACE", 800.0f, 160.0f, 1.0f, 1.0f, GLBitmapFont::alCenter);
     }
 }
 //----------------------------------------------------------------------------
@@ -1282,7 +1282,7 @@ void PlanetManager::tradeClick()
     }
 
     Planet *pl = GameS::instance()->_currentPlanet;
-    float offset = 630.0f;
+    float offset = 620.0f;
     for (std::vector<CargoItemInfo>::iterator it = info->begin();
         it != info->end(); ++it)
     {
@@ -1290,7 +1290,7 @@ void PlanetManager::tradeClick()
         CargoItem *c = pc.findItem((*it)._name);
 
         // skip the cargo sum
-        if ((*it)._name == "Proton spread fire")
+        if ((*it)._name == "Proton enhancer")
             offset -=35;
 
         if (_mouseY <= offset || _mouseY >= offset + 35.0f)

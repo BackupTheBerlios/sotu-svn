@@ -108,11 +108,7 @@ void Hero::assignWeapons()
     WeaponDepot *wDepot = WeaponDepotS::instance();
     _weapon[ Hero::PRIMARY_WEAPON] = wDepot->getWeapon(WeaponWINGPHASER);
     Cargo &c = GameS::instance()->_cargo;
-    CargoItem *spread = c.findItem("Proton spread fire");
-    if (spread->_quantity > 0)
-        _weapon[ Hero::TERTIARY_WEAPON] = wDepot->getWeapon(WeaponICESPRAY);
-    else
-        _weapon[ Hero::TERTIARY_WEAPON] = wDepot->getWeapon(WeaponDOG);
+    _weapon[ Hero::TERTIARY_WEAPON] = wDepot->getWeapon(WeaponICESPRAY);
 
     CargoItem *sideways = c.findItem("Wave emitter");
     if (sideways->_quantity > 0)
@@ -225,9 +221,9 @@ void Hero::hit(ParticleInfo * p, int damage, int /*radIndex*/)
         {
             // remove some of the weapons
             Cargo &c = GameS::instance()->_cargo;
-            std::string toLose[] = { "Proton spread fire", "Proton enhancer",
+            std::string toLose[] = { "Proton enhancer",
                 "Wave emitter", "Shield upgrade" };
-            for (int tries = 0; tries < 3; tries++)
+            for (int tries = 0; tries < 2; tries++)
             {
                 int rnd = Random::integer(sizeof(toLose)/sizeof(std::string));
                 CargoItem *item = c.findItem(toLose[rnd]);
