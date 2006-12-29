@@ -31,7 +31,6 @@ class Selectable;
 class GLTexture;
 class Planet;
 class CargoItemInfo;
-// class GLTextureCubeMap;
 //----------------------------------------------------------------------------
 // load/save helpers
 std::string removespaces(const std::string& str);
@@ -75,8 +74,6 @@ private:
 
     float _mouseX;
     float _mouseY;
-
-    //bool _delayedExit;
 
     Model *_nextGenShippy;
     Model *_mapleLeaf;
@@ -191,6 +188,9 @@ public:
         const std::string& okText, const std::string& okAction,
         const std::string& cancelText = "",
         const std::string& cancelAction = "");
+    void file(bool save);
+    int getSlot();
+    std::string getSlotName();
 
 private:
     virtual ~MessageBoxManager();
@@ -201,6 +201,13 @@ private:
     list<Selectable*> _activeSelectables;
     void clearSelectables();
 
+    typedef enum { mbsDialog, mbsFileChooser } MessageBoxStyle;
+    MessageBoxStyle _style;
+
+    bool _save;
+    bool _textInput;
+    std::string _textValue;
+    int _slot;
     int _pointer;
     int _board;
     float _mouseX, _mouseY;
@@ -208,6 +215,8 @@ private:
 
     std::string _title;
     std::vector<std::string> _text;
+
+    void messageBoxClick();
 };
 
 typedef Singleton<MessageBoxManager> MessageBoxManagerS;

@@ -1907,10 +1907,7 @@ bool Bonus1::update( ParticleInfo *p)
 //    XTRACE();
     if( p->tod == 0) return false;
     if( fabs( p->position.y) > 50.0)
-    {
-        ScoreKeeperS::instance()->incGoodiesMissed();
         return false;
-    }
 
     //update previous values for interpolation
     updatePrevs(p);
@@ -1933,7 +1930,6 @@ void Bonus1::hit( ParticleInfo *p, int /*damage*/, int /*radIndex*/)
     p->tod = 0;
 
     int newValue = ScoreKeeperS::instance()->addToCurrentScore( _value);
-    ScoreKeeperS::instance()->incGoodiesCaught();
 
     ParticleInfo pi;
     pi.position = p->position;

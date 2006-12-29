@@ -1338,9 +1338,8 @@ void PlanetManager::saveClick()
     if (GameS::instance()->_money >= 1000)
     {
         MessageBoxManagerS::instance()->setup("SAVE GAME",
-            "Saving the game costs 1000 credits. There is only "
-            "one save game slot, so any previous save will be lost.\n\n"
-            "Do you want to save the game?",
+            "Saving the game costs 1000 credits."
+            "\n\nDo you want to save the game?",
             "Save", "SaveGame", "Cancel", "PlanetMenu");
     }
     else
@@ -1538,13 +1537,58 @@ void PlanetManager::loadEvents(ifstream& is)
 //----------------------------------------------------------------------------
 // MessageBoxManager *********************************************************
 //----------------------------------------------------------------------------
+std::string getSlotInfo(int slot)
+{
+    string fileName = ConfigS::instance()->getConfigDirectory();
+    char buff[100];
+    sprintf(buff, "savegame%d", slot);
+    fileName += buff;
+    ifstream zin(fileName.c_str(), ios::in | ios::binary);
+    std::string line;
+    if (!zin.good() || getline(zin, line).eof() || line != "#------ SOTU Saved Game -----#")
+        return "EMPTY SLOT";
+    zin >> line;
+    zin.close();
+    return addspaces(line);
+}
+//----------------------------------------------------------------------------
+int MessageBoxManager::getSlot()
+{
+    return _slot;
+}
+//----------------------------------------------------------------------------
+std::string MessageBoxManager::getSlotName()
+{
+    return _text[_slot-1];
+}
+//----------------------------------------------------------------------------
+void MessageBoxManager::file(bool save)
+{
+    _save = save;
+    _slot = 1;      // select slot 1
+
+    // load save game info stuff
+    std::string text;
+    for (int slot = 1; slot < 10; slot++)
+        text += getSlotInfo(slot) + "\n";
+    setup(
+        save ? "SAVE GAME" : "LOAD GAME", text, // title
+        save ? "SAVE" : "LOAD",                 // ok label
+        save ? "SaveGameSlot" : "LoadGameSlot", // ok action
+        "CANCEL",                               // cancel label
+        save ? "PlanetMenu" : "MainMenu");      // cancel action
+    // has to come after setup() call
+    _style = mbsFileChooser;
+}
+//----------------------------------------------------------------------------
 void MessageBoxManager::setup(const std::string& title, const std::string& text,
     const std::string& okText, const std::string& okAction,
     const std::string& cancelText, const std::string& cancelAction)
 {
+    _textInput = false;
     _title = title;
+    _style = mbsDialog;
 
-    // create selectables
     clearSelectables();
 
     BoundingBox r;
@@ -1656,13 +1700,56 @@ bool MessageBoxManager::draw()
     const float textsize = 0.65f;
     const float lineh = 40.0f;
     float yoffset = 440.0f;
+    if (_style == mbsFileChooser)
+        yoffset = 480.0f;
+    int cnt = 0;
     for (std::vector<std::string>::iterator it = _text.begin(); it != _text.end(); ++it)
     {
+        std::string to_write = (*it);
+        if (_style == mbsFileChooser)
+        {
+            if (cnt == _slot - 1 && _textInput)
+                to_write = _textValue;
+
+            if (cnt == _slot - 1 || !_textInput &&
+                _mouseX >= 200.0f             && _mouseX <= 800.0f &&
+                _mouseY >= 480.0f - lineh*cnt && _mouseY <= 480 - lineh*cnt + lineh)
+            {
+                if (cnt == _slot - 1)
+                {
+                    setMinLineSize(2.0f);
+                    glColor4f(1.0, 1.0, 1.0, 0.7);
+                }
+                else
+                {
+                    setMinLineSize(1.0f);
+                    glColor4f(1.0, 1.0, 0.0, 0.7);
+                }
+                glBegin(GL_LINE_LOOP);
+                    glVertex2f( 200, 480 - lineh*cnt);
+                    glVertex2f( 800, 480 - lineh*cnt);
+                    glVertex2f( 800, 480 - lineh*cnt + lineh);
+                    glVertex2f( 200, 480 - lineh*cnt + lineh);
+                glEnd();
+            }
+            cnt++;
+        }
         // shadow
         glColor4f(0.0, 0.0, 0.0, 1.0);
-        fontWhite.DrawString((*it).c_str(), 502, yoffset-2, textsize, textsize, GLBitmapFont::alCenter);
+        fontWhite.DrawString(to_write.c_str(), 502, yoffset-2, textsize, textsize, GLBitmapFont::alCenter);
         glColor4f(1.0, 1.0, 1.0, 1.0);
-        fontWhite.DrawString((*it).c_str(), 500, yoffset, textsize, textsize, GLBitmapFont::alCenter);
+        fontWhite.DrawString(to_write.c_str(), 500, yoffset, textsize, textsize, GLBitmapFont::alCenter);
+        if (_style == mbsFileChooser && cnt == _slot && _textInput)
+        {
+            fontWhite.DrawString("Description:", 203.0f, yoffset, textsize, textsize);
+            float w = fontWhite.GetWidth(to_write.c_str(), textsize);
+            glBegin(GL_POLYGON);
+                glVertex2f(503.0f+w*0.5f, yoffset +  7.0f);
+                glVertex2f(513.0f+w*0.5f, yoffset +  7.0f);
+                glVertex2f(513.0f+w*0.5f, yoffset + 22.0f);
+                glVertex2f(503.0f+w*0.5f, yoffset + 22.0f);
+            glEnd();
+        }
         yoffset -= lineh;
     }
 
@@ -1672,14 +1759,57 @@ bool MessageBoxManager::draw()
         (*i)->draw();
     }
 
-    glEnable(GL_TEXTURE_2D);
-    GLBitmapCollection *icons =
-        BitmapManagerS::instance()->getBitmap( "bitmaps/menuIcons");
-    icons->bind();
-    glColor4f(1.0, 1.0, 1.0, 1.0);
-    icons->Draw(_pointer, _mouseX, _mouseY, 0.5, 0.5);
-    glDisable(GL_TEXTURE_2D);
+    if (!_textInput)
+    {
+        glEnable(GL_TEXTURE_2D);
+        GLBitmapCollection *icons =
+            BitmapManagerS::instance()->getBitmap( "bitmaps/menuIcons");
+        icons->bind();
+        glColor4f(1.0, 1.0, 1.0, 1.0);
+        icons->Draw(_pointer, _mouseX, _mouseY, 0.5, 0.5);
+        glDisable(GL_TEXTURE_2D);
+    }
     return true;
+}
+//----------------------------------------------------------------------------
+void MessageBoxManager::messageBoxClick()
+{
+    if (_style != mbsFileChooser || _textInput)
+        return;
+
+    if (_mouseX < 200.0f || _mouseX > 800.0f || _mouseY > 520.0f || _mouseY < 160.0f)
+        return;
+
+    int lastslot = _slot;
+    _slot = 9 - (int)((_mouseY - 160.0f) / 40.0f);
+    if (_slot < 1)
+        _slot = 1;
+    if (_slot > 9)
+        _slot = 9;
+
+    if (_save)
+    {
+        if (_slot != lastslot)
+            _text[lastslot-1] = getSlotInfo(lastslot);
+        SDL_EnableUNICODE(true);
+        _textInput = true;
+        _textValue = _text[_slot-1];
+        _textValue.erase(_textValue.find_last_not_of(" \n\t") + 1);
+#if 0
+        if (_textValue == "EMPTY SLOT")
+        {
+            /*
+            time_t tajm;
+            time(&tajm);
+            char buf[100];
+            strftime( buf, 100,"%d%b%Y %Hh%Mm ", localtime(&tajm));
+            _textValue = buf;
+            _textValue = GameS::instance()->_currentPlanet->_name + _textValue;
+            */
+            _textValue = GameS::instance()->_currentPlanet->_name;
+        }
+#endif
+    }
 }
 //----------------------------------------------------------------------------
 bool MessageBoxManager::update()
@@ -1723,20 +1853,45 @@ bool MessageBoxManager::init()
 void MessageBoxManager::input(const Trigger &trigger, const bool &isDown)
 {
     Trigger t = trigger;
-    if( isDown)
+    if (isDown)
     {
         switch( trigger.type)
         {
             case eKeyTrigger:
                 switch( trigger.data1)
                 {
-                    //case SDLK_ESCAPE:   GameS::instance()->previousContext();  return;
+                    case SDLK_RETURN:
+                        if (_textInput)
+                            _text[_slot-1] = _textValue;
+                    case SDLK_ESCAPE:
+                        SDL_EnableUNICODE(false);
+                        _textInput = false;
+                        break;
+
+                    case SDLK_DELETE:
+                    case SDLK_BACKSPACE:
+                        if (_textValue.length() > 0)
+                            _textValue.erase( _textValue.length()-1, 1);
+                        break;
+
                     //case SDLK_UP:       Up();           break;
                     //case SDLK_DOWN:     Down();         break;
                     //case SDLK_LEFT:     Left();         break;
                     //case SDLK_RIGHT:    Right();        break;
                     case SDLK_F12:      VideoS::instance()->takeSnapshot();  break;
                     default:                break;
+                }
+
+                //LOG_INFO << "KEY PRESS: " << trigger.data1 << endl;
+                if  (_textValue.length() <= 50 &&
+                    (trigger.data1 ==  SDLK_SPACE ||
+                     trigger.data1 >= SDLK_a && trigger.data1 <= SDLK_z ||
+                     trigger.data1 >= SDLK_0 && trigger.data1 <= SDLK_9))
+                {
+                    char c = (char)tolower(trigger.data1);
+                    if( trigger.data2 & KMOD_SHIFT)
+                        c = toupper(c);
+                    _textValue += c;
                 }
                 break;
 
@@ -1747,10 +1902,17 @@ void MessageBoxManager::input(const Trigger &trigger, const bool &isDown)
                 Clamp( _mouseY, 0.0f, 750.0f);
                 break;
 
+            case eButtonTrigger:
+                messageBoxClick();
+                break;
+
             default:
                 break;
         }
     }
+
+    if (_textInput)
+        return;
 
     //put the absolute mouse position into trigger
     t.fData1 = _mouseX;

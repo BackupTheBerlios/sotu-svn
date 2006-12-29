@@ -57,13 +57,8 @@ Game::~Game()
 
     LOG_INFO << "Shutting down..." << endl;
 
-#if 1
     // save config stuff
     ConfigS::instance()->saveToFile();
-
-    // save leaderboard
-    ScoreKeeperS::instance()->save();
-#endif
 
     StarfieldS::cleanup();
 
@@ -90,7 +85,7 @@ bool Game::init( void)
     XTRACE();
     bool result = true;
 
-    ScoreKeeperS::instance()->load();
+    ScoreKeeperS::instance();   // init
 
     // init subsystems et al
     if( ! ParticleGroupManagerS::instance()->init()) return false;
@@ -348,10 +343,12 @@ Planet *loadPlanetCoords(ifstream& in)
     return GameS::instance()->_galaxy.getPlanetAt(x, y);
 }
 //----------------------------------------------------------------------------
-bool Game::saveGame()
+bool Game::saveGame(const std::string& savename, int slot)
 {
+    char buff[100];
+    sprintf(buff, "savegame%d", slot);
     string fileName = ConfigS::instance()->getConfigDirectory();
-    fileName += "savegame";
+    fileName += buff;
     LOG_INFO << "Saving game to " << fileName << endl;
 
     //Save in a compressed file to make it a bit tougher to cheat...
@@ -369,31 +366,41 @@ bool Game::saveGame()
     _money -= 1000;
 
     zout << "#------ SOTU Saved Game -----#\n";
+    zout << removespaces(savename) << " ";
     _galaxy.save(zout);
-    LOG_INFO << "Saving current planet coords" << endl;
+    LOG_INFO << "  Saving current planet coords" << endl;
     savePlanetCoords(zout, _currentPlanet);
-    LOG_INFO << "Saving player's cargo" << endl;
+    LOG_INFO << "  Saving player's cargo" << endl;
     _cargo.save(zout);
-    LOG_INFO << "Saving money, kills, etc." << endl;
+    LOG_INFO << "  Saving money, kills, etc." << endl;
+    SkillS::instance(); // initialize
     zout << "" << _money << " " << (int)_rebelStatus << " " << (int)_empireStatus
         << " " << _kills << " " << _chapter << " " << (int)GameState::skill
         << " " << ScoreKeeperS::instance()->getCurrentScore() << " ";
-    LOG_INFO << "Saving Quest Targets" << endl;
+    LOG_INFO << "  Saving Quest Targets" << endl;
     for (std::vector<std::string>::iterator it = _questTargets.begin(); it != _questTargets.end(); ++it)
         zout << (*it) << " ";
     zout << "QUEST_TARGETS_END ";
 
-    LOG_INFO << "Saving hyperspace target coords" << endl;
+    LOG_INFO << "  Saving hyperspace target coords" << endl;
     savePlanetCoords(zout, PlanetManagerS::instance()->getHyperspaceTarget());
-    LOG_INFO << "Saving events" << endl;
+    LOG_INFO << "  Saving events" << endl;
     PlanetManagerS::instance()->saveEvents(zout);
+
+    if (!zout.good())
+    {
+        _money += 1000;
+        return false;
+    }
     return true;
 }
 //----------------------------------------------------------------------------
-bool Game::loadGame()
+bool Game::loadGame(int slot)
 {
+    char buff[100];
+    sprintf(buff, "savegame%d", slot);
     string fileName = ConfigS::instance()->getConfigDirectory();
-    fileName += "savegame";
+    fileName += buff;
     LOG_INFO << "Loading game from " << fileName << endl;
 
     //Save in a compressed file to make it a bit tougher to cheat...
@@ -416,7 +423,7 @@ bool Game::loadGame()
     // load other defaults
     _landed = true;
     _spaceStationApproach = _hyperspaceCount = 0;
-
+    zin >> line;    // load save name
     _galaxy.load(zin);
     LOG_INFO << "  current planet" << endl;
     _currentPlanet = loadPlanetCoords(zin);
@@ -451,7 +458,6 @@ bool Game::loadGame()
     PlanetManagerS::instance()->setHyperspaceTarget(p);
     LOG_INFO << "   events" << endl;
     PlanetManagerS::instance()->loadEvents(zin);
-
     switchContext(ePlanetMenu);
     setPreviousContext(ePlanetMenu);
     return true;

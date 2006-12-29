@@ -501,7 +501,7 @@ void LeaderBoardSelectable::input( const Trigger &trigger, const bool &isDown)
         break;
 
     case eMotionTrigger:
-        _info = ScoreKeeperS::instance()->getInfoText( 9-idx);
+        //_info = ScoreKeeperS::instance()->getInfoText( 9-idx);
         this->activate();
         break;
 
@@ -539,7 +539,7 @@ void LeaderBoardSelectable::draw( void)
     _boundingBox.min.x, _boundingBox.min.y,
     _size, _size);
 
-    ScoreKeeperS::instance()->draw();
+    //ScoreKeeperS::instance()->draw();
 }
 //------------------------------------------------------------------------------
 ResolutionSelectable::ResolutionSelectable(
@@ -893,19 +893,35 @@ void ActionSelectable::select( void)
     }
     else if (_action == "LoadGame")
     {
-        GameS::instance()->loadGame();
+        MessageBoxManagerS::instance()->file(false);
+        GameS::instance()->switchContext(eMessageBox);
     }
     else if (_action == "SaveGame")
     {
-        std::string msg = "GAME SAVED SUCCESSFULLY\n\n"
-            "You can load it from the main menu.\n\n"
-            "Note: To prevent players from load-and-retry tactics, only a single "
-            "game position can be saved at a time.";
-        if (!GameS::instance()->saveGame())
+        MessageBoxManagerS::instance()->file(true);
+    }
+    else if (_action == "LoadGameSlot")
+    {
+        int slot = MessageBoxManagerS::instance()->getSlot();
+        if (!GameS::instance()->loadGame(slot))
         {
-            msg = "SAVE FAILED\n\nProbable reasons are:\n\n1. You don't have "
-                "enough disk space.\n2. You can't write to game directory\n"
-                "3. Some other software is preventing writing.";
+            MessageBoxManagerS::instance()->setup("LOAD GAME",
+                "LOADING FAILED", "OK", "MainMenu");
+        }
+    }
+    else if (_action == "SaveGameSlot")
+    {
+        int slot = MessageBoxManagerS::instance()->getSlot();
+        std::string sname = MessageBoxManagerS::instance()->getSlotName();
+        if (sname == "")
+            sname = "SAVED GAME";
+        std::string msg = "GAME SAVED SUCCESSFULLY\n\n"
+            "You can load it from the main menu.\n\n";
+        if (!GameS::instance()->saveGame(sname, slot))
+        {
+            msg = "SAVE FAILED\n\nPerhaps you don't have "
+                "enough disk space or you can't write to game's directory.\n\n"
+                "Try saving to a different save slot.";
         }
         MessageBoxManagerS::instance()->setup("SAVE GAME", msg,
             "OK", "PlanetMenu");
@@ -939,7 +955,11 @@ void ActionSelectable::select( void)
     else if (_action == "ShowQuests")
         PlanetManagerS::instance()->setActiveScreen(PlanetManager::stQuests);
     else if (_action == "MainMenu")
+    {
         GameS::instance()->switchContext(eMenu);
+        while (MenuManagerS::instance()->exitMenu(false))   // don't exit game
+            ;                                               // but go to top
+    }
     else
         LOG_ERROR << "Unknown action" << _action << endl;
     AudioS::instance()->playSample( "sounds/confirm.wav");

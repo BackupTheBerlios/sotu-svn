@@ -180,8 +180,8 @@ public:
     void reset();
     void startNewGame();
 
-    bool saveGame();
-    bool loadGame();
+    bool saveGame(const std::string& savename, int slot);
+    bool loadGame(int slot);
 
     void startNewCampaign();
     ContextEnum getContext();
