@@ -81,32 +81,36 @@
         Text="Mission Tips (hover over tips):"
         Info="That's it, you got it... Hover on, dude!"
         Size="1.0"
-        Position="500.0 470.0" />
+        Position="500.0 450.0" />
         <TextItem
-        Text="* Using the keyboard is much harder then using the mouse"
+        Text="* Using the keyboard is much harder than using the mouse"
         Info="If it gets too easy, try using the keyboard!"
-        Position="500.0 430.0" />
+        Position="500.0 400.0" />
         <TextItem
-        Text="* Secondary weapon becomes available in > NORMAL"
-        Info="Default is mouse button 2 or left ALT."
-        Position="500.0 390.0" />
-        <TextItem
-        Text="* Tertiary weapon helps against horizontal bullets"
-        Info="Default is mouse button 3 or left CTRL."
-        Position="500.0 350.0" />
-        <TextItem
-        Text="* Armor piercing becomes useful in > NORMAL"
-        Info="Critters will otherwise require multiple hits to give up goodies."
-        Position="500.0 310.0" />
+        Text="* Use both left and right mouse button for firing"
+        Info="Or left ALT and left CTRL."
+        Position="500.0 360.0" />
         <TextItem
         Text="* Shoot some then move to other side of screen. Rinse and repeat."
         Info="It's sounds almost too simple now, doesn't it?"
+        Position="500.0 320.0" />
+        <TextItem
+        Text="* Buy cheap food at low tech. planets, and sell at high tech. ones"
+        Info="Vice versa for electronics"
         Position="500.0 270.0" />
         <TextItem
+        Text="* If you run out of money, kill some aliens in planet's orbit"
+        Info="Some drop artifacts which are worth 20 credits each."
+        Position="500.0 230.0" />
+        <TextItem
+        Text="* Keep extra fuel to hyperjump when things get rough."
+        Info="For example, when you have 5 energy left."
+        Position="500.0 190.0" />
+        <TextItem
         Text="* Don't die"
-        Info="Duh!"
+        Info="Hm, you probably knew that."
         Size="1.0"
-        Position="500.0 210.0" />
+        Position="500.0 120.0" />
     </Menu>
 
     <Menu
