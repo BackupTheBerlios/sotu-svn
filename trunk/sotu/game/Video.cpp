@@ -642,7 +642,7 @@ bool Video::update( void)
             const float spacing = 40.0f;
             const float redge = 1020.0f;
             const float top = 730.0f;
-            if (hyspace <= 10.0f)
+            if (hyspace == 0 || countdown < 10)
             {
                 int data[3];
                 StageManagerS::instance()->getCounts(data[0], data[1], data[2]);
@@ -710,7 +710,7 @@ bool Video::update( void)
             glPopMatrix();
 
             // draw images of incoming enemies -------------------------------
-            if (hyspace <= 10.0f)
+            if (hyspace == 0 || countdown < 10)
             {
                 static Model *alien = ModelManagerS::instance()->getModel("models/SixLegBugYellow");
                 glColor4f(1.0f, 1.0f, 1.0f, 1.0f);

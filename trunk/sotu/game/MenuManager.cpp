@@ -181,6 +181,8 @@ void MenuManager::clearActiveSelectables( void)
 //----------------------------------------------------------------------------
 void MenuManager::loadMenuLevel( void)
 {
+    GameS::instance()->_hyperspaceCount = 0;
+
     clearActiveSelectables();
 
     TiXmlNode *node = _currentMenu->FirstChild();

@@ -696,10 +696,12 @@ void Game::reachedSpecialPlanet()
     if (_currentPlanet->_name == "TORRES")
     {
         title = "TRIAL VERSION";
-        msg = "This is the most you can play with trial version of the game. "
-            "To buy the full version, please visit our website at\nwww.whatever.com\n\n"
+        msg = "This is the most you can play with trial version of the game.\n"
+            "To buy the full version, please visit our website at\n"
+            "www.whatever.com\n\n"
             "The full version consists of five chapters, some new enemy types, "
-            "chance to join the rebels or fight against them, and many more...";
+            "choice to join the rebels or fight against them, and some surprises "
+            "you'd rather discover yourself...";
         okAction = "Quit";
         okButton = "Exit game";
         _questTargets.clear();

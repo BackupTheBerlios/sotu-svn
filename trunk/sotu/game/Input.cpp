@@ -307,7 +307,7 @@ std::string Input::getKeyForAction(const std::string& action)
     for( ci=_callbackMap.begin(); ci!=_callbackMap.end(); ci++)
         if (ci->second->getActionName() == action &&  ci->first.type == eKeyTrigger)
             return _keys.convertTriggerToString(ci->first);
-    return "NONE!!!";
+    return "NONE!!!";   // <- MAGIC STRING!!! change in Video.cpp as well
 }
 //----------------------------------------------------------------------------
 void Input::save( ofstream &outfile)
