@@ -17,7 +17,8 @@ set audio = true
 set horsePower = 100
 set developer = false
 set debug = false
-set autofireOn = 0
+set autofireOn = 1
+set allowVerticalMovement = 1
 set resolutions = 1600x1200,1280x960,1152x864,1024x768,800x600,640x480,512x384
 # --- Binding section ---
 bind CritterBoard TAB
@@ -34,9 +35,8 @@ bind MotionUp UP
 bind MotionDown DOWN
 bind MotionRight RIGHT
 bind MotionLeft LEFT
-bind ChangeContext c
 bind Snapshot F12
-bind PauseGame p
-bind HyperSpace h
-bind MegaBomb d
-bind Rocket f
+bind PauseGame P
+bind HyperSpace H
+bind MegaBomb D
+bind Rocket F

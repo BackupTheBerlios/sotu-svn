@@ -207,23 +207,18 @@
         Info="Turn music on or off."
         Position="220.0 460.0"
         Variable="playMusic" />
-        <Bool
-        Text="Play default soundtrack"
-        Info="Play default or custom soundtrack."
-        Position="220.0 420.0"
-        Variable="playDefaultSoundtrack" />
 
         <Float
         Text="Music Volume"
         Info="Change music volume."
-        Position="220.0 360.0"
+        Position="220.0 400.0"
         Variable="musicVolume"
         Range="0.0 1.0"
         SliderOffset="60"/>
         <Float
         Text="Effects Volume"
         Info="Change effects volume."
-        Position="220.0 320.0"
+        Position="220.0 360.0"
         Variable="effectsVolume"
         Range="0.0 1.0"
         SliderOffset="60"/>
@@ -231,17 +226,108 @@
         <Float
         Text="Mouse Smoothing"
         Info="Soften mouse movement."
-        Position="220.0 260.0"
+        Position="220.0 300.0"
         Variable="mouseSmooth"
         Range="0.0 0.9"
         SliderOffset="100"/>
         <Float
         Text="Mouse Sensitivity"
         Info="Change mouse speed."
-        Position="220.0 220.0"
+        Position="220.0 260.0"
         Variable="mouseSensitivity"
         Range="0.1 0.5"
         SliderOffset="100"/>
+        <Menu
+             Text="Configure keys"
+             Info="Change keyboard bindings"
+             Position="500.0 160.0">
+
+            <ActionItem
+                Text="Done"
+                Action="KeysSetupDone"
+                Info="Go back to previous menu"
+                Position="650.0 110.0"/>
+            <ActionItem
+                Text="Defaults"
+                Action="ResetKeys"
+                Info="Reset to default keys"
+                Position="350.0 110.0"/>
+
+             <KeyboardItem
+                Text="Move ship left"
+                Info="Key to move ship to the left - click to change key"
+                Position="140.0 460.0"
+                KeyPosition="355.0 460.0"
+                BindingName="MotionLeft"/>
+             <KeyboardItem
+                Text="Move ship right"
+                Info="Key to move ship to the right - click to change key"
+                Position="140.0 415.0"
+                KeyPosition="355.0 415.0"
+                BindingName="MotionRight"/>
+             <KeyboardItem
+                Text="Move ship up"
+                Info="Key to move ship up - click to change key"
+                Position="140.0 370.0"
+                KeyPosition="355.0 370.0"
+                BindingName="MotionUp"/>
+             <KeyboardItem
+                Text="Move ship down"
+                Info="Key to move ship down - click to change key"
+                Position="140.0 325.0"
+                KeyPosition="355.0 325.0"
+                BindingName="MotionDown"/>
+             <KeyboardItem
+                Text="Hyperspace jump"
+                Info="Hyperspace moves you to other planets - click to change key"
+                Position="140.0 280.0"
+                KeyPosition="355.0 280.0"
+                BindingName="HyperSpace"/>
+
+             <KeyboardItem
+                Text="Pause game"
+                Info="Pause key - click to change key"
+                Position="140.0 200.0"
+                KeyPosition="355.0 200.0"
+                BindingName="PauseGame"/>
+
+             <KeyboardItem
+                Text="Proton gun"
+                Info="Primary weapon - click to change key"
+                Position="540.0 460.0"
+                KeyPosition="760.0 460.0"
+                BindingName="PrimaryFire"/>
+             <KeyboardItem
+                Text="Spread proton fire"
+                Info="Secondary weapon - click to change key"
+                Position="540.0 415.0"
+                KeyPosition="760.0 415.0"
+                BindingName="TertiaryFire"/>
+             <KeyboardItem
+                Text="Plasma wave"
+                Info="Tertiary weapon - click to change key"
+                Position="540.0 370.0"
+                KeyPosition="760.0 370.0"
+                BindingName="SecondaryFire"/>
+             <KeyboardItem
+                Text="Space grenade"
+                Info="Special weapon - click to change key"
+                Position="540.0 325.0"
+                KeyPosition="760.0 325.0"
+                BindingName="MegaBomb"/>
+             <KeyboardItem
+                Text="Stinger rockets"
+                Info="Special weapon - click to change key"
+                Position="540.0 280.0"
+                KeyPosition="760.0 280.0"
+                BindingName="Rocket"/>
+             <KeyboardItem
+                Text="Show/hide stats"
+                Info="Show and hide stats while in the game - click to change key"
+                Position="540.0 200.0"
+                KeyPosition="760.0 200.0"
+                BindingName="CritterBoard"/>
+        </Menu>
     </Menu>
 
     <Bool
