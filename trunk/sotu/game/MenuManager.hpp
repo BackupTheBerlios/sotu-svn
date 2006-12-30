@@ -40,6 +40,8 @@ class MenuManager: public InterceptorI
 {
 friend class Singleton<MenuManager>;
 public:
+    Selectable *_waitSingleKey;
+
     bool init( void);
     bool update( void);
     bool draw( void);

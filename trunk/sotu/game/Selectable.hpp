@@ -37,22 +37,22 @@ public:
     virtual void input( const Trigger &/*trigger*/, const bool &/*isDown*/)
     {
     }
-    virtual void activate( void)
+    virtual void activate( )
     {
     }
-    virtual void deactivate( void)
+    virtual void deactivate( )
     {
     }
-    virtual void select( void)
+    virtual void select( )
     {
     }
-    virtual void update( void)
+    virtual void update( )
     {
     }
 
-    virtual void draw( void);
+    virtual void draw( );
 
-    const BoundingBox &getInputBox( void)
+    const BoundingBox &getInputBox( )
     {
         return _inputBox;
     }
@@ -84,8 +84,8 @@ public:
     EscapeSelectable( const BoundingBox &r, float size=1.0);
 
     virtual void input( const Trigger &trigger, const bool &isDown);
-    virtual void activate( void);
-    virtual void draw( void);
+    virtual void activate( );
+    virtual void draw( );
 protected:
     float _size;
     GLBitmapCollection *_icons;
@@ -100,8 +100,8 @@ public:
         const string &info);
 
     virtual void input( const Trigger &trigger, const bool &/*isDown*/);
-    virtual void draw( void);
-    void activate( void);
+    virtual void draw( );
+    void activate( );
 protected:
     string _text;
     GLBitmapFont *_fontShadow;
@@ -116,8 +116,8 @@ public:
         float red=1.0, float green=0.852, float blue=0.0);
 
     virtual void input( const Trigger &trigger, const bool &/*isDown*/);
-    virtual void activate( void);
-    virtual void draw( void);
+    virtual void activate( );
+    virtual void draw( );
 protected:
     string _text;
     GLBitmapFont *_fontShadow;
@@ -152,10 +152,10 @@ public:
         const string &text, const string &info);
 
     virtual void input( const Trigger &trigger, const bool &/*isDown*/);
-    virtual void draw( void);
-    void activate( void);
+    virtual void draw( );
+    void activate( );
 protected:
-    void addFullscreenResolutions(void);
+    void addFullscreenResolutions();
 
     GLBitmapFont *_fontShadow;
     BoundingBox _bRect;
@@ -173,7 +173,7 @@ public:
         const string &range, const string &sliderOffset);
 
     virtual void input( const Trigger &trigger, const bool &isDown);
-    virtual void draw( void);
+    virtual void draw( );
 protected:
     BoundingBox _bRect;
     string _variable;
@@ -194,7 +194,7 @@ public:
         const string &info, const string &variable, const string &values);
 
     virtual void input( const Trigger &trigger, const bool &isDown);
-    virtual void draw( void);
+    virtual void draw( );
 protected:
     string _variable;
     float _xOff;
@@ -209,7 +209,7 @@ public:
         const string &info, const string &variable);
 
     virtual void input( const Trigger &trigger, const bool &isDown);
-    virtual void draw( void);
+    virtual void draw( );
 protected:
     string _variable;
     float _xOff;
@@ -224,10 +224,10 @@ public:
         const string &info, float _maxSize = 2.0f);
 
     virtual void input( const Trigger &trigger, const bool &isDown);
-    virtual void activate( void);
-    virtual void deactivate( void);
-    virtual void update( void);
-    virtual void draw( void);
+    virtual void activate( );
+    virtual void deactivate( );
+    virtual void update( );
+    virtual void draw( );
 protected:
     float _ds;
     float _prevSize;
@@ -240,7 +240,7 @@ public:
     ActionSelectable(const BoundingBox &r, const string &action,
         const string &text, const string &info, float _maxSize = 2.0f);
 
-    virtual void select( void);
+    virtual void select( );
 protected:
     string _action;
 };
@@ -251,9 +251,29 @@ public:
     MenuSelectable(TiXmlNode *node, const BoundingBox &r,
         const string &text, const string &info);
 
-    virtual void select( void);
+    virtual void select( );
 protected:
     TiXmlNode *_node;
+};
+//------------------------------------------------------------------------------
+class KeySelectable: public TextSelectable
+{
+public:
+    KeySelectable(const BoundingBox &r, const BoundingBox& kb,
+        const std::string& text,
+        const std::string& info, const std::string& bindingName);
+
+    virtual void input( const Trigger &trigger, const bool &isDown);
+    virtual void update( );
+    virtual void draw();
+    virtual void select();
+protected:
+    BoundingBox _keyBox;
+    string _bindingName;
+    bool _awaitingInput;
+
+    void keypress(SDLKey key);
+    void stopWaiting();
 };
 //------------------------------------------------------------------------------
 #endif

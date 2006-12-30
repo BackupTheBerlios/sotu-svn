@@ -54,7 +54,7 @@ Selectable::~Selectable()
     }
 }
 //------------------------------------------------------------------------------
-void Selectable::draw( void)
+void Selectable::draw( )
 {
 #if 0
     glColor4f( 1.0, 0.2, 0.2, 0.5);
@@ -116,7 +116,7 @@ void EscapeSelectable::input(const Trigger &trigger, const bool &isDown)
     }
 }
 //------------------------------------------------------------------------------
-void EscapeSelectable::activate( void)
+void EscapeSelectable::activate( )
 {
     if( (_active != this))
     {
@@ -127,7 +127,7 @@ void EscapeSelectable::activate( void)
     }
 }
 //------------------------------------------------------------------------------
-void EscapeSelectable::draw( void)
+void EscapeSelectable::draw( )
 {
     Selectable::draw();
 
@@ -191,7 +191,7 @@ void TextOnlySelectable::input( const Trigger &trigger, const bool &/*isDown*/)
     }
 }
 //------------------------------------------------------------------------------
-void TextOnlySelectable::activate(void)
+void TextOnlySelectable::activate()
 {
     if( (_active != this))
     {
@@ -201,7 +201,7 @@ void TextOnlySelectable::activate(void)
     }
 }
 //------------------------------------------------------------------------------
-void TextOnlySelectable::draw( void)
+void TextOnlySelectable::draw( )
 {
     Selectable::draw();
 
@@ -309,7 +309,7 @@ void FloatSelectable::input( const Trigger &trigger, const bool &isDown)
     }
 }
 //------------------------------------------------------------------------------
-void FloatSelectable::draw( void)
+void FloatSelectable::draw( )
 {
 #if 0
     glColor4f( 0.2, 0.2, 1.0, 0.5);
@@ -387,7 +387,7 @@ void EnumSelectable::input( const Trigger &trigger, const bool &isDown)
     }
 }
 //------------------------------------------------------------------------------
-void EnumSelectable::draw( void)
+void EnumSelectable::draw( )
 {
     TextOnlySelectable::draw();
 
@@ -446,7 +446,7 @@ void BoolSelectable::input( const Trigger &trigger, const bool &isDown)
     }
 }
 //------------------------------------------------------------------------------
-void BoolSelectable::draw( void)
+void BoolSelectable::draw( )
 {
     TextOnlySelectable::draw();
     bool val = false;
@@ -510,7 +510,7 @@ void LeaderBoardSelectable::input( const Trigger &trigger, const bool &isDown)
     }
 }
 //------------------------------------------------------------------------------
-void LeaderBoardSelectable::activate( void)
+void LeaderBoardSelectable::activate( )
 {
     if( (_active != this))
     {
@@ -520,7 +520,7 @@ void LeaderBoardSelectable::activate( void)
     }
 }
 //------------------------------------------------------------------------------
-void LeaderBoardSelectable::draw( void)
+void LeaderBoardSelectable::draw( )
 {
     Selectable::draw();
 
@@ -626,7 +626,7 @@ ResolutionSelectable::ResolutionSelectable(
     _inputBox = _boundingBox;
 }
 //------------------------------------------------------------------------------
-void ResolutionSelectable::addFullscreenResolutions(void)
+void ResolutionSelectable::addFullscreenResolutions()
 {
     SDL_Rect **modes=SDL_ListModes(NULL, SDL_FULLSCREEN | SDL_OPENGL);
 
@@ -734,7 +734,7 @@ void ResolutionSelectable::input( const Trigger &trigger, const bool &isDown)
     }
 }
 //------------------------------------------------------------------------------
-void ResolutionSelectable::activate( void)
+void ResolutionSelectable::activate( )
 {
     if( (_active != this))
     {
@@ -743,7 +743,7 @@ void ResolutionSelectable::activate( void)
     }
 }
 //------------------------------------------------------------------------------
-void ResolutionSelectable::draw( void)
+void ResolutionSelectable::draw( )
 {
 //    Selectable::draw();
     TextOnlySelectable::draw();
@@ -782,6 +782,135 @@ void ResolutionSelectable::draw( void)
         _icons->Draw( _checkmarkOff, _xOff, _boundingBox.min.y+2, 0.5, 0.5);
     glDisable(GL_TEXTURE_2D);
 }
+
+//------------------------------------------------------------------------------
+KeySelectable::KeySelectable(const BoundingBox &r, const BoundingBox& keybox,
+    const string& text, const string& info, const string& bindingName)
+:
+    TextSelectable(r, text, info, 1.3f)
+{
+    _awaitingInput = false;
+    _bindingName = bindingName;
+    _keyBox = keybox;
+
+    // reset some stuff
+    _boundingBox.min.x = r.min.x;
+
+    _inputBox = _boundingBox;
+    _inputBox.max.x = _inputBox.min.x + 330.f;
+
+    // TODO: _inputBox ...
+}
+//------------------------------------------------------------------------------
+void KeySelectable::input( const Trigger &trigger, const bool &isDown)
+{
+    if( !isDown)
+        return;
+
+    switch( trigger.type)
+    {
+        case eButtonTrigger:
+            select();
+            break;
+
+        case eMotionTrigger:
+            activate();
+            break;
+
+        case eKeyTrigger:
+            keypress((SDLKey)trigger.data1);
+            break;
+
+        default:
+            break;
+    }
+}
+//------------------------------------------------------------------------------
+void KeySelectable::keypress(SDLKey key)
+{
+    if (!_awaitingInput)
+        return;
+
+    if (key == SDLK_ESCAPE)
+    {
+        stopWaiting();
+        return;
+    }
+
+    std::string keyname = InputS::instance()->getKeys().getKeyAsString(key);
+    if (keyname != "")        // set a key
+    {
+        InputS::instance()->unbindKeys(_bindingName);
+
+        string line = "bind " + _bindingName + " " + keyname;
+        InputS::instance()->handleLine(line);
+        stopWaiting();
+    }
+}
+//------------------------------------------------------------------------------
+void KeySelectable::stopWaiting()
+{
+    MenuManagerS::instance()->_waitSingleKey = 0;
+    _awaitingInput = false;
+}
+//------------------------------------------------------------------------------
+void KeySelectable::select()
+{
+    if (!MenuManagerS::instance()->_waitSingleKey)
+    {
+        MenuManagerS::instance()->_waitSingleKey = this;
+        _awaitingInput = true;
+    }
+}
+//------------------------------------------------------------------------------
+void KeySelectable::update( )
+{
+    _prevSize = _size;
+    _size += _ds;
+    Clamp( _size, 1.0, _maxSize - 0.2f);
+}
+//------------------------------------------------------------------------------
+void KeySelectable::draw( )
+{
+    r = 1.0f;
+    g = 1.0f;
+    b = 1.0f;
+    float preSize = _size;
+    _size = 0.7f;
+    TextOnlySelectable::draw();
+    _size = preSize;
+
+    /*
+    glColor4f(0.0f, 0.8f, 1.0f, 0.6f);
+    glBegin(GL_POLYGON);
+        glVertex2f(_inputBox.min.x, _inputBox.min.y);
+        glVertex2f(_inputBox.max.x, _inputBox.min.y);
+        glVertex2f(_inputBox.max.x, _inputBox.max.y);
+        glVertex2f(_inputBox.min.x, _inputBox.max.y);
+    glEnd();
+    */
+
+    // draw key name
+    std::string key = InputS::instance()->getKeyForAction(_bindingName);
+    if (_awaitingInput)
+        key = "PRESS KEY";
+    float iSize = _prevSize + (_size - _prevSize) * GameState::frameFractionOther;
+    Clamp( iSize, 1.0, _maxSize);
+
+    float halfWidth = _fontWhite->GetWidth( key.c_str(), iSize-1.0f)/2.0f;
+    float halfHeight = _fontWhite->GetHeight( iSize-1.0f)/2.0f;
+
+    glColor4f(1.0, 1.0, 1.0, 1.0);
+    _fontShadow->DrawString( key.c_str(),
+        _keyBox.min.x - halfWidth  + 5*iSize,
+        _keyBox.min.y - halfHeight - 5*iSize - 6.0f,
+        iSize, iSize);
+    glColor4f(1.0f, 0.852f, 0.0f, 0.8f);
+    _fontWhite->DrawString( key.c_str(),
+        _keyBox.min.x - halfWidth,
+        _keyBox.min.y - halfHeight  - 6.0f,
+        iSize, iSize);
+}
 //------------------------------------------------------------------------------
 TextSelectable::TextSelectable(const BoundingBox &r, const string &text,
     const string &info, float(maxSize))
@@ -812,7 +941,7 @@ void TextSelectable::input( const Trigger &trigger, const bool &isDown)
     }
 }
 //------------------------------------------------------------------------------
-void TextSelectable::activate( void)
+void TextSelectable::activate( )
 {
     if( (_active != this))
     {
@@ -824,13 +953,13 @@ void TextSelectable::activate( void)
     }
 }
 //------------------------------------------------------------------------------
-void TextSelectable::deactivate( void)
+void TextSelectable::deactivate( )
 {
     //  LOG_INFO << "Deactivate " << _text << endl;
     _ds = -0.1f;
 }
 //------------------------------------------------------------------------------
-void TextSelectable::update( void)
+void TextSelectable::update( )
 {
     _prevSize = _size;
     _size += _ds;
@@ -846,7 +975,7 @@ void TextSelectable::update( void)
     _inputBox.max.y = _boundingBox.max.y + dy;
 }
 //------------------------------------------------------------------------------
-void TextSelectable::draw( void)
+void TextSelectable::draw( )
 {
     Selectable::draw();
 
@@ -875,7 +1004,7 @@ ActionSelectable::ActionSelectable(const BoundingBox &r, const string &action,
 {
 }
 //------------------------------------------------------------------------------
-void ActionSelectable::select( void)
+void ActionSelectable::select( )
 {
     LOG_INFO << "Selecting: " << _action << endl;
     if (_action == "NewCampaign")
@@ -960,6 +1089,10 @@ void ActionSelectable::select( void)
         while (MenuManagerS::instance()->exitMenu(false))   // don't exit game
             ;                                               // but go to top
     }
+    else if (_action == "KeysSetupDone")
+    {
+        MenuManagerS::instance()->exitMenu(false);
+    }
     else
         LOG_ERROR << "Unknown action" << _action << endl;
     AudioS::instance()->playSample( "sounds/confirm.wav");
@@ -971,7 +1104,7 @@ MenuSelectable::MenuSelectable(TiXmlNode *node, const BoundingBox &r,
 {
 }
 //------------------------------------------------------------------------------
-void MenuSelectable::select( void)
+void MenuSelectable::select( )
 {
     MenuManagerS::instance()->makeMenu( _node);
     AudioS::instance()->playSample( "sounds/confirm.wav");

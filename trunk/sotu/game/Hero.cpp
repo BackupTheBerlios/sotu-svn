@@ -458,6 +458,7 @@ void Hero::weaponFire( bool isDown, int weapNum)
         if (_weaponEnergy < er)
             return;
 
+        _autofireOn = true;
         ConfigS::instance()->getBoolean( "autofireOn", _autofireOn);
         if (!_autofireOn)
             needButtonUp = true;

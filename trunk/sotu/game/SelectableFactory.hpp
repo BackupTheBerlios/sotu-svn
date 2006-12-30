@@ -39,7 +39,7 @@ protected:
     SelectableFactory( void) {}
     virtual ~SelectableFactory() {}
 
-    static hash_map< 
+    static hash_map<
         const string, SelectableFactory*, hash<const string>, equal_to<const string> > _sfMap;
 
     void posToPoint2D( const string &pos, Point2D &point);
@@ -55,6 +55,14 @@ class ActionItemFactory: public SelectableFactory
 public:
     ActionItemFactory( void);
     virtual ~ActionItemFactory();
+    virtual Selectable *createSelectable( TiXmlNode *node);
+};
+
+class KeyboardItemFactory: public SelectableFactory
+{
+public:
+    KeyboardItemFactory( void);
+    virtual ~KeyboardItemFactory();
     virtual Selectable *createSelectable( TiXmlNode *node);
 };
 

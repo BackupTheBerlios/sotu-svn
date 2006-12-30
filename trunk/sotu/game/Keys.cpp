@@ -100,6 +100,11 @@ string Keys::convertTriggerToString( const Trigger & trigger)
     return triggerName;
 }
 //----------------------------------------------------------------------------
+string Keys::getKeyAsString(SDLKey key)
+{
+    return _symmap[key];
+}
+//----------------------------------------------------------------------------
 Keys::Keys( void)
 {
     XTRACE();
@@ -154,32 +159,32 @@ Keys::Keys( void)
     _symmap[ SDLK_CARET] = "CARET";
     _symmap[ SDLK_UNDERSCORE] = "UNDERSCORE";
     _symmap[ SDLK_BACKQUOTE] = "BACKQUOTE";
-    _symmap[ SDLK_a] = "a";
-    _symmap[ SDLK_b] = "b";
-    _symmap[ SDLK_c] = "c";
-    _symmap[ SDLK_d] = "d";
-    _symmap[ SDLK_e] = "e";
-    _symmap[ SDLK_f] = "f";
-    _symmap[ SDLK_g] = "g";
-    _symmap[ SDLK_h] = "h";
-    _symmap[ SDLK_i] = "i";
-    _symmap[ SDLK_j] = "j";
-    _symmap[ SDLK_k] = "k";
-    _symmap[ SDLK_l] = "l";
-    _symmap[ SDLK_m] = "m";
-    _symmap[ SDLK_n] = "n";
-    _symmap[ SDLK_o] = "o";
-    _symmap[ SDLK_p] = "p";
-    _symmap[ SDLK_q] = "q";
-    _symmap[ SDLK_r] = "r";
-    _symmap[ SDLK_s] = "s";
-    _symmap[ SDLK_t] = "t";
-    _symmap[ SDLK_u] = "u";
-    _symmap[ SDLK_v] = "v";
-    _symmap[ SDLK_w] = "w";
-    _symmap[ SDLK_x] = "x";
-    _symmap[ SDLK_y] = "y";
-    _symmap[ SDLK_z] = "z";
+    _symmap[ SDLK_a] = "A";
+    _symmap[ SDLK_b] = "B";
+    _symmap[ SDLK_c] = "C";
+    _symmap[ SDLK_d] = "D";
+    _symmap[ SDLK_e] = "E";
+    _symmap[ SDLK_f] = "F";
+    _symmap[ SDLK_g] = "G";
+    _symmap[ SDLK_h] = "H";
+    _symmap[ SDLK_i] = "I";
+    _symmap[ SDLK_j] = "J";
+    _symmap[ SDLK_k] = "K";
+    _symmap[ SDLK_l] = "L";
+    _symmap[ SDLK_m] = "M";
+    _symmap[ SDLK_n] = "N";
+    _symmap[ SDLK_o] = "O";
+    _symmap[ SDLK_p] = "P";
+    _symmap[ SDLK_q] = "Q";
+    _symmap[ SDLK_r] = "R";
+    _symmap[ SDLK_s] = "S";
+    _symmap[ SDLK_t] = "T";
+    _symmap[ SDLK_u] = "U";
+    _symmap[ SDLK_v] = "V";
+    _symmap[ SDLK_w] = "W";
+    _symmap[ SDLK_x] = "X";
+    _symmap[ SDLK_y] = "Y";
+    _symmap[ SDLK_z] = "Z";
     _symmap[ SDLK_DELETE] = "DELETE";
     _symmap[ SDLK_WORLD_0] = "WORLD_0";
     _symmap[ SDLK_WORLD_1] = "WORLD_1";

@@ -2,6 +2,7 @@
 //   Input subsystem.
 //
 // Copyright (C) 2001 Frank Becker
+// Copyright (C) 2006 Milan Babuskov
 //
 // This program is free software; you can redistribute it and/or modify it under
 // the terms of the GNU General Public License as published by the Free Software
@@ -29,24 +30,24 @@ class Callback;
 namespace HASH_NAMESPACE
 {
     template<>
-	struct hash<Trigger>
+    struct hash<Trigger>
     {
-	//a simple hash function for Trigger
-	int operator()(const Trigger &t) const
-	{
-	    int hashval;
+    //a simple hash function for Trigger
+    int operator()(const Trigger &t) const
+    {
+        int hashval;
 
-	    if( t.type == eMotionTrigger)
-	    {
-		hashval = t.type*1000;
-	    }
-	    else
-	    {
-		hashval = t.type*1000+t.data1;
-	    }
+        if( t.type == eMotionTrigger)
+        {
+        hashval = t.type*1000;
+        }
+        else
+        {
+        hashval = t.type*1000+t.data1;
+        }
 
-	    return hashval;
-	}
+        return hashval;
+    }
     };
 }
 //----------------------------------------------------------------------------
@@ -87,6 +88,13 @@ public:
     void disableInterceptor( void)
     {
         _interceptor = 0;
+    }
+
+    void unbindKeys(const std::string& action);
+    std::string getKeyForAction(const std::string& action);
+    Keys& getKeys()
+    {
+        return _keys;
     }
 
 private:

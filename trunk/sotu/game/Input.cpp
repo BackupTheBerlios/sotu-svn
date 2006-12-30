@@ -260,6 +260,39 @@ void Input::handleLine( const string line)
     }
 }
 //----------------------------------------------------------------------------
+void Input::unbindKeys(const std::string& action)
+{
+    bool found;
+    do
+    {
+        found = false;
+        std::string retval;
+        hash_map< Trigger, Callback*, hash<Trigger> >::iterator ci;
+        for( ci=_callbackMap.begin(); ci!=_callbackMap.end(); ci++)
+        {
+            if (ci->second->getActionName() == action &&
+                ci->first.type == eKeyTrigger)
+            {
+                found = true;
+                //LOG_INFO << "REMOVING PREVIOUS KEY BINDING" << endl;
+                _callbackMap.erase(ci);
+                //LOG_INFO << "DONE" << endl;
+                return;
+            }
+        }
+    }
+    while (found);
+}
+//----------------------------------------------------------------------------
+std::string Input::getKeyForAction(const std::string& action)
+{
+    hash_map< Trigger, Callback*, hash<Trigger> >::const_iterator ci;
+    for( ci=_callbackMap.begin(); ci!=_callbackMap.end(); ci++)
+        if (ci->second->getActionName() == action &&  ci->first.type == eKeyTrigger)
+            return _keys.convertTriggerToString(ci->first);
+    return "NONE!!!";
+}
+//----------------------------------------------------------------------------
 void Input::save( ofstream &outfile)
 {
     XTRACE();
@@ -281,10 +314,11 @@ void Input::bind( Trigger &trigger, Callback *callback)
     Callback * cb = findHash( trigger, _callbackMap);
     if( cb)
     {
-        LOG_WARNING << "Removing old binding" << endl;
+        LOG_INFO << "Removing old binding" << endl;
         //remove previous callback...
         _callbackMap.erase( trigger);
-        delete cb;
+        //delete cb;
+        LOG_INFO << "DELETE SUCCESSFULL" << endl;
     }
 
     LOG_INFO << "Creating binding for " << callback->getActionName()

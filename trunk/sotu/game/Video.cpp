@@ -24,6 +24,7 @@
 #include <Config.hpp>
 #include <GameState.hpp>
 #include <Game.hpp>
+#include "Input.hpp"
 #include <Constants.hpp>
 
 #include <Hero.hpp>
@@ -474,8 +475,12 @@ bool Video::update( void)
             else if (GameS::instance()->getHyperspaceAvailable() == "OK")
             {
                 glColor4f(1.0f,1.0f,1.0f,0.6f);
-                smallFont.DrawString("Press H for hyperspace jump",
-                    500, 600, 1.0f, 1.0f, GLBitmapFont::alCenter);
+                string hskey = InputS::instance()->getKeyForAction("HyperSpace");
+                if (hskey == "NONE!!!")
+                    hskey = "Hyperspace key not set! Please re-configure the keyboard.";
+                else
+                    hskey = "Press " + hskey + " for hyperspace jump";
+                smallFont.DrawString(hskey.c_str(), 500, 600, 1.0f, 1.0f, GLBitmapFont::alCenter);
             }
         }
     }

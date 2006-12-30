@@ -181,7 +181,7 @@ void Game::startNewGame()
     AudioS::instance()->playSample("sounds/voiceGo.wav");
     _landed = false;
 
-    bool allowVerticalMovement = false;
+    bool allowVerticalMovement = true;
     ConfigS::instance()->getBoolean("allowVerticalMovement", allowVerticalMovement);
     HeroS::instance()->allowVerticalMovement(allowVerticalMovement);
 }
@@ -958,7 +958,7 @@ std::vector<CargoItemInfo>* CargoItemInfo::getCargoInfo()
         info.push_back(CargoItemInfo(1.0f, "models/IceSprayPierce", "Proton enhancer", 6,  900, 0,  1, pmNormal,
             "Enhances primary and secondary weapon power"));
         info.push_back(CargoItemInfo(0.8f, "models/FlankBurster", "Wave emitter",      8, 1200, 0,  1, pmNormal,
-            "Tertiary weapon - use middle mouse button or ALT key"));
+            "Tertiary weapon - use middle mouse button or left ALT key"));
         info.push_back(CargoItemInfo(5.0f, "models/WeaponUpgrade", "Space grenade",    8, 1000, 0, 20, pmNormal,
             "Destroys multiple enemies - press key D to detonate"));
         info.push_back(CargoItemInfo(1.0f, "models/Stinger", "Stinger rocket",         1,   50, 0, 20, pmNormal,

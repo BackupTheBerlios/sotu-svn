@@ -107,6 +107,7 @@ MenuManager::MenuManager():
     _prevAngle(0.0)
 {
     XTRACE();
+    _waitSingleKey = 0;
 }
 //----------------------------------------------------------------------------
 MenuManager::~MenuManager()
@@ -220,6 +221,7 @@ void MenuManager::loadMenuLevel( void)
 //----------------------------------------------------------------------------
 void MenuManager::makeMenu( TiXmlNode *_node)
 {
+    _waitSingleKey = 0;
     _currentMenu = _node;
     loadMenuLevel();
 }
@@ -296,6 +298,15 @@ bool MenuManager::draw( void)
     glColor4f(1.0, 1.0, 1.0, 1.0);
     icons->Draw( _pointer, _mouseX, _mouseY, 0.5, 0.5);
     glDisable(GL_TEXTURE_2D);
+
+    /*
+    glColor4f(1.0, 1.0, 1.0, 1.0);
+    char buf3[100];
+    sprintf(buf3, "(%0.1f,%0.1f)", _mouseX, _mouseY);
+    GLBitmapFont &fontWhite =
+        *(FontManagerS::instance()->getFont( "bitmaps/menuWhite"));
+    fontWhite.DrawString(buf3, 10, 10, 0.5, 0.5);
+    */
     return true;
 }
 //----------------------------------------------------------------------------
@@ -304,6 +315,12 @@ void MenuManager::input( const Trigger &trigger, const bool &isDown)
     Trigger t = trigger;
     if (isDown)
     {
+        if (_waitSingleKey)
+        {
+            if (trigger.type == eKeyTrigger)
+                _waitSingleKey->input(t, isDown);
+            return;
+        }
         switch( trigger.type)
         {
             case eKeyTrigger:
@@ -1256,7 +1273,7 @@ void PlanetManager::planetClick()
         Planet *pl = GameS::instance()->_galaxy.getNearest(
             _mouseX - gxoffset, _mouseY - gyoffset);
         Planet *pc = GameS::instance()->_currentPlanet;
-        if (!pl || !pc || pl == pc)
+        if (!pl || !pc) // || pl == pc)
             return;
         float dist = pc->getDistance(pl->_x, pl->_y);
         CargoItem *c = GameS::instance()->_cargo.findItem("Fuel");

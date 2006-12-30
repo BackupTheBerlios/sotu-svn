@@ -2,6 +2,7 @@
 //   Different kinds of selectable factories.
 //
 // Copyright (C) 2001 Frank Becker
+// Copyright (C) 2006 Milan Babuskov
 //
 // This program is free software; you can redistribute it and/or modify it under
 // the terms of the GNU General Public License as published by the Free Software
@@ -13,14 +14,14 @@
 // FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details
 //
 #include <SelectableFactory.hpp>
-
+//----------------------------------------------------------------------------
 hash_map<
     const string,
     SelectableFactory*,
     hash<const string>, equal_to<const string> > SelectableFactory::_sfMap;
 
 bool SelectableFactory::_initialized = false;
-
+//----------------------------------------------------------------------------
 SelectableFactory *SelectableFactory::getFactory( const string &name)
 {
     XTRACE();
@@ -36,10 +37,11 @@ SelectableFactory *SelectableFactory::getFactory( const string &name)
         new FloatFactory();
         new LeaderBoardFactory();
         new ResolutionFactory();
+        new KeyboardItemFactory();
     }
     return findHash( name, _sfMap);
 }
-
+//----------------------------------------------------------------------------
 void SelectableFactory::cleanup( void)
 {
     hash_map< const string,
@@ -54,7 +56,7 @@ void SelectableFactory::cleanup( void)
 
     _initialized = false;
 }
-
+//----------------------------------------------------------------------------
 void SelectableFactory::posToPoint2D( const string &pos, Point2D &point)
 {
     if( pos == "")
@@ -68,7 +70,7 @@ void SelectableFactory::posToPoint2D( const string &pos, Point2D &point)
     point.x = (float)atof( t.next().c_str());
     point.y = (float)atof( t.next().c_str());
 }
-
+//----------------------------------------------------------------------------
 string SelectableFactory::getAttribute( const TiXmlElement* elem, string attr)
 {
     const string *attrVal = elem->Attribute( attr);
@@ -79,7 +81,7 @@ string SelectableFactory::getAttribute( const TiXmlElement* elem, string attr)
 
     return( string(""));
 }
-
+//----------------------------------------------------------------------------
 void SelectableFactory::getBasics(
     TiXmlElement* elem,
     Point2D &pos,
@@ -90,18 +92,16 @@ void SelectableFactory::getBasics(
     text = getAttribute( elem, "Text");
     info = getAttribute( elem, "Info");
 }
-
 //------------------------------------------------------------------------------
-
 ActionItemFactory::ActionItemFactory( void)
 {
     _sfMap[ "ActionItem"] = this;
 }
-
+//----------------------------------------------------------------------------
 ActionItemFactory::~ActionItemFactory()
 {
 }
-
+//----------------------------------------------------------------------------
 Selectable *ActionItemFactory::createSelectable( TiXmlNode *node)
 {
     TiXmlElement* elem = node->ToElement();
@@ -110,26 +110,20 @@ Selectable *ActionItemFactory::createSelectable( TiXmlNode *node)
     string text;
     string info;
     getBasics( elem, r.min, text, info);
-
     string action = getAttribute( elem, "Action");
-
     return new ActionSelectable( r, action, text, info);
 }
-
 //------------------------------------------------------------------------------
-
-//------------------------------------------------------------------------------
-
-MenuItemFactory::MenuItemFactory( void)
+KeyboardItemFactory::KeyboardItemFactory(void)
 {
-    _sfMap[ "Menu"] = this;
+    _sfMap["KeyboardItem"] = this;
 }
-
-MenuItemFactory::~MenuItemFactory()
+//------------------------------------------------------------------------------
+KeyboardItemFactory::~KeyboardItemFactory()
 {
 }
-
-Selectable *MenuItemFactory::createSelectable( TiXmlNode *node)
+//------------------------------------------------------------------------------
+Selectable *KeyboardItemFactory::createSelectable( TiXmlNode *node)
 {
     TiXmlElement* elem = node->ToElement();
 
@@ -138,9 +132,33 @@ Selectable *MenuItemFactory::createSelectable( TiXmlNode *node)
     string info;
     getBasics( elem, r.min, text, info);
 
+    string bindingName = getAttribute(elem, "BindingName");
+    BoundingBox keyBox;
+    posToPoint2D( getAttribute(elem, "KeyPosition"), keyBox.min);
+
+    return new KeySelectable(r, keyBox, text, info, bindingName);
+}
+//------------------------------------------------------------------------------
+
+MenuItemFactory::MenuItemFactory( void)
+{
+    _sfMap[ "Menu"] = this;
+}
+//----------------------------------------------------------------------------
+MenuItemFactory::~MenuItemFactory()
+{
+}
+//----------------------------------------------------------------------------
+Selectable *MenuItemFactory::createSelectable( TiXmlNode *node)
+{
+    TiXmlElement* elem = node->ToElement();
+
+    BoundingBox r;
+    string text;
+    string info;
+    getBasics( elem, r.min, text, info);
     return new MenuSelectable( node, r, text, info);
 }
-
 //------------------------------------------------------------------------------
 
 TextItemFactory::TextItemFactory( void)

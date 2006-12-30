@@ -35,7 +35,7 @@ void migrateConfig( void)
     bool dummy;
     if( ! ConfigS::instance()->getBoolean( "onlineCheck", dummy))
     {
-    ConfigS::instance()->updateKeyword( "onlineCheck", "1");
+        ConfigS::instance()->updateKeyword( "onlineCheck", "1");
     }
 
 #ifdef WIN32

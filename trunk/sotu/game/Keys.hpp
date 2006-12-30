@@ -2,6 +2,7 @@
 //   Keyboard/Trigger helpers.
 //
 // Copyright (C) 2001 Frank Becker
+// Copyright (C) 2006 Milan Babuskov
 //
 // This program is free software; you can redistribute it and/or modify it under
 // the terms of the GNU General Public License as published by the Free Software
@@ -20,14 +21,15 @@ using namespace std;
 #include "SDL.h"
 #include <string>
 #include <Trigger.hpp>
-
+//----------------------------------------------------------------------------
 class Keys
 {
 public:
     Keys( void);
     ~Keys();
+    string getKeyAsString(SDLKey key);
     string convertTriggerToString( const Trigger & trigger);
-    bool convertStringToTrigger( 
+    bool convertStringToTrigger(
         string & triggerStr, Trigger & trigger);
 
 private:
@@ -36,5 +38,5 @@ private:
 
     string _symmap[ SDLK_LAST];
 };
-
+//----------------------------------------------------------------------------
 #endif
