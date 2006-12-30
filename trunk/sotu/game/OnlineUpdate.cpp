@@ -40,17 +40,17 @@ OnlineUpdate::~OnlineUpdate()
 {
     if( _thread)
     {
-	LOG_INFO << "Waiting for online update thread to finish\n";
-    	int status;
-	SDL_WaitThread( _thread, &status);
-	_thread = 0;
-	LOG_INFO << "Online update thread done status = " << status << endl;
+        LOG_INFO << "Waiting for online update thread to finish\n";
+        int status;
+        SDL_WaitThread( _thread, &status);
+        _thread = 0;
+        LOG_INFO << "Online update thread done status = " << status << endl;
     }
 
     list<NewsItem*>::iterator i;
     for( i=_newsItemList.begin(); i!=_newsItemList.end(); i++)
     {
-	delete (*i);
+        delete (*i);
     }
     _newsItemList.clear();
 }
@@ -64,20 +64,20 @@ void OnlineUpdate::init( const string &defaultUpdateURL)
 void OnlineUpdate::getUpdate( void)
 {
     bool onlineCheck = false;
-    ConfigS::instance()->getBoolean( "onlineCheck", onlineCheck);
+    //ConfigS::instance()->getBoolean( "onlineCheck", onlineCheck);
     if( onlineCheck)
     {
-	_text = "";
-	_status = eDownloading;
+        _text = "";
+        _status = eDownloading;
 #if 1
-	_thread = SDL_CreateThread(OnlineUpdate::run, (void*)this);
-	if ( _thread == NULL ) 
-	{
-	    _status = eFailure;
-	    LOG_ERROR << "Unable to create thread.\n";
-	}
+        _thread = SDL_CreateThread(OnlineUpdate::run, (void*)this);
+        if ( _thread == NULL )
+        {
+            _status = eFailure;
+            LOG_ERROR << "Unable to create thread.\n";
+        }
 #else
-	OnlineUpdate::run( this);
+        OnlineUpdate::run(this);
 #endif
     }
 }
@@ -90,7 +90,7 @@ size_t OnlineUpdate::write(void *buffer, size_t size, size_t nmemb, void *data)
 
     OnlineUpdate *onlineUpdate = (OnlineUpdate*)data;
     onlineUpdate->_text += tmpBuf;
-//    LOG_INFO << tmpBuf << endl;
+    //    LOG_INFO << tmpBuf << endl;
 
     delete [] tmpBuf;
 
@@ -103,17 +103,17 @@ void OnlineUpdate::loadUpdateCache(const string &updateCache)
     ifstream infile( updateCache.c_str(), ios::in | ios::binary);
     if( infile.good())
     {
-	ziStream zin(infile);
-	string line;
-	while( !getline( zin, line).eof())
-	{
-	    _text += line;
-	}
+        ziStream zin(infile);
+        string line;
+        while( !getline( zin, line).eof())
+        {
+            _text += line;
+        }
 
-	if( process())
-	    _status = eSuccess;
-	else
-	    _status = eFailure;
+        if( process())
+            _status = eSuccess;
+        else
+            _status = eFailure;
     }
 }
 
@@ -123,66 +123,65 @@ int OnlineUpdate::run(void *data)
     string updateCache = ConfigS::instance()->getConfigDirectory() + "update.cache";
 
     struct stat statInfo;
-    if( stat( updateCache.c_str(), &statInfo) != -1) 
+    if( stat( updateCache.c_str(), &statInfo) != -1)
     {
-	struct timeval tv;
-	struct timezone tz;
-	gettimeofday(&tv, &tz);
+        struct timeval tv;
+        struct timezone tz;
+        gettimeofday(&tv, &tz);
 
-	int delta = tv.tv_sec - statInfo.st_mtime;
-	if( delta < UPDATE_INTERVAL)
-	{
-	    onlineUpdate->loadUpdateCache( updateCache);
-	    return 0;
-	}
+        int delta = tv.tv_sec - statInfo.st_mtime;
+        if( delta < UPDATE_INTERVAL)
+        {
+            onlineUpdate->loadUpdateCache( updateCache);
+            return 0;
+        }
     }
 
-    CURL *handle = curl_easy_init(); 
+    CURL *handle = curl_easy_init();
     if( handle)
     {
-	curl_easy_setopt(handle, CURLOPT_WRITEFUNCTION, OnlineUpdate::write);
-	curl_easy_setopt(handle, CURLOPT_WRITEDATA, data);
-	curl_easy_setopt(handle, CURLOPT_FOLLOWLOCATION, 1);
-	curl_easy_setopt(handle, CURLOPT_TIMEOUT, 30);
-	curl_easy_setopt(handle, CURLOPT_USERAGENT, PACKAGE " " VERSION " " OSNAME " (" __DATE__ " " __TIME__ ")");
-	curl_easy_setopt(handle, CURLOPT_URL, onlineUpdate->_updateURL.c_str());
-	//      curl_easy_setopt(handle, CURLOPT_REFERER, "None");
+        curl_easy_setopt(handle, CURLOPT_WRITEFUNCTION, OnlineUpdate::write);
+        curl_easy_setopt(handle, CURLOPT_WRITEDATA, data);
+        curl_easy_setopt(handle, CURLOPT_FOLLOWLOCATION, 1);
+        curl_easy_setopt(handle, CURLOPT_TIMEOUT, 30);
+        curl_easy_setopt(handle, CURLOPT_USERAGENT, PACKAGE " " VERSION " " OSNAME " (" __DATE__ " " __TIME__ ")");
+        curl_easy_setopt(handle, CURLOPT_URL, onlineUpdate->_updateURL.c_str());
+        //      curl_easy_setopt(handle, CURLOPT_REFERER, "None");
 
-	LOG_INFO << "Checking for updates at " << onlineUpdate->_updateURL << endl;
-	CURLcode success = curl_easy_perform(handle);
-	if( success == CURLE_OK)
-	{
-	    //	    LOG_INFO << "Update text: [" << onlineUpdate->_text << "]\n";
+        LOG_INFO << "Checking for updates at " << onlineUpdate->_updateURL << endl;
+        CURLcode success = curl_easy_perform(handle);
+        if( success == CURLE_OK)
+        {
+            //	    LOG_INFO << "Update text: [" << onlineUpdate->_text << "]\n";
 
-	    if( onlineUpdate->process())
-	    {
-		ofstream outfile( updateCache.c_str(), ios::out | ios::binary);
-		if( outfile.good())
-		{
-		    zoStream zout(outfile);
-		    zout << onlineUpdate->_text;
-		}
-		onlineUpdate->_status = eSuccess;
-	    }
-	    else
-		onlineUpdate->_status = eFailure;
-	}
-	else
-	{
-	    onlineUpdate->_status = eFailure;
-	}
-
-	curl_easy_cleanup(handle);
+            if( onlineUpdate->process())
+            {
+                ofstream outfile( updateCache.c_str(), ios::out | ios::binary);
+                if( outfile.good())
+                {
+                    zoStream zout(outfile);
+                    zout << onlineUpdate->_text;
+                }
+                onlineUpdate->_status = eSuccess;
+            }
+            else
+                onlineUpdate->_status = eFailure;
+        }
+        else
+        {
+            onlineUpdate->_status = eFailure;
+        }
+        curl_easy_cleanup(handle);
     }
     else
     {
-	onlineUpdate->_status = eFailure;
+        onlineUpdate->_status = eFailure;
     }
 
     if( onlineUpdate->_status != eSuccess)
     {
-	LOG_WARNING << "Failed to get online update - trying cache.\n";
-	onlineUpdate->loadUpdateCache( updateCache);
+        LOG_WARNING << "Failed to get online update - trying cache.\n";
+        onlineUpdate->loadUpdateCache( updateCache);
     }
 
     return 0;
@@ -319,7 +318,7 @@ bool OnlineUpdate::process( void)
 
 			    if( key == "Color")
 			    {
-				sscanf( value.c_str(), "%f,%f,%f", 
+				sscanf( value.c_str(), "%f,%f,%f",
 					&newsItem->r, &newsItem->g, &newsItem->b);
 			    }
 
@@ -335,7 +334,7 @@ bool OnlineUpdate::process( void)
 	    }
 	    node = node->NextSibling( "NewsItem");
 	}
-	
+
 	result = true;
     }
 

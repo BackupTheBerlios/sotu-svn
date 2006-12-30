@@ -53,12 +53,12 @@ void EnemyWaves::reset()
     int rebelStatus = (int)(GameS::instance()->_rebelStatus);
     int empireStatus = (int)(GameS::instance()->_empireStatus);
     _alienTotal  = 4 + Random::integer(2) + (p->_alienActivity / 10);
-    _rebelTotal  = ((p->_rebelSentiment - 50) / 10) * rebelStatus;
-    _empireTotal = ((50 - p->_rebelSentiment) / 10) * empireStatus;
+    _rebelTotal  = ((p->_rebelSentiment - 50) / 12) * rebelStatus;
+    _empireTotal = ((50 - p->_rebelSentiment) / 12) * empireStatus;
     if (_rebelTotal > 3)
-        _rebelTotal  = _rebelTotal  + 2 - Random::integer(5);
+        _rebelTotal  = _rebelTotal  + 1 - Random::integer(3);
     if (_empireTotal > 3)
-        _empireTotal = _empireTotal + 2 - Random::integer(5);
+        _empireTotal = _empireTotal + 1 - Random::integer(3);
 
     if (p->_name == "ARMADA")
     {
@@ -81,6 +81,8 @@ void EnemyWaves::getCounts(int &a, int& e, int& r)
         a = _alienTotal  - _alienDone;
         e = _empireTotal - _empireDone;
         r = _rebelTotal  - _rebelDone;
+        if (a > 0 || e > 0 || r > 0)    // fixed strange bug
+            GameS::instance()->_spaceStationApproach = 0;
     }
 }
 //----------------------------------------------------------------------------

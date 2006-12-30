@@ -37,10 +37,11 @@ OnlineUpdateDisplay::~OnlineUpdateDisplay()
 void OnlineUpdateDisplay::update( void)
 {
     bool onlineCheck = false;
-    ConfigS::instance()->getBoolean("onlineCheck", onlineCheck);
-    if( !onlineCheck) return;
+    //ConfigS::instance()->getBoolean("onlineCheck", onlineCheck);
+    if (!onlineCheck)
+        return;
 
-    GLBitmapFont &fontWhite = 
+    GLBitmapFont &fontWhite =
 	*(FontManagerS::instance()->getFont( "bitmaps/arial-small"));
 
     if( ! _updateIsReady)
@@ -105,7 +106,7 @@ void OnlineUpdateDisplay::update( void)
 void OnlineUpdateDisplay::draw( void)
 {
     bool onlineCheck = false;
-    ConfigS::instance()->getBoolean("onlineCheck", onlineCheck);
+    //ConfigS::instance()->getBoolean("onlineCheck", onlineCheck);
     if( !onlineCheck) return;
 
     if( !_updateIsReady) return;
@@ -114,7 +115,7 @@ void OnlineUpdateDisplay::draw( void)
 
     MessageInfo mi= (*_currentMessage);
 
-    GLBitmapFont &fontWhite = 
+    GLBitmapFont &fontWhite =
 	*(FontManagerS::instance()->getFont( "bitmaps/arial-small"));
     glColor4f(mi.r, mi.g, mi.b, 0.7);
 

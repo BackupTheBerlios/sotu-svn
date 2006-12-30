@@ -1109,9 +1109,12 @@ void PlanetManager::drawMap()
                 glColor4f(1.0f, 1.0f, 1.0f, 0.8f);
                 char ok[] = "Click to set as hyperspace target.";
                 char too_far[] = "Planet is out of range.";
+                char need_fuel[] = "Planet is out of range, you should buy more Fuel.";
                 char already_set[] = "Hyperspace jump will take you there.";
                 char *text = (c->_quantity >= dist ? ok : too_far);
-                if (c->_quantity >= dist && pl == _hyperspaceTarget)
+                if (dist <= 40 && c->_quantity < dist)
+                    text = need_fuel;
+                if (text == ok && pl == _hyperspaceTarget)
                     text = already_set;
                 fontWhite.DrawString(text, w + 20.0f, 17.0f, 0.7f, 0.65f);
             }
@@ -1902,11 +1905,15 @@ void MessageBoxManager::input(const Trigger &trigger, const bool &isDown)
                 //LOG_INFO << "KEY PRESS: " << trigger.data1 << endl;
                 if  (_textValue.length() <= 50 &&
                     (trigger.data1 ==  SDLK_SPACE ||
+                     trigger.data1 ==  SDLK_MINUS ||
+                     trigger.data1 ==  SDLK_PERIOD ||
+                     trigger.data1 ==  SDLK_COMMA ||
+                     trigger.data1 ==  SDLK_COLON ||
                      trigger.data1 >= SDLK_a && trigger.data1 <= SDLK_z ||
                      trigger.data1 >= SDLK_0 && trigger.data1 <= SDLK_9))
                 {
                     char c = (char)tolower(trigger.data1);
-                    if( trigger.data2 & KMOD_SHIFT)
+                    if (trigger.data2 & KMOD_SHIFT)
                         c = toupper(c);
                     _textValue += c;
                 }

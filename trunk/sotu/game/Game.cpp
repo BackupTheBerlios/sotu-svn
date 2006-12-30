@@ -42,6 +42,7 @@
 #include <MenuManager.hpp>
 #include <ResourceManager.hpp>
 
+#define DEMO
 //#define TRAINER
 //----------------------------------------------------------------------------
 Game::Game(void):
@@ -290,7 +291,7 @@ void Game::updateInGameLogic()
             ParticleGroupManagerS::instance()->update();
         }
 
-        //FIXME: Currently the Critterboard is updated in the video system. Should be on its own.
+        // update rotation for OSD objects
         VideoS::instance()->updateLogic();
 
         //advance to next start-of-game-step point in time
@@ -691,6 +692,19 @@ void Game::reachedSpecialPlanet()
     std::string okAction = "PlanetMenu";
     std::string cancelButton = "";
     std::string cancelAction = "";
+#ifdef DEMO
+    if (_currentPlanet->_name == "TORRES")
+    {
+        title = "TRIAL VERSION";
+        msg = "This is the most you can play with trial version of the game. "
+            "To buy the full version, please visit our website at\nwww.whatever.com\n\n"
+            "The full version consists of five chapters, some new enemy types, "
+            "chance to join the rebels or fight against them, and many more...";
+        okAction = "Quit";
+        okButton = "Exit game";
+        _questTargets.clear();
+    }
+#else
     if (_currentPlanet->_name == "TORRES")
     {
         _chapter = 2;
@@ -897,6 +911,7 @@ void Game::reachedSpecialPlanet()
         PlanetManagerS::instance()->addEvent(QuestEvent::qePlayer,
             "The human race is safe now.");
     }
+#endif
 
     MessageBoxManagerS::instance()->setup(title, msg, okButton, okAction,
         cancelButton, cancelAction);

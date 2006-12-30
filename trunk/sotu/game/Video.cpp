@@ -446,6 +446,12 @@ bool Video::update( void)
 
     if (HeroS::instance()->alive() && (context == eInGame || context == ePaused))
     {
+        if (context == ePaused)
+        {
+            glColor4f(1.0f,1.0f,1.0f,0.9f);
+            smallFont.DrawString("PAUSED", 500, 300, 1.0f, 1.0f, GLBitmapFont::alCenter);
+        }
+
         if (hyspace != 0)
         {
             if (countdown < 10)
@@ -636,14 +642,17 @@ bool Video::update( void)
             const float spacing = 40.0f;
             const float redge = 1020.0f;
             const float top = 730.0f;
-            int data[3];
-            StageManagerS::instance()->getCounts(data[0], data[1], data[2]);
-            glColor4f(1.0f, 1.0f, 1.0f, 0.9f);
-            for (int ix = 0; ix < 3; ++ix)
+            if (hyspace <= 10.0f)
             {
-                sprintf(buff, "%d", data[ix]);
-                scoreFont.DrawString(buff, redge - (3-ix)*spacing,
-                    top - 40, 0.48f, 0.48f, GLBitmapFont::alCenter);
+                int data[3];
+                StageManagerS::instance()->getCounts(data[0], data[1], data[2]);
+                glColor4f(1.0f, 1.0f, 1.0f, 0.9f);
+                for (int ix = 0; ix < 3; ++ix)
+                {
+                    sprintf(buff, "%d", data[ix]);
+                    scoreFont.DrawString(buff, redge - (3-ix)*spacing,
+                        top - 40, 0.48f, 0.48f, GLBitmapFont::alCenter);
+                }
             }
 
             float xoffset1 = weapon_start_x;
@@ -701,33 +710,36 @@ bool Video::update( void)
             glPopMatrix();
 
             // draw images of incoming enemies -------------------------------
-            static Model *alien = ModelManagerS::instance()->getModel("models/SixLegBugYellow");
-            glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
-            glPushMatrix();
-                glTranslatef(redge - 3*spacing, top, 1.0);
-                glRotatef(-90.0f, 1.0, 0.0, 0.0);
-                glRotatef(iAngle, 0.0, 0.0, 1.0);
-                glScalef(6.0f, 6.0f, 6.0f);
-                alien->draw();
-            glPopMatrix();
+            if (hyspace <= 10.0f)
+            {
+                static Model *alien = ModelManagerS::instance()->getModel("models/SixLegBugYellow");
+                glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+                glPushMatrix();
+                    glTranslatef(redge - 3*spacing, top, 1.0);
+                    glRotatef(-90.0f, 1.0, 0.0, 0.0);
+                    glRotatef(iAngle, 0.0, 0.0, 1.0);
+                    glScalef(6.0f, 6.0f, 6.0f);
+                    alien->draw();
+                glPopMatrix();
 
-            static Model *empire = ModelManagerS::instance()->getModel("models/DarkAngel");
-            glPushMatrix();
-                glTranslatef(redge - 2*spacing, top, 1.0);
-                glRotatef(-15.0f, 1.0, 0.0, 0.0);
-                glRotatef(iAngle, 0.0, 1.0, 0.0);
-                glScalef(6.0f, 6.0f, 6.0f);
-                empire->draw();
-            glPopMatrix();
+                static Model *empire = ModelManagerS::instance()->getModel("models/DarkAngel");
+                glPushMatrix();
+                    glTranslatef(redge - 2*spacing, top, 1.0);
+                    glRotatef(-15.0f, 1.0, 0.0, 0.0);
+                    glRotatef(iAngle, 0.0, 1.0, 0.0);
+                    glScalef(6.0f, 6.0f, 6.0f);
+                    empire->draw();
+                glPopMatrix();
 
-            static Model *rebel = ModelManagerS::instance()->getModel("models/BigFoot");
-            glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
-            glPushMatrix();
-                glTranslatef(redge - spacing, top, 1.0);
-                glRotatef(iAngle, 0.0, 1.0, 0.0);
-                glScalef(6.0f, 6.0f, 6.0f);
-                rebel->draw();
-            glPopMatrix();
+                static Model *rebel = ModelManagerS::instance()->getModel("models/BigFoot");
+                glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+                glPushMatrix();
+                    glTranslatef(redge - spacing, top, 1.0);
+                    glRotatef(iAngle, 0.0, 1.0, 0.0);
+                    glScalef(6.0f, 6.0f, 6.0f);
+                    rebel->draw();
+                glPopMatrix();
+            }
 
             // draw weapons
             float yoffset = weapon_start_y;

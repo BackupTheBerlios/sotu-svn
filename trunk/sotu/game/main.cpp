@@ -31,24 +31,15 @@
 //----------------------------------------------------------------------------
 void migrateConfig( void)
 {
-    //if onlineCheck is not set, default it to true
-    bool dummy;
-    if( ! ConfigS::instance()->getBoolean( "onlineCheck", dummy))
-    {
-        ConfigS::instance()->updateKeyword( "onlineCheck", "1");
-    }
-
-#ifdef WIN32
-    rename( "config.txt-scores" , "leaderboard");
-#else
+#ifndef WIN32
     struct stat statInfo;
 
     string configFileName = ConfigS::instance()->getConfigFileName();
 
     if( (stat( configFileName.c_str(), &statInfo) != -1) )
     {
-    LOG_INFO << "Found config file - no need to migrate\n";
-    return;
+        LOG_INFO << "Found config file - no need to migrate\n";
+        return;
     }
 
     string::size_type start = configFileName.find_last_of( '/');

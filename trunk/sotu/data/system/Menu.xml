@@ -340,12 +340,6 @@
         Info="Click and hold mouse button to fire."
         Position="340.0 240.0"
         Variable="autofireOn" />
-
-        <Bool
-        Text="Online Check and News Scroller"
-        Info="Check for updates (needs Internet connection)."
-        Position="340.0 140.0"
-        Variable="onlineCheck" />
     </Menu>
 
     <ActionItem
