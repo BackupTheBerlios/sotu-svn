@@ -1020,6 +1020,10 @@ void ActionSelectable::select( )
             GameS::instance()->switchContext(eInGame);
         return;
     }
+    else if (_action == "ResetKeys")
+    {
+        InputS::instance()->defaultKeys();
+    }
     else if (_action == "LoadGame")
     {
         MessageBoxManagerS::instance()->file(false);

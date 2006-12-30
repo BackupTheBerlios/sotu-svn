@@ -90,6 +90,7 @@ public:
         _interceptor = 0;
     }
 
+    void defaultKeys();
     void unbindKeys(const std::string& action);
     std::string getKeyForAction(const std::string& action);
     Keys& getKeys()

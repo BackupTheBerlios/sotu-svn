@@ -260,6 +260,23 @@ void Input::handleLine( const string line)
     }
 }
 //----------------------------------------------------------------------------
+void Input::defaultKeys()
+{
+    static string bindings[] = { "PauseGame", "CritterBoard",
+        "MotionLeft", "MotionRight",  "MotionUp",    "MotionDown", "HyperSpace",
+        "PrimaryFire","SecondaryFire","TertiaryFire","MegaBomb",   "Rocket" };
+    static string keys[] = {     "P",         "TAB",
+        "LEFT",       "RIGHT",        "UP",          "DOWN",       "H",
+        "SPACE",      "LALT",         "LCTRL",       "D",          "F" };
+
+    for (unsigned int i=0; i<sizeof(keys)/sizeof(string); ++i)
+    {
+        unbindKeys(bindings[i]);
+        string line = "bind " + bindings[i] + " " + keys[i];
+        handleLine(line);
+    }
+}
+//----------------------------------------------------------------------------
 void Input::unbindKeys(const std::string& action)
 {
     bool found;
