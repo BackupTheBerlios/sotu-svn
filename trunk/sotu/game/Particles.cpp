@@ -2012,7 +2012,7 @@ void ScoreHighlight::init( ParticleInfo *p)
 
     p->extra.x = Random::rangef0_1()*40.0f-20.0f;
     p->extra.y = 0.05f;
-    p->extra.z = 0.8f;
+    p->extra.z = 0.6f;
 
     p->tod = -1;
 

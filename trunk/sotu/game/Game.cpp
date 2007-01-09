@@ -698,7 +698,7 @@ void Game::reachedSpecialPlanet()
         title = "TRIAL VERSION";
         msg = "This is the most you can play with trial version of the game.\n"
             "To buy the full version, please visit our website at\n"
-            "www.whatever.com\n\n"
+            "www.wodan.com\n\n"
             "The full version consists of five chapters, some new enemy types, "
             "choice to join the rebels or fight against them, and some surprises "
             "you'd rather discover yourself...";
@@ -1401,6 +1401,7 @@ void Map::draw(float x, float y)
     }
     glEnd();
     glDisable(GL_POINT_SMOOTH);
+    glPointSize(1.0f);
 
     for (PlanetList::iterator it = _planets.begin(); it != _planets.end(); ++it)
         if ((*it)->isSpecial())
