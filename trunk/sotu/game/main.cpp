@@ -133,7 +133,7 @@ void showInfo()
              << " - "__TIME__" "__DATE__
              << endl;
     LOG_INFO << "Copyright (C) 2006 Milan Babuskov, 2001-2005 Frank Becker" << endl;
-    LOG_INFO << "Visit http://sotu.berlios.de/" << endl;
+    LOG_INFO << "Visit http://www.guacosoft.com/" << endl;
     LOG_INFO << "----------------------------------" << endl;
 }
 //----------------------------------------------------------------------------
@@ -197,7 +197,7 @@ int main( int argc, char *argv[])
         cfg->dump();
     }
 
-    OnlineUpdateS::instance()->init("http://sotu.berlios.de/update.php");
+    OnlineUpdateS::instance()->init("http://www.guacosoft.com/update.php");
     //TODO: Napraviti da berlios vraca podatke o updateu (obican string)
     //OnlineUpdateS::instance()->getUpdate();
 

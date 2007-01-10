@@ -698,7 +698,7 @@ void Game::reachedSpecialPlanet()
         title = "TRIAL VERSION";
         msg = "This is the most you can play with trial version of the game.\n"
             "To buy the full version, please visit our website at\n"
-            "www.wodan.com\n\n"
+            "www.guacosoft.com\n\n"
             "The full version consists of five chapters, some new enemy types, "
             "choice to join the rebels or fight against them, and some surprises "
             "you'd rather discover yourself...";

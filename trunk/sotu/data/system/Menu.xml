@@ -116,38 +116,35 @@
     <Menu
         Text="Credits"
         Info="Greetings and salutations go out to..."
-    Position="500.0 260.0">
+        Position="500.0 260.0">
 
         <TextItem
-        Text="Scum of the Universe"
-        Info="Cool name, ain't it?"
-        Size="1.2"
-        Position="500.0 440.0"/>
+            Text="Scum of the Universe"
+            Info="Cool name, ain't it?"
+            Size="1.2"
+            Position="500.0 440.0"/>
         <TextItem
-        Text="a space adventure"
-        Info="Be a trader, smuggler, freedom fighter or mercenary"
-        Size="0.85"
-        Position="500.0 400.0" />
+            Text="a space adventure"
+            Info="Be a trader, smuggler, freedom fighter or mercenary"
+            Size="0.85"
+            Position="500.0 400.0" />
         <TextItem
-            Text="This game is based on Critter game"
-            Info="Long live GPL license."
-            Position="500.0 280.0" />
+            Text="www.GuacoSoft.com"
+            Info="Our website"
+            Size="0.85"
+            Position="500.0 290.0" />
         <TextItem
-            Text="found at  http://criticalmass.sourceforge.net"
-            Info="Critter is pure space shooter - no strategy stuff"
-            Position="500.0 240.0" />
+            Text="This game is based on game Critter by Frank Becker"
+            Info="Long live the GPL."
+            Position="500.0 190.0" />
         <TextItem
-        Text="So a special thanks to:"
-        Info="Hey, more than special."
-        Position="500.0 190.0" />
+            Text="and Lunar Gravity & Burkey (Soundtrack)"
+            Info="Critical: Lunar Gravity's Millennium Remake"
+            Position="500.0 160.0" />
         <TextItem
-        Text="-- Frank Becker --"
-        Info="Yeah."
-        Position="500.0 160.0" />
-        <TextItem
-        Text="-- Lunar Gravity & Burkey (Soundtrack) --"
-        Info="Critical: Lunar Gravity's Millennium Remake"
-        Position="500.0 130.0" />
+            Text="critticalmass.sourceforge.net"
+            Info="Critter is pure shooter - no strategy stuff"
+            Position="500.0 130.0" />
     </Menu>
 
     <Menu

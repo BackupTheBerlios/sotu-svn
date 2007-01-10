@@ -943,10 +943,10 @@ void PlanetManager::drawCargo()
     if (!landed)
     {
         glColor4f(1.0f, 0.852f, 0.0f, 1.0f);
-        fontWhite.DrawString("TRADE NOT",   800.0f, 520.0f, 1.0f, 1.0f, GLBitmapFont::alCenter);
-        fontWhite.DrawString("POSSIBLE",    800.0f, 400.0f, 1.0f, 1.0f, GLBitmapFont::alCenter);
-        fontWhite.DrawString("WHILE IN",    800.0f, 280.0f, 1.0f, 1.0f, GLBitmapFont::alCenter);
-        fontWhite.DrawString("OUTER SPACE", 800.0f, 160.0f, 1.0f, 1.0f, GLBitmapFont::alCenter);
+        fontWhite.DrawString("TRADE NOT",   800.0f, 400.0f, 1.0f, 1.0f, GLBitmapFont::alCenter);
+        fontWhite.DrawString("POSSIBLE",    800.0f, 350.0f, 1.0f, 1.0f, GLBitmapFont::alCenter);
+        fontWhite.DrawString("WHILE IN",    800.0f, 300.0f, 1.0f, 1.0f, GLBitmapFont::alCenter);
+        fontWhite.DrawString("OUTER SPACE", 800.0f, 250.0f, 1.0f, 1.0f, GLBitmapFont::alCenter);
     }
 }
 //----------------------------------------------------------------------------
