@@ -5,7 +5,7 @@ User manual
 
 Scum of the Universe is a game that combines two genres: arcade and strategy. On the one side, it's a classic vertical-scrolling 3rd person shooter game. On the other side, it is an adventure and strategy. You should choose whether you'll be an independent space trader, firearms smuggler, fierce freedom-fighter or something in between. Following the main storyline, you go through the galaxy from one planet to another. Space travel requires fuel, so you need to keep earning money to buy it. You can also buy various upgrades from your spaceship and weapons that affect the arcade part of the game. The storyline itself is not linear. There are also some points where you'll need to make decisions that will determine your destiny.
 
-The Story
+About the game world
 
 For thousands of years, people of planet Xen have colonized the planets in their galaxy. As time went by, many colonies grew unhappy about their status, as everything was controlled by Xen. Some of them organized military units and declared independence. You can see the status of each planet by "Rebel Sentiment" indicator. Planets with RS higher than 50% are ruled by the Rebel government, and Rebel laws apply.
 
@@ -13,14 +13,117 @@ Trading firearms is legal on planets ruled by Rebels, as they need as much firep
 
 Beside the raging war between Xen Empire and the rebels there is increased activity of alien species, who destroy human ships. The stronger alien activity, the more waves of alien ships you'll need to defeat in each planet's outer orbit. Some of the aliens you destroy may drop artifacts (big blue ones) which you can sell at any space station for 20credits a piece.
 
-You
+The story
 
-One day, while wandering on abandoned planet you found a beautiful crystal. You took it hoping to sell it for a good price. On the way, you were attacked by two pirates who looted your ship and took the crystal. You bearly managed to stay alive.
+One day, while wandering on abandoned planet you found a beautiful crystal. You took it hoping to sell it for a good price. On the way, you were attacked by two pirates who looted your ship and took the crystal. You barely managed to stay alive.
 
-As the game starts, your escape pod reached a nearby planet. You learned that those pirates come from planet Torres and decided to go after them. You have 2000 credits on your bank account.
+As the game starts, your escape pod reaches a nearby planet. You learn that those pirates come from planet Torres and decide to go after them. You have 2000 credits on your bank account.
 
-It's time to begin your quest throught the galaxy. You start at planet Xen, and first mission is to reach planet Torres. Both planets are marked with pulsing white cross on the galaxy map. The small green circle in galaxy map represents the area you can reach with current amount of fuel. You can buy more fuel at "Trade&Cargo" screen. You ship's tank has capacity for 40 units of fuel, and that's the most you can travel withing a single "space jump".
+It's time to begin your quest throughout the galaxy. You start at planet Xen, and first mission is to reach planet Torres. Both current and target planet are marked with pulsing white cross on the galaxy map. The small green circle in galaxy map represents the area you can reach with current amount of fuel. You can buy more fuel at "Trade&Cargo" screen. You ship's tank has capacity for 40 units of fuel, and that's the most you can travel withing a single "space jump". If you loose all fuel and don't have any money, you're stuck on the planet until you earn enough money to buy fuel to leave it. To earn money, simply Launch off in the planet's orbit and shoot some aliens to collect alien artifacts you can sell when you return to space station.
 
-Each planet has a tech level (TL). That determines the prices of goods on it, and also the level of crime (pirates). Planets also have rebel sentiment (RS). Planets with more than 50% RS are Rebel planets, and with less than or equal to 50% are Empire planets. You move from planet to planet through hyperspace using the fuel. If you loose all fuel you're stuck on the planet until you earn enough money to buy fuel to leave it. You can fly in the orbit and kill some SOTU to earn money. After you leave hyperspace you show up somewhere in the planets orbit, and you have to get to the planet. On your way you may meet pirates and aliens, rebels and empire fleet ships. Pirates and aliens shoot at you no matter what. Rebels and empire fleet shoot at you depending on your empiral/rebel status, which can be: clean, criminal, terrorist. You are considered criminal if you're caught trading illegal goods. Chances of capture depend on RS and TL. Chance% = (TL * 5) + bonus of 30% if RS is lower than 20% or greater than 80% (planets like that are considered Planets of Stable Government). You are considered terrorist if you attack empirial/rebel ships.
 
-As time goes by, some planets change their RS so be careful. Also planets of Stable Government increase their TL, while planets where government is overturned have their TL reduced by 4 due to civil war.
+Playing the game
+
+The game is divided into two parts. First is the planetary screen and second is the arcade shooter part of the game. Planetary screen has the following sections:
+
+1. Galaxy map
+
+You can see your current location and green circle shows the area you can reach with amount of fuel you have at the moment. You can set the next planet for hyperspace jump by clicking the left mouse button on some of the planets within that green circle. You can extend the circle by buying more fuel on "Cargo&Trade" screen.
+
+2. Cargo & Trade
+
+Here you can buy and sell goods and equipment. The current amount of money is shown in bottom left part of the screen. In space economy, the currency is called "Credits". The goods are shown in upper part of the screen, while weapons and equipment are in the lower part. Some of the goods are illegal to trade, so make sure you read the item description at the bottom of the list.
+
+The cargo hull of your ship has limited capacity for 20 tons of any goods, so make sure you combine them in such way to maximize the profit. Some weapons are permanent, while others are lost when fired. Permanent weapons have unlimited ammo. 
+
+Goods		TL	Note
+--------------- ------- -------------------------------------------------
+Food		1	Cheap on low TL planets
+Electronics	5	Cheap on high TL planets
+Alien artifacts N/A	Collect when you shoot aliens, sell on any planet
+Jewelry		3	Random prices
+Firearms	4	Illegal on Empire planets
+Slaves		1	Illegal on Rebel planets
+Narcotics	3	Illegal everywhere, cheap on low TL planets
+
+Weapons
+--------------- ------- -------------------------------------------------
+Proton enhancer	6	Enhances primary and secondary weapon power	
+Wave emitter	8	Tertiary weapon - use middle mouse button
+Space grenade	8	Destroys multiple enemies - default key D
+Stinger rocket	1	Ammo for rocket launcher - default key F
+
+Other
+--------------- ------- -------------------------------------------------
+Shield upgrade	7	Allows your ship to have 200 shield energy
+Fuel		1	Needed for hyperspace travel between planets
+-------------------------------------------------------------------------
+
+
+3. Quest
+
+Quest section shows the ship log (planets you visit and important events that happen to you) and the latest news about ongoing war between the rebels and empire. As time goes by, some planets change their government (rebel/empire) so be careful if you're considered hostile by some of them. The change affects prices of some illegal goods as well. 
+
+Planets with more than 80% of Rebel or Empire inclined citizens are considered planets of stable government. On them, the economy and science prospers and occasionally the tech. level increases. Planets where government is overturned sometimes have their tech. level reduced due to civil war. All these changes are recorded in the quest log too.
+
+While docked in the space station, this screen also features an option to save the game. In order to prevent save-and-retry tactics, each saving costs 1000 credits.
+
+4. Launch
+
+You exit the space station and enter the planet's outer orbit. From there you can fly around, shoot some aliens and return back to space station, or use the hyperspace jump to travel to another planet. If you wish to set or change the hyperspace jump target, just press ESC key, and go to galaxy map.
+
+While in outer orbit, you will encounter various enemies. Aliens shoot at you no matter what. The number of waves of aliens depends on alien activity in that area. Rebels and empire fleet shoot at you depending on your empiral/rebel status, which can be: clean, fugitive, terrorist. You are considered fugitive (criminal) when you're caught trading illegal goods. Later in the game you are allowed to make some choices, which will lead to you getting a terrorist status by one of the sides in conflict. For example, it may happen if you join the rebels in their attempt to destroy the Empire Armada.
+
+
+Outer space
+
+In the top left part of the screen you can see the score and number of kills you made. Number of kills determine your military reputation. Once you get high reputation, some interesting quests could be offered to you.
+
+Reputation	Kills
+--------------- -----
+Harmless	    0
+Poor		  500
+Average		 1000
+Competent	 2500
+Dangerous	 4500
+Deadly		 6500
+Elite		 9000
+---------------------
+
+
+The number of incoming waves of aliens, empire fleet and rebel ships is shown in the top left corner of the screen. Once all counters reach zero, you can dock to space station.
+
+Bottom left part of the screen shows levels of shield and energy your ship has. Energy is conserved while there is any shield left. When shield is lost, enemy bullets can penetrate your ship and destroy some of the ship upgrades you have bought.
+
+Bottom right corner shows weapon upgrades and number of Space Grenades and Stinger Rockets you have.
+
+While shooting at aliens, so may drop artifacts. When you collect them, another power-up shows up: either Energy or Shield, and you have to collect it. You can have maximum 100 shield or energy. When you buy Shield Upgrade, you can have up to 200 shield points.
+
+
+
+Tips and Tricks
+
+1. Trading
+2. Combat
+
+
+1. Trading
+
+If you wish to avoid fighting with a lot of Empire or Rebel ships, you should not trade with illegal goods. The exception is end of chapter two where Rebels agree to forgive all your previos record if you join them. There are three kinds of legal goods: food, electronics and jewelry. Food is cheap on planets with low technology level and expensive on high tech. ones. Electronics is other way around. So, make sure you travel among differing planets (ideally it would be TL9 -> TL1 -> TL9 -> TL1 ->... etc.). Jewelry has a random price in the range beween 200 and 600. If you see jewelry for less than 300 it is usually a very good bargain.
+
+Illegal goods make bigger profit, but are more risky as you need to fight more enemies to go through. Narcotics are cheap on low-tech planets and illegal everywhere. In Empire, the slavery is still legal. On Rebel planets, trading firearms is legal as they need it to support their struggle against heavy-armed Empire forces. Plan your route trough planets of different government if you wish to do the smuggling business.
+
+Once you decide the next target for your hyperspace jump, it is wise to sell all the extra fuel you don't need and invest it into some goods.
+
+
+2. Combat
+
+Each weapon has its use. Proton Enhancer is first choice to many. It makes your primary and secondary weapons (vertical and spread fire) two times stronger. Firing more powerful ammo requires more energy to the rate is a little bit slower. When you feel that firing-rate just does not clean enemies fast enought, add few stinger rockets.
+
+Stinger rockets come in sets of three. They go through all the enemies, so if they're lined up vertically, you can shoot multiple with a single shot. Stingers are especially usable against the famuos "endless loop" of red alien ships that sometimes shows up.
+
+Wave emitter is a powerful weapon that sends two horizontal plasma waves that clean your flanks of both enemies and their bullets. Brave pilots fly in the midst of alien swarm and fire a plasma wave to destroy most of them in a single blow. 
+
+Space grenade is an ultimate weapon. A single grenade can clean entire alien swarm and sometimes even more. It was invented by Rebels to fight Empire fleet, so it is specially tuned to flight formation that Empire sqadrons use. Just make sure you fire it as soon as they show up, and enjoy.
+
+
