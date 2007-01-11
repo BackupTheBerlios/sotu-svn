@@ -1,0 +1,26 @@
+Scum of the Universe
+
+User manual
+
+
+Scum of the Universe is a game that combines two genres: arcade and strategy. On the one side, it's a classic vertical-scrolling 3rd person shooter game. On the other side, it is an adventure and strategy. You should choose whether you'll be an independent space trader, firearms smuggler, fierce freedom-fighter or something in between. Following the main storyline, you go through the galaxy from one planet to another. Space travel requires fuel, so you need to keep earning money to buy it. You can also buy various upgrades from your spaceship and weapons that affect the arcade part of the game. The storyline itself is not linear. There are also some points where you'll need to make decisions that will determine your destiny.
+
+The Story
+
+For thousands of years, people of planet Xen have colonized the planets in their galaxy. As time went by, many colonies grew unhappy about their status, as everything was controlled by Xen. Some of them organized military units and declared independence. You can see the status of each planet by "Rebel Sentiment" indicator. Planets with RS higher than 50% are ruled by the Rebel government, and Rebel laws apply.
+
+Trading firearms is legal on planets ruled by Rebels, as they need as much firepower as they can get. On the other hand, Empire forbid all the trading with firearms and other ground weaponry as they wish to maintain their military advantage. One of the ways to make a lot of money is to buy cheap guns at Empire planets and sell them for a lot of money on Rebel planets where demand is extremely high. But be careful as you'll need to fight Empire fleet once they find out you're a smuggler.
+
+Beside the raging war between Xen Empire and the rebels there is increased activity of alien species, who destroy human ships. The stronger alien activity, the more waves of alien ships you'll need to defeat in each planet's outer orbit. Some of the aliens you destroy may drop artifacts (big blue ones) which you can sell at any space station for 20credits a piece.
+
+You
+
+One day, while wandering on abandoned planet you found a beautiful crystal. You took it hoping to sell it for a good price. On the way, you were attacked by two pirates who looted your ship and took the crystal. You bearly managed to stay alive.
+
+As the game starts, your escape pod reached a nearby planet. You learned that those pirates come from planet Torres and decided to go after them. You have 2000 credits on your bank account.
+
+It's time to begin your quest throught the galaxy. You start at planet Xen, and first mission is to reach planet Torres. Both planets are marked with pulsing white cross on the galaxy map. The small green circle in galaxy map represents the area you can reach with current amount of fuel. You can buy more fuel at "Trade&Cargo" screen. You ship's tank has capacity for 40 units of fuel, and that's the most you can travel withing a single "space jump".
+
+Each planet has a tech level (TL). That determines the prices of goods on it, and also the level of crime (pirates). Planets also have rebel sentiment (RS). Planets with more than 50% RS are Rebel planets, and with less than or equal to 50% are Empire planets. You move from planet to planet through hyperspace using the fuel. If you loose all fuel you're stuck on the planet until you earn enough money to buy fuel to leave it. You can fly in the orbit and kill some SOTU to earn money. After you leave hyperspace you show up somewhere in the planets orbit, and you have to get to the planet. On your way you may meet pirates and aliens, rebels and empire fleet ships. Pirates and aliens shoot at you no matter what. Rebels and empire fleet shoot at you depending on your empiral/rebel status, which can be: clean, criminal, terrorist. You are considered criminal if you're caught trading illegal goods. Chances of capture depend on RS and TL. Chance% = (TL * 5) + bonus of 30% if RS is lower than 20% or greater than 80% (planets like that are considered Planets of Stable Government). You are considered terrorist if you attack empirial/rebel ships.
+
+As time goes by, some planets change their RS so be careful. Also planets of Stable Government increase their TL, while planets where government is overturned have their TL reduced by 4 due to civil war.
