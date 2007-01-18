@@ -8,10 +8,22 @@ http://www.freeloader.com         <- done
 http://www.totallyfreegames.com   <- done
 http://www.softwarearchives.com   <- affiliate program
 http://www.heavygames.com         <- pending reg. info
-http://www.gamextazy.com/	  <- pending reg. info
+http://www.gamextazy.com/         <- pending reg. info
 
 Todo:
-www.softpedia.com
+http://www.softpedia.com
+http://www.spaceshooter.com/
+http://space-galaga.games-here.com/
+http://www.noodan.com/
+http://www.jarkey.net/            <- 2milion visits/month?
+http://www.gamesquared.com/
+http://www.arcadetown.com/        <- rade i prodaju (vidi chiken invaders 3)
+http://www.efreegame.com/
+http://www.share-games.com/
+
+Websites w/ directories/ads:
+http://www.top100gamesites.com/index.html
+http://www.gametop.com/
 
 
 Forums:
@@ -19,4 +31,7 @@ www.gamesforum.com                <- pending reg info
 forum.free-games.com.au           <- b(done)
 http://www.millionsofgames.com    <- needs windows soft
 
-
+Competition:
+http://www.jaggedbladesoft.com/     <- reviews of others and stuff
+http://www.smallrockets.com/
+http://www.kraisoft.com/arcade-games/atomaders/
