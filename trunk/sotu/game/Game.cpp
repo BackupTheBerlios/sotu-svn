@@ -1208,9 +1208,9 @@ Planet::BuyStatus Planet::canBuy(CargoItemInfo& item)
     int tlr = item._techLevelRequired;
     if (tlr == -1)
         return bsNA;
-    else if (tlr > _techLevel)
+    if (tlr > _techLevel)
         return bsNoTech;
-    else if (GameS::instance()->_money < getPrice(item._name))
+    if (GameS::instance()->_money < getPrice(item._name))
         return bsNoMoney;
     return bsOk;
 }
