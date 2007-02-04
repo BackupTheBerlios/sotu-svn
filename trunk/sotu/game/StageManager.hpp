@@ -33,6 +33,8 @@ private:
     int _rebelDone;
     int _empireDone;
 
+    unsigned int _enemy;
+
 public:
     EnemyWaves();
     void reset();

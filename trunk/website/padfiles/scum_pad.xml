@@ -1,4 +1,4 @@
-<?xml version="1.0" ?> 
+<?xml version="1.0" ?>
 <XML_DIZ_INFO>
 <MASTER_PAD_VERSION_INFO>
  <MASTER_PAD_VERSION>2.01</MASTER_PAD_VERSION>
@@ -61,8 +61,8 @@
   <Filename_Previous>scum-110.exe</Filename_Previous>
   <Filename_Generic>scum-1.exe</Filename_Generic>
   <Filename_Long>scum-1.0-setup.exe</Filename_Long>
-  <File_Size_Bytes>4760224</File_Size_Bytes>
-  <File_Size_K>4649</File_Size_K>
+  <File_Size_Bytes>4761606</File_Size_Bytes>
+  <File_Size_K>4650</File_Size_K>
   <File_Size_MB>4.54</File_Size_MB>
  </File_Info>
  <Expire_Info>
@@ -76,7 +76,7 @@
 <Program_Descriptions>
  <English>
   <Keywords>space shooter, galaga, space invaders, elite, 3D, trading, arcade, free, download, game, scum of the universe</Keywords>
-  <Char_Desc_45>Space shooter with strategy elements</Char_Desc_45>
+  <Char_Desc_45>Space trading game</Char_Desc_45>
   <Char_Desc_80>Space shooter like Galaga with trading system of Elite</Char_Desc_80>
   <Char_Desc_250>Space shooter like Galaga or Space Invaders combined with trading and adventure elements of Elite</Char_Desc_250>
   <Char_Desc_450>Scum of the Universe is a game that combines two genres: arcade and strategy. On one side, it's a classic vertical-scrolling 3rd person shooter game. On the other side, it is an adventure and strategy. You should choose whether you'll be an independent space trader, firearms smuggler, fierce freedom-fighter or something in between. Following the main storyline, you go through the galaxy from one planet to another.</Char_Desc_450>

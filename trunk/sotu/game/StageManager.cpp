@@ -33,6 +33,7 @@ EnemyWaves::EnemyWaves():
     _alienDone(0), _rebelDone(0), _empireDone(0)
 {
     _rebelsAreNext = _empireIsNext = false;
+    _enemy = 0;
 }
 //----------------------------------------------------------------------------
 void EnemyWaves::reset()
@@ -70,6 +71,18 @@ void EnemyWaves::reset()
         _rebelTotal = _empireTotal = 0;
         _alienTotal = 99;
     }
+
+    static int cnt1 = 0;
+    static int cnt2 = 0;
+    if (p->_name == "XEN")  // make sure we get the same at each run
+    {
+        cnt1 = 0;
+        cnt2 = 0;
+    }
+    cnt1++;
+    if (cnt1 % 4 == 0)
+        cnt2++;
+    _enemy = cnt2;
 }
 //----------------------------------------------------------------------------
 void EnemyWaves::getCounts(int &a, int& e, int& r)
@@ -129,9 +142,21 @@ int EnemyWaves::getNextWave(std::string& name)
     {
         _alienDone++;
         sprintf(buff, "Alien wave %d of %d", _alienDone, _alienTotal);
-        index = 1;
-        while (index == 1 || index == 10)
-            index = Random::integer(18);
+        if (_alienTotal > 12)
+        {
+            index = 1;
+            while (index == 1 || index == 10)
+                index = Random::integer(18);
+        }
+        else
+        {
+            const unsigned int redosled[] = { 2, 7, 11, 6, 9, 13, 0, 16, 5,
+                4, 15, 12, 3, 8, 14, 17 };
+            if (_enemy >= sizeof(redosled)/sizeof(unsigned int))
+                _enemy = 0;
+            index = redosled[_enemy];
+            _enemy++; // next wave
+        }
         if (_alienDone == 99)
             index = 19;         // big boss
     }
@@ -215,7 +240,7 @@ void StageManager::update( void)
                         // don't allow to go back
                         GameS::instance()->setPreviousContext(ePlanetMenu);
                         static int counter = 0;
-                        if (counter++ > 10)
+                        if (counter++ > 6)
                         {
                             counter = 0;
                             SkillS::instance()->incrementSkill();
