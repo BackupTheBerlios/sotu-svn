@@ -6,16 +6,17 @@ Keywords: space shooter, galaga, space invaders, elite, 3D, trading, arcade, fre
 Sites:
 http://www.freeloader.com         <- done
 http://www.totallyfreegames.com   <- done
-*http://www.noodan.com/            <- done, +ima gomila linkova za slicne sajtove
+*http://www.noodan.com/           <- done, +ima gomila linkova za slicne sajtove
 http://www.softwarearchives.com   <- affiliate program
-http://www.heavygames.com         <- pending reg. info
-http://www.gamextazy.com/         <- pending reg. info
+http://www.heavygames.com         <- pending reg. info 2x  guacosoft:123456
+http://www.gamextazy.com/         <- pending reg. info 2x  guacosoft:123456
 http://www.reallyfirst.com        <- banner (done)
-http://www.gamelinks.com          <- pending
-*http://www.softpedia.com
+http://www.gamelinks.com          <- done  guacosoft:123456 - online games only
+*http://www.softpedia.com         <- done
+*http://www.qarchive.org          <- done (milan.babuskov@gmail.com enenen) PAD file
+http://www.jarkey.net/            <- sent-email. 2milion visits/month?
 
 Todo:
-http://www.jarkey.net/            <- 2milion visits/month?
 http://www.gamesquared.com/
 http://www.arcadetown.com/        <- rade i prodaju (vidi chiken invaders 3)
 http://www.efreegame.com/
