@@ -11,7 +11,7 @@ http://www.softwarearchives.com   <- affiliate program
 http://www.heavygames.com         <- pending reg. info 2x  guacosoft:123456
 http://www.gamextazy.com/         <- pending reg. info 2x  guacosoft:123456
 http://www.reallyfirst.com        <- banner (done)
-http://www.gamelinks.com          <- done  guacosoft:123456 - online games only
+http://www.gamelinks.com          <- done  guacosoft:123456 - online games only, prijavio javagames
 *http://www.softpedia.com         <- done
 *http://www.qarchive.org          <- done (milan.babuskov@gmail.com enenen) PAD file
 http://www.jarkey.net/            <- sent-email. 2milion visits/month?
@@ -34,6 +34,7 @@ forum.free-games.com.au           <- b(done)
 http://www.millionsofgames.com    <- needs windows soft
 
 Competition:
+http://www.warblade.as/             <- ima gomila linkova za prijavljivanje (gde su se oni prijavili)
 http://space-galaga.games-here.com/ <- kao free game directory, a ustvari nije
 http://www.jaggedbladesoft.com/     <- reviews of others and stuff
 http://www.smallrockets.com/
