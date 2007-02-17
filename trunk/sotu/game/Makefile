@@ -25,7 +25,7 @@ pkglibdir = $(libdir)/SOTU
 pkgincludedir = $(includedir)/SOTU
 top_builddir = ..
 am__cd = CDPATH="$${ZSH_VERSION+.}$(PATH_SEPARATOR)" && cd
-INSTALL = /bin/install -c
+INSTALL = /usr/bin/ginstall -c
 install_sh_DATA = $(install_sh) -c -m 644
 install_sh_PROGRAM = $(install_sh) -c
 install_sh_SCRIPT = $(install_sh) -c
@@ -37,11 +37,11 @@ POST_INSTALL = :
 NORMAL_UNINSTALL = :
 PRE_UNINSTALL = :
 POST_UNINSTALL = :
-build_triplet = i686-pc-mingw32
-host_triplet = i686-pc-mingw32
-target_triplet = i686-pc-mingw32
+build_triplet = i686-pc-linux-gnu
+host_triplet = i686-pc-linux-gnu
+target_triplet = i686-pc-linux-gnu
 bin_PROGRAMS = sotu$(EXEEXT)
-am__append_1 = sotu.res
+#am__append_1 = sotu.res
 subdir = game
 DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
@@ -72,7 +72,7 @@ am_sotu_OBJECTS = ActionCallbacks.$(OBJEXT) Audio.$(OBJEXT) \
 	XMLHelper.$(OBJEXT) main.$(OBJEXT)
 sotu_OBJECTS = $(am_sotu_OBJECTS)
 sotu_LDADD = $(LDADD)
-am__DEPENDENCIES_1 = sotu.res
+#am__DEPENDENCIES_1 = sotu.res
 sotu_DEPENDENCIES = ../curl/lib/libcurl.a ../utils/libutils.a \
 	../utilssdl/libutilssdl.a ../utilsgl/libutilsgl.a \
 	../tinyxml/libtinyxml.a $(am__DEPENDENCIES_1)
@@ -97,39 +97,39 @@ DATA = $(pkgdata_DATA)
 ETAGS = etags
 CTAGS = ctags
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
-ACLOCAL = ${SHELL} /c/cygwin/home/home/sdl/sotu/svn/sotu/missing --run aclocal-1.9
+ACLOCAL = ${SHELL} /home/milanb/devel/svn/sotu/trunk/sotu/missing --run aclocal-1.9
 AMDEP_FALSE = #
 AMDEP_TRUE =
-AMTAR = ${SHELL} /c/cygwin/home/home/sdl/sotu/svn/sotu/missing --run tar
+AMTAR = ${SHELL} /home/milanb/devel/svn/sotu/trunk/sotu/missing --run tar
 APPLE_FALSE =
 APPLE_TRUE = #
-AUTOCONF = ${SHELL} /c/cygwin/home/home/sdl/sotu/svn/sotu/missing --run autoconf
-AUTOHEADER = ${SHELL} /c/cygwin/home/home/sdl/sotu/svn/sotu/missing --run autoheader
-AUTOMAKE = ${SHELL} /c/cygwin/home/home/sdl/sotu/svn/sotu/missing --run automake-1.9
+AUTOCONF = ${SHELL} /home/milanb/devel/svn/sotu/trunk/sotu/missing --run autoconf
+AUTOHEADER = ${SHELL} /home/milanb/devel/svn/sotu/trunk/sotu/missing --run autoheader
+AUTOMAKE = ${SHELL} /home/milanb/devel/svn/sotu/trunk/sotu/missing --run automake-1.9
 AWK = gawk
 CC = gcc
 CCDEPMODE = depmode=none
-CFLAGS =  -W -Wall -O2 -I/usr/local/include/SDL -Dmain=SDL_main
-CPPFLAGS = -I/usr/local/include
+CFLAGS =  -W -Wall -O2 -I/usr/include/SDL -D_REENTRANT
+CPPFLAGS =
 CXX = g++
 CXXDEPMODE = depmode=none
-CXXFLAGS =  -W -Wall -fno-exceptions -O2 -I/usr/local/include/SDL -Dmain=SDL_main -DCURL_STATICLIB
+CXXFLAGS =  -W -Wall -fno-exceptions -O2 -I/usr/include/SDL -D_REENTRANT -I/usr/X11R6/include
 CYGPATH_W = echo
 DEFS = -DHAVE_CONFIG_H
 DEPDIR = .deps
 ECHO_C =
 ECHO_N = -n
 ECHO_T =
-EXEEXT = .exe
+EXEEXT =
 INSTALL_DATA = ${INSTALL} -m 644
 INSTALL_PROGRAM = ${INSTALL}
 INSTALL_SCRIPT = ${INSTALL}
 INSTALL_STRIP_PROGRAM = ${SHELL} $(install_sh) -c -s
 LDFLAGS =
 LIBOBJS =
-LIBS = -lm  -L/usr/local/lib -lmingw32 -lSDLmain -lSDL -mwindows -lSDL_image -lSDL_mixer -lopengl32 -lglu32 -lpng -lz -ljpeg -lstdc++ -lws2_32 -lwinmm
+LIBS = -lm -lGL -lz -lpng12 -L/usr/local/lib -L/usr/X11R6/lib  -L/usr/lib -Wl,-rpath,/usr/lib -lSDL -lpthread -lSDL_image -lSDL_mixer -lGLU
 LTLIBOBJS =
-MAKEINFO = ${SHELL} /c/cygwin/home/home/sdl/sotu/svn/sotu/missing --run makeinfo
+MAKEINFO = ${SHELL} /home/milanb/devel/svn/sotu/trunk/sotu/missing --run makeinfo
 OBJEXT = o
 PACKAGE = SOTU
 PACKAGE_BUGREPORT =
@@ -145,8 +145,8 @@ STRIP =
 USE_LZMA_FALSE =
 USE_LZMA_TRUE = #
 VERSION = 1.0.0
-WIN32_FALSE = #
-WIN32_TRUE =
+WIN32_FALSE =
+WIN32_TRUE = #
 ac_ct_CC = gcc
 ac_ct_CXX = g++
 ac_ct_RANLIB = ranlib
@@ -161,21 +161,21 @@ am__quote =
 am__tar = ${AMTAR} chof - "$$tardir"
 am__untar = ${AMTAR} xf -
 bindir = ${exec_prefix}/bin
-build = i686-pc-mingw32
+build = i686-pc-linux-gnu
 build_alias =
 build_cpu = i686
-build_os = mingw32
+build_os = linux-gnu
 build_vendor = pc
 datadir = ${prefix}/share
 exec_prefix = ${prefix}
-host = i686-pc-mingw32
+host = i686-pc-linux-gnu
 host_alias =
 host_cpu = i686
-host_os = mingw32
+host_os = linux-gnu
 host_vendor = pc
 includedir = ${prefix}/include
 infodir = ${prefix}/info
-install_sh = /c/cygwin/home/home/sdl/sotu/svn/sotu/install-sh
+install_sh = /home/milanb/devel/svn/sotu/trunk/sotu/install-sh
 libdir = ${exec_prefix}/lib
 libexecdir = ${exec_prefix}/libexec
 localstatedir = ${prefix}/var
@@ -188,10 +188,10 @@ sbindir = ${exec_prefix}/sbin
 sharedstatedir = ${prefix}/com
 subdirs =  curl
 sysconfdir = ${prefix}/etc
-target = i686-pc-mingw32
+target = i686-pc-linux-gnu
 target_alias =
 target_cpu = i686
-target_os = mingw32
+target_os = linux-gnu
 target_vendor = pc
 sotu_SOURCES = \
         ActionCallbacks.cpp \
@@ -236,11 +236,11 @@ sotu_SOURCES = \
 LDADD = ../curl/lib/libcurl.a ../utils/libutils.a \
 	../utilssdl/libutilssdl.a ../utilsgl/libutilsgl.a \
 	../tinyxml/libtinyxml.a $(am__append_1)
-#INCLUDES = -I../curl/include -I../tinyxml -I../utils -I../utilssdl -I../utilsgl -DDATA_DIR=\"$(pkgdatadir)/\"
-##INCLUDES = -I../curl/include -I../tinyxml -I../utils -I../utilssdl -I../utilsgl -DDATA_DIR=\"/Contents/Resources/\"
-INCLUDES = -I../curl/include -I../tinyxml -I../utils -I../utilssdl -I../utilsgl -DDATA_DIR=\"./\"
-#pkgdata_DATA = resource.dat
-#DISTCLEANFILES = resource.dat sotu-static
+INCLUDES = -I../curl/include -I../tinyxml -I../utils -I../utilssdl -I../utilsgl -DDATA_DIR=\"$(pkgdatadir)/\"
+#INCLUDES = -I../curl/include -I../tinyxml -I../utils -I../utilssdl -I../utilsgl -DDATA_DIR=\"/Contents/Resources/\"
+#INCLUDES = -I../curl/include -I../tinyxml -I../utils -I../utilssdl -I../utilsgl -DDATA_DIR=\"./\"
+pkgdata_DATA = resource.dat
+DISTCLEANFILES = resource.dat sotu-static
 MAINTAINERCLEANFILES = Makefile.bak Makefile.in
 all: all-am
 
@@ -504,8 +504,8 @@ uninstall-am: uninstall-binPROGRAMS uninstall-info-am \
 depend:
 	makedepend -I. -I/usr/include/g++-3 $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(AM_CXXFLAGS) $(sotu_SOURCES)
 
-#resource.dat:
-#	../tools/Packer ../data/description_file resource.dat
+resource.dat:
+	../tools/Packer ../data/description_file resource.dat
 
 small:
 	strip $(bin_PROGRAMS)

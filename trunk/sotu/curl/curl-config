@@ -138,7 +138,7 @@ while test $# -gt 0; do
        	;;
 
     --libs)
-       	echo -L${exec_prefix}/lib -lcurl  -lwinmm -lws2_32  -lz -lws2_32
+       	echo -L${exec_prefix}/lib -lcurl  -ldl  -lz
        	;;
 
     *)
