@@ -1,0 +1,17 @@
+Sites:
+http://www.soft45.com
+http://www.softwarearchives.com   <- affiliate program
+http://www.softpedia.com         <- done
+http://www.qarchive.org          <- done (milan.babuskov@gmail.com enenen) PAD file
+http://www.filedudes.com              <- done (padfile)
+http://www.programurl.com
+http://www.sharewareriver.com	<- office@guacosoft.com, enenen
+http://www.5cup.com
+http://5star-shareware.com
+http://www.acidfiles.com
+http://5starshare.com
+
+TODO:
+http://www.directlogic.com/awards.htm <- vidi sajtove
+
+
