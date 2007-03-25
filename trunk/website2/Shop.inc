@@ -1,4 +1,3 @@
-<center>
 <table border="0" cellspacing="0" cellpadding="0" width="600">
     <TR>
         <TD valign="top">
@@ -18,4 +17,3 @@
         </TD>
     </TR>
 </table>
-</center>

@@ -98,7 +98,7 @@ div.desni {
 </head>
 
 <body>
-
+<center>
 <div class="container">
     <div id="header">
         <p class="links"><a href="index.php">Home</a> | <a
@@ -129,8 +129,7 @@ div.desni {
     if (!$found)
         require('Home.inc');
 ?>
-
-
+</center>
 <br>
 
 <div class="footer">
