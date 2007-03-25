@@ -6,9 +6,8 @@
   <meta name="GENERATOR" content="Quanta Plus">
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
   <meta name="KEYWORDS" content="home inventory, space, trading, shooter, assets, borrow, loan, free, download, linux, windows">
-</head>
 
-<style>
+<style type="text/css">
 td { font-family: Sans-serif; font-size: 11px;}
 body {  background: #fff url(gradient.jpg) repeat-x;
     margin: 0; padding: 0; }
@@ -37,6 +36,7 @@ div.footer {
     line-height: 1.4em;
     margin-top: 25px;
     border-top: 1px solid #6666AA;
+    border-bottom: 1px solid #6666AA;
 }
 
 div.container {
@@ -95,6 +95,7 @@ div.desni {
 /* End hide from IE-mac */
 
 </style>
+</head>
 
 <body>
 

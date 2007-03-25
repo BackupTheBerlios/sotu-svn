@@ -29,7 +29,6 @@
                 <LI>Track multiple locations of <strong>your business</strong></LI>
                 <LI>UTF8 enabled - enter data in any language you use</LI>
                 <LI>Modern, easy to use interface</LI>
-                <LI><a href="attic/index.php">Learn more...</a></LI>
             </UL>
             <br />
     </div>
@@ -41,11 +40,13 @@
         <a href="scum/"><img src="scum350.jpg" alt="Screenshot" border="0"></a>
         <br />
         <a href="scum/">More...</a>
+        </center>
     </div>
     <div class="desni">
         <center>
         <a href="attic/"><img src="attic350.jpg" alt="Screenshot" border="0"></a>
         <br />
         <a href="attic/">More...</a>
+        </center>
     </div>
 </div>
