@@ -10,82 +10,106 @@
 
 <style>
 td { font-family: Sans-serif; font-size: 11px;}
-body { 	background: #fff url(gradient.jpg) repeat-x;
-	margin: 0; padding: 0; }
+body {  background: #fff url(gradient.jpg) repeat-x;
+    margin: 0; padding: 0; }
 
 
 h1 {
-	font-size: 16px;
-	margin: 0 0 4px 0;
-	font-family: verdana;
+    font-size: 16px;
+    margin: 0 0 4px 0;
+    font-family: verdana;
 }
 
 h2 {
-	font-family: verdana;
-	line-height: 1.2em;
-	font-size: 14px;
-	margin: 0 0 3px 0;
+    font-family: verdana;
+    line-height: 1.2em;
+    font-size: 14px;
+    margin: 0 0 3px 0;
 }
 
 div.footer {
-	text-align: center;
-	background-color: #b4d8ec;
-	font-family: verdana;
-	color: #000;
-	padding: 15px 0;
-	font-size: 10px;
-	line-height: 1.4em;
-	margin-top: 25px;
-}
-
-div.footer a {
-	color: #000;
+    text-align: center;
+    background-color: #b4d8ec;
+    font-family: verdana;
+    color: #000;
+    padding: 15px 0;
+    font-size: 10px;
+    line-height: 1.4em;
+    margin-top: 25px;
+    border-top: 1px solid #6666AA;
 }
 
 div.container {
-	width: 765px;
-	margin: 0 auto;
+    width: 765px;
+    margin: 0 auto;
 }
 
 div#header {
-	height: 20px;
-	margin: 15px auto;
-	width: 750px;
-	text-align: left;
+    height: 20px;
+    margin: 15px auto;
+    width: 750px;
+    text-align: left;
 }
 
 div#header p {
-	padding-top: 2px;
-	font-size: 11px;
-	font-family: verdana;
+    padding-top: 2px;
+    font-size: 11px;
+    font-family: verdana;
 }
 
-div#header p.logo {
-	float: right;
+div#header p.links {
+    float: right;
 }
 
 div#header a img {
-	border: 0;
+    border: 0;
 }
+
+div.levi {
+    float: left;
+    width: 370px;
+    text-align: left;
+    font-family: Sans-serif; font-size: 11px;
+}
+
+div.desni {
+    float: right;
+    width: 370px;
+    text-align: left;
+    font-family: Sans-serif; font-size: 11px;
+}
+
+.spacer:after {
+    content: ".";
+    display: block;
+    height: 0;
+    clear: both;
+    visibility: hidden;
+}
+
+.spacer {display: inline-block;}
+
+/* Hides from IE-mac \*/
+* html .spacer {height: 1%;}
+.spacer {display: block;}
+/* End hide from IE-mac */
 
 </style>
 
 <body>
 
 <div class="container">
-	<div id="header">
-		<p class="logo"><a href="index.php">Home</a> | <a
-			href="index.php?page=Home">Products</a> | <a
-			href="index.php?page=Shop">Shop</a> | <a
-			href="index.php?page=About">About us</a>
-		</p>
-		<p><img src="guacosoft.gif" alt="Guacosoft logo"><br />SOFTWARE FOR EVERYONE</p>
-	</div>
+    <div id="header">
+        <p class="links"><a href="index.php">Home</a> | <a
+            href="index.php?page=Home">Products</a> | <a
+            href="index.php?page=Shop">Shop</a> | <a
+            href="index.php?page=About">About us</a>
+        </p>
+        <p><img src="guacosoft.gif" alt="Guacosoft logo"><br />SOFTWARE FOR EVERYONE</p>
+    </div>
 </div>
 
 <br><br>
-<center>
-
 <?
     $pages = array('Home', 'Products', 'Shop', 'About');
     if (empty($page) && isset($_GET['page']))
@@ -108,7 +132,6 @@ div#header a img {
 
 <br>
 
-</center>
 <div class="footer">
 Copyright &copy; 2006, 2007 GuacoSoft.com
 </div>
