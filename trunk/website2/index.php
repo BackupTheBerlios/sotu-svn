@@ -7,11 +7,12 @@
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
   <meta name="KEYWORDS" content="home inventory, space, trading, shooter, assets, borrow, loan, free, download, linux, windows">
 
+<!-- nemoj brisati TD, ima na About i Shop stranama table -->
 <style type="text/css">
-td { font-family: Sans-serif; font-size: 11px;}
-body {  background: #fff url(gradient.jpg) repeat-x;
+td { font-family: Sans-serif; font-size: 12px;}
+body {
+    background: #fff url(gradient.jpg) repeat-x;
     margin: 0; padding: 0; }
-
 
 h1 {
     font-size: 16px;
@@ -20,10 +21,10 @@ h1 {
 }
 
 h2 {
-    font-family: verdana;
-    line-height: 1.2em;
     font-size: 14px;
     margin: 0 0 3px 0;
+    font-family: verdana;
+    line-height: 1.2em;
 }
 
 div.footer {
@@ -32,7 +33,7 @@ div.footer {
     font-family: verdana;
     color: #000;
     padding: 15px 0;
-    font-size: 10px;
+    font-size: 11px;
     line-height: 1.4em;
     margin-top: 25px;
     border-top: 1px solid #6666AA;
@@ -53,7 +54,7 @@ div#header {
 
 div#header p {
     padding-top: 2px;
-    font-size: 11px;
+    font-size: 12px;
     font-family: verdana;
 }
 

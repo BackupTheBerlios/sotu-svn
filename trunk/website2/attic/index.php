@@ -1,65 +1,141 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
+
 <head>
-  <meta content="text/html; charset=ISO-8859-1" http-equiv="content-type">
-  <title>Home Inventory Software</title>
-    <meta name="description" content="Attic Manager is home inventory software used to build and maintain a database of your assets. You can keep track of all the stuff you have, what you have loaned to others, and all the maintenance costs.">
+    <title>Home Inventory Software</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+    <meta name="description" content="Home inventory software used to build and maintain a database of your assets. You can keep track of all the stuff you have, what you have loaned to others, and all the maintenance costs.">
     <meta name="keywords" content="free, download, attic, manager, home, inventory, software, assets, business, small, medium, database, stuff, things, own, load, borrow, costs, planning, insurance">
-<style>
-td { font-family: Sans-serif; }
 
-div.menu   { width: 190px; margin-top: 0px; }
-div.menu a { text-decoration: none; }
+<style type="text/css">
+td { font-family: Sans-serif; font-size: 14px; }
+body {
+    background: #fff url(../gradient.jpg) repeat-x;
+    margin: 0; padding: 0; }
 
-a       { text-decoration: none; }
-a:hover { text-decoration: underline; }
-
-a.menuitem:hover    { color: black; background-color: #AACCFF; }
-a.menuitem          {
-    font-size: 18px;         font-family: Sans-Serif;
-    text-align: center;          border-color: black;
-        border-style: solid;         border-width: thin;
-        background-color: #336699;   background-repeat: repeat-y;
-        color: white;                padding: 5px 0px 5px 0px;
-        display: block;              margin: 0px 20px 10px 0px;
+h1 {
+    font-size: 16px;
+    margin: 0 0 4px 0;
+    font-family: verdana;
 }
 
-div.glavni { border-style: solid; border-width: thin; border-color: black; }
+h2 {
+    font-size: 14px;
+    margin: 0 0 3px 0;
+    font-family: verdana;
+    line-height: 1.2em;
+}
+
+div.footer {
+    text-align: center;
+    background-color: #b4d8ec;
+    font-family: verdana;
+    color: #000;
+    padding: 15px 0;
+    font-size: 11px;
+    line-height: 1.4em;
+    margin-top: 25px;
+    border-top: 1px solid #6666AA;
+    border-bottom: 1px solid #6666AA;
+}
+
+div.container {
+    width: 765px;
+    margin: 0 auto;
+}
+
+div#header {
+    height: 20px;
+    margin: 15px auto;
+    width: 750px;
+    text-align: left;
+}
+
+div#header p {
+    padding-top: 2px;
+    font-size: 12px;
+    font-family: verdana;
+}
+
+div#header p.links {
+    float: right;
+}
+
+.spacer:after {
+    content: ".";
+    display: block;
+    height: 0;
+    clear: both;
+    visibility: hidden;
+}
+
+.spacer {display: inline-block;}
+
+/* Hides from IE-mac \*/
+* html .spacer {height: 1%;}
+.spacer {display: block;}
+/* End hide from IE-mac */
+
+a       { text-decoration: none; }
+a:link  { text-decoration: none; }
+a:hover { text-decoration: underline; }
+a img, a:link img {
+    border: 0px;
+}
+
+
+a.menuitem          {
+    font-size: 12px;                 font-family: Sans-serif;
+    text-align: center;
+    border-width: 0;
+    background-color: #FFFFFF;       color: black;
+    padding: 2px 15px 2px 15px;      text-decoration: none;
+    display: block;                  margin: 0px 5px 0px 5px;
+}
+a.menuitem:hover    {
+    color: black;
+    background-color: #AACCFF;
+    text-decoration: none;
+}
 
 </style>
 </head>
 
-<body bgcolor="#F0F0FF">
-<table border="0" cellpadding="10" cellspacing="0" width="100%">
-    <tr>
-      <td valign="top"><img alt="Logo" src="logo.gif" align=left>
-    <FONT face="Helvetica, Arial, sans-serif" size="+3"><B>Attic Manager&#8482;</B></font><br>
-    <font face="Helvetica, Arial, sans-serif">HOME INVENTORY SOFTWARE</font>
-      </td>
-      <TD><font color="#F0F0FF"><H1>Home Inventory Software</H1></font></td>
-    </tr>
-</table>
-<br>
-
-<table border="0" cellpadding="0" cellspacing="0">
-  <tr>
-    <td valign="top">
-    <div class="menu">
-<?
-    $pages = array('Home', 'Features', 'Download', 'Manual', 'Shop', 'Support', 'Links');
-    foreach ($pages as $p)
-    {?>
-        <div><a class="menuitem" href="index.php?page=<? echo $p; ?>"><? echo $p; ?></a></div><?
-    }?>
+<body>
+<center>
+<div class="container">
+    <div id="header">
+        <p class="links"><a href="../index.php">Home</a> | <a
+            href="../index.php?page=Home">Products</a> | <a
+            href="../index.php?page=Shop">Shop</a> | <a
+            href="../index.php?page=About">About us</a>
+        </p>
+        <p><img src="attic.gif" alt="Guacosoft logo"><br />HOME INVENTORY SOFTWARE</p>
     </div>
+</div>
 
-    </td>
-    <td valign="top">
-
+<br><br>
+<table cellspacing="0" cellpadding="0">
+    <tr>
 <?
     if (empty($page) && isset($_GET['page']))
         $page = $_GET['page'];
     if (empty($page))
-        $page = 'Home';
+        $page = 'About';
+
+    $pages = array('About', 'Features', 'Download', 'Manual', 'Shop', 'Support');
+    foreach ($pages as $p)
+    {?>
+        <td><a class="menuitem" href="index.php?page=<? echo $p; ?>"><?
+        if ($p == $page)
+            echo "<B>";
+        echo $p;
+        if ($p == $page)
+            echo "</B>";
+        ?></a></td><?
+    }
+    echo "</tr></table>";
+
     $found = false;
     foreach ($pages as $p)
     {
@@ -70,17 +146,14 @@ div.glavni { border-style: solid; border-width: thin; border-color: black; }
         }
     }
     if (!$found)
-        require('Home.inc');
+        require('About.inc');
 ?>
+</center>
 
-        <br>
-        <center>Copyright &copy; 2007 GuacoSoft.com</center>
 
-    </td>
-  </tr>
-  <tr>
-  </tr>
-</table>
-<br>
+<div class="footer">
+Copyright &copy; 2006, 2007 GuacoSoft.com
+</div>
+
 </body>
 </html>

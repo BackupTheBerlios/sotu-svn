@@ -1,14 +1,14 @@
-<table cellspacing="1" cellpadding="20" border="0" bgcolor="black">
+<table cellspacing="0" cellpadding="20" border="0" width="600">
 <TR bgcolor="white"><TD>
 
 <B>Price list</B>
 
-<P>Buying the full version entitles you to free support by e-mail and 
-free upgrades to any future version of Attic Manager. The Attic Manager Full 
+<P>Buying the full version entitles you to free support by e-mail and
+free upgrades to any future version of Attic Manager. The Attic Manager Full
 Version costs 29.99 USD or equivallent amount in other currency.</P>
 
 <UL>
-	<LI>Full version for regular users - $29.99</LI>
+    <LI>Full version for regular users - $29.99</LI>
 </UL>
 
 <br>
@@ -25,8 +25,8 @@ Version costs 29.99 USD or equivallent amount in other currency.</P>
 <P>The online <a href="http://www.shareit.com/ccc/index.html?publisherid=200049645&languageid=1">customer care center</a> of our partner Share-it! answers many questions about the order process. If you cannot find the answer to your question regarding the purchase process in the customer care center, please send an email to <a href="mailto:support@shareit.com">support@shareit.com</a> or call</P>
 
 <UL>
-	<LI><font color="#006600">+1 800 903 4152</font> or <font color="#006600">+1 724 850 8186</font> in the US (languages: English)</LI>
-	<LI><font color="#006600">+49 221 31088 20</font> in Europe (languages: German, English, French, Italian, Spanish, Portuguese)</LI>
+    <LI><font color="#006600">+1 800 903 4152</font> or <font color="#006600">+1 724 850 8186</font> in the US (languages: English)</LI>
+    <LI><font color="#006600">+49 221 31088 20</font> in Europe (languages: German, English, French, Italian, Spanish, Portuguese)</LI>
 </UL>
 
 <P>Feel free to contact us should you have any questions.</P>

@@ -1,4 +1,4 @@
-<table cellspacing="1" cellpadding="20" border="0" bgcolor="black">
+<table cellspacing="0" cellpadding="20" border="0">
 <TR bgcolor="white"><TD width="550">
 
 <h2>User manual</h2>
@@ -22,7 +22,7 @@ Contents:
 <li>Add items</li>
 </ul>
 
-<p>It is very useful to prepare photos of items. Easiest way is 
+<p>It is very useful to prepare photos of items. Easiest way is
 to take a digital camera with you and take shots (or use scanner
 to scan regular photos). To work faster through it,
 you can have multiple items in a single photo - the
@@ -31,9 +31,9 @@ software has the option to cut out a piece you need using the <em>Crop</em> opti
 <center>
 <a href="shotcropbig.png"><IMG src="shotcrop.jpg" alt="Screenshot - cropping the image" border="0"></a>
 </center>
-
+<br>
 <p>If you have boxes in attic or basement, or you're
-moving, it's a good idea to label the boxes (ex. box1, box2, 
+moving, it's a good idea to label the boxes (ex. box1, box2,
 box3...) and keep track which item is in
 which box. Later when you need something, you can
 easily locate in which box
@@ -63,8 +63,8 @@ the item:
 <br><br>
 <h3>Searching</h3>
 
-<p>Looking for something in particular? Search is very powerful and searches for 
-entered text in all items' properties. Most 
+<p>Looking for something in particular? Search is very powerful and searches for
+entered text in all items' properties. Most
 of the things are easier to recognize visually, so
 it's a good idea to switch to thumbnail view when searching:</p>
 <br>
@@ -78,7 +78,7 @@ it's a good idea to switch to thumbnail view when searching:</p>
 
 <p>You can export all item data in CSV format. If you want to load data in Excel or OpenOffice make sure
 you select CSV format. Program exports all data that is shown in the list. If you wish to export everything
-select <em>My Locations</em> and turn off any search you have started, so that list contains all the items. The 
+select <em>My Locations</em> and turn off any search you have started, so that list contains all the items. The
 same applies to printing: program
 will only print items in the list, so make sure whatever you want to print or export is shown there.</p>
 

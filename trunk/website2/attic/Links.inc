@@ -1,3 +1,5 @@
+<div style="width:550px;">
+<br>
     <a target="_BLANK" href="http://www.firebirdsql.orgm/">FirebirdSQL.org</a> Open source database engine
 <br>
 <br>
@@ -10,3 +12,4 @@
 <br><br>
 <HR>
 <br>
+</div>
