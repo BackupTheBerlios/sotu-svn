@@ -6,89 +6,10 @@
     <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
     <meta name="description" content="Home inventory software used to build and maintain a database of your assets. You can keep track of all the stuff you have, what you have loaned to others, and all the maintenance costs.">
     <meta name="keywords" content="free, download, attic, manager, home, inventory, software, assets, business, small, medium, database, stuff, things, own, load, borrow, costs, planning, insurance">
-
-<style type="text/css">
-td { font-family: Sans-serif; font-size: 14px; }
-body {
-    background: #fff url(../gradient.jpg) repeat-x;
-    margin: 0; padding: 0; }
-
-h1 {
-    font-size: 16px;
-    margin: 0 0 4px 0;
-    font-family: verdana,sans-serif;
-}
-
-h2 {
-    font-size: 14px;
-    margin: 0 0 3px 0;
-    font-family: verdana,sans-serif;
-    line-height: 1.2em;
-}
-
-div.footer {
-    text-align: center;
-    background-color: #b4d8ec;
-    font-family: verdana,sans-serif;
-    color: #000;
-    padding: 15px 0;
-    font-size: 11px;
-    line-height: 1.4em;
-    margin-top: 25px;
-    border-top: 1px solid #6666AA;
-    border-bottom: 1px solid #6666AA;
-}
-
-div.container {
-    width: 765px;
-    margin: 0 auto;
-}
-
-div#header {
-    height: 20px;
-    margin: 15px auto;
-    width: 750px;
-    text-align: left;
-}
-
-div#header p {
-    padding-top: 2px;
-    font-size: 12px;
-    font-family: verdana,sans-serif;
-}
-
-div#header p.links {
-    float: right;
-}
-
-.spacer:after {
-    content: ".";
-    display: block;
-    height: 0;
-    clear: both;
-    visibility: hidden;
-}
-
-.spacer {display: inline-block;}
-
-/* Hides from IE-mac \*/
-* html .spacer {height: 1%;}
-.spacer {display: block;}
-/* End hide from IE-mac */
-
-a:hover {
-    text-decoration: none;
-}
-
-a img, a:link img {
-    border: 0px;
-}
-
-
-</style>
+    <link rel="stylesheet" href="../common.css" type="text/css">
 </head>
 
-<body>
+<body style="background: #fff url(../gradient.jpg) repeat-x; margin: 0; padding: 0;">
 <center>
 <div class="container">
     <div id="header">
@@ -102,10 +23,7 @@ a img, a:link img {
 </div>
 
 <br><br>
-<div style="width: 750px;
-    aborder-top: 1px solid #ddbbbb;
-    border: 1px solid #ddbbbb;
-    background-color: #ffd8d8; padding: 3px 0px 3px 0px; font-size: 12px; font-family: verdana,sans-serif;">
+<div class="atticmenu">
 <?
     if (empty($page) && isset($_GET['page']))
         $page = $_GET['page'];

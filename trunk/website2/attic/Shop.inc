@@ -15,7 +15,7 @@ Version costs 29.99 USD or equivallent amount in other currency.</P>
 <br>
 <B>How To Order</B>
 
-<P>The payment is handled by <a href="http://www.shareit.com/">Share-it!</a>, one of the world's leading sellers for shareware software. You can buy full version of Attic Manager using a credit card (all major credit cards accepted), by sending a check, bank draft, cash or through a bank/wire transfer. You can also send your details by fax or phone instead of using the online services. US dollars, Euros and many other currencies are accepted. You can place your order in English, Spanish, Italian, French, German and other languages.</P>
+<P>The payment is handled by <a href="http://www.shareit.com/">Share-it!</a>, one of the world's leading sellers for shareware software. You can buy full version of Attic Manager using a credit card (all major credit cards accepted), by sending a check, bank draft, cash, through a bank/wire transfer or via PayPal. You can also send your details by fax or phone instead of using the online services. US dollars, Euros and many other currencies are accepted. You can place your order in English, Spanish, Italian, French, German and other languages.</P>
 
 <P>To order Attic Manager full version <a href="https://secure.shareit.com/shareit/checkout.html?PRODUCT[300151338]=1&cartcoupon=1&DELIVERY[300151338]=EML&stylefrom=300151338&backlink=http%3A%2F%2Fwww.guacosoft.com%2Fattic%2F">click here</a>.</P>
 
