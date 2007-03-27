@@ -16,20 +16,20 @@ body {
 h1 {
     font-size: 16px;
     margin: 0 0 4px 0;
-    font-family: verdana;
+    font-family: verdana,sans-serif;
 }
 
 h2 {
     font-size: 14px;
     margin: 0 0 3px 0;
-    font-family: verdana;
+    font-family: verdana,sans-serif;
     line-height: 1.2em;
 }
 
 div.footer {
     text-align: center;
     background-color: #b4d8ec;
-    font-family: verdana;
+    font-family: verdana,sans-serif;
     color: #000;
     padding: 15px 0;
     font-size: 11px;
@@ -54,7 +54,7 @@ div#header {
 div#header p {
     padding-top: 2px;
     font-size: 12px;
-    font-family: verdana;
+    font-family: verdana,sans-serif;
 }
 
 div#header p.links {
@@ -76,27 +76,14 @@ div#header p.links {
 .spacer {display: block;}
 /* End hide from IE-mac */
 
-a       { text-decoration: none; }
-a:link  { text-decoration: none; }
-a:hover { text-decoration: underline; }
+a:hover {
+    text-decoration: none;
+}
+
 a img, a:link img {
     border: 0px;
 }
 
-
-a.menuitem          {
-    font-size: 12px;                 font-family: Sans-serif;
-    text-align: center;
-    border-width: 0;
-    background-color: #FFFFFF;       color: black;
-    padding: 2px 15px 2px 15px;      text-decoration: none;
-    display: block;                  margin: 0px 5px 0px 5px;
-}
-a.menuitem:hover    {
-    color: black;
-    background-color: #AACCFF;
-    text-decoration: none;
-}
 
 </style>
 </head>
@@ -115,8 +102,10 @@ a.menuitem:hover    {
 </div>
 
 <br><br>
-<table cellspacing="0" cellpadding="0">
-    <tr>
+<div style="width: 750px;
+    aborder-top: 1px solid #ddbbbb;
+    border: 1px solid #ddbbbb;
+    background-color: #ffd8d8; padding: 3px 0px 3px 0px; font-size: 12px; font-family: verdana,sans-serif;">
 <?
     if (empty($page) && isset($_GET['page']))
         $page = $_GET['page'];
@@ -125,16 +114,13 @@ a.menuitem:hover    {
 
     $pages = array('About', 'Features', 'Download', 'Manual', 'Shop', 'Support');
     foreach ($pages as $p)
-    {?>
-        <td><a class="menuitem" href="index.php?page=<? echo $p; ?>"><?
+    {
         if ($p == $page)
-            echo "<B>";
-        echo $p;
-        if ($p == $page)
-            echo "</B>";
-        ?></a></td><?
+            echo '<B style="margin: 0px 15px 0px 15px; color:black;">'.$p.'</B>';
+        else
+            echo '<a style="margin: 0px 15px 0px 15px;" href="index.php?page='.$p.'">'.$p.'</a>';
     }
-    echo "</tr></table>";
+    echo "</div>";
 
     $found = false;
     foreach ($pages as $p)
