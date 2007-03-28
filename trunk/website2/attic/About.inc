@@ -20,8 +20,10 @@
 
     <br>
     <center>
-    <a href="shot1big.png"><img src="shot1.jpg" border="0"></a> <a href="shot2big.png"><img src="shot2.jpg" border="0"></a> <br>
-    <a href="shot3big.png"><img src="shot3.jpg" border="0"></a> <a href="shot4big.png"><img align="top" src="shot4.jpg" border="0"></a> <br>
+    <a href="shot1big.png"><img src="shot1.jpg" border="0" alt="Main screen with list of items"></a> <a
+       href="shot2big.png"><img src="shot2.jpg" border="0" alt="Item details"></a> <br>
+    <a href="shot3big.png"><img src="shot3.jpg" border="0" alt="Print preview screen"></a> <a
+       href="shot4big.png"><img src="shot4.jpg" border="0" alt="Thumbnail view" align="top"></a> <br>
     <br>
     <a href="index.php?page=Features">more...</a>
     </center>
