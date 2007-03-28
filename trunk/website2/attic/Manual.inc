@@ -1,5 +1,5 @@
 <table cellspacing="0" cellpadding="20" border="0">
-<TR bgcolor="white"><TD width="550">
+<TR bgcolor="white"><TD width="550" align="left">
 
 <h2>User manual</h2>
 

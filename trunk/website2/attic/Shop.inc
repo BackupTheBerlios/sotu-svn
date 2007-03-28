@@ -1,5 +1,5 @@
 <table cellspacing="0" cellpadding="20" border="0" width="600">
-<TR bgcolor="white"><TD>
+<TR bgcolor="white"><TD align="left">
 
 <B>Price list</B>
 

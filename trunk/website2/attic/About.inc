@@ -1,5 +1,5 @@
 <table cellspacing="0" cellpadding="20" border="0">
-<TR bgcolor="white"><TD nowrap>
+<TR bgcolor="white"><TD nowrap align="left">
 
     <P>Attic Manager is software used to build and maintain database of your assets:
     </P>
