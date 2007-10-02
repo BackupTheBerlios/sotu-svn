@@ -5,10 +5,10 @@
 
 <P>Buying the full version entitles you to free support by e-mail and
 free upgrades to any future version of Attic Manager. The Attic Manager Full
-Version costs 29.99 USD or equivallent amount in other currency.</P>
+Version costs 12.99 USD or equivallent amount in other currency.</P>
 
 <UL>
-    <LI>Full version for regular users - $29.99</LI>
+    <LI>Full version for regular users - $12.99</LI>
 </UL>
 
 <br>

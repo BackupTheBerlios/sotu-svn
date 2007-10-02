@@ -1,5 +1,9 @@
-<table cellspacing="0" cellpadding="20" border="0">
-<TR bgcolor="white"><TD width="550" align="left">
+<div style="
+    margin: 20px 20px 20px 20px;
+    width: 600px;
+    text-align: left;
+    font-family: Sans-serif; font-size: 14px;
+">
 
 <B>Download</B>
 
@@ -8,16 +12,14 @@ platform-independent, so you can load databases created on Linux into Windows co
 Manager and vice versa (simply by using backup/restore options).</P>
 
 <center>
-<table border="0" cellpadding="20" cellspacing="0">
-    <TR>
-        <TD align="center" nowrap><a href="attic-1.0-setup.exe"><IMG
+<div class="spacer" style="width: 350px; margin: 20px 20px">
+        <div style="float: left"><a href="attic-1.01-setup.exe"><IMG
             src="windows_logo.jpg" alt="Windows" border="0"></a><br><a
-            href="attic-1.0-setup.exe">Download for Windows</a><br>3.4MB</TD>
-        <TD align="center" nowrap><a href="attic-1.0-i386.tar.gz"><IMG
+            href="attic-1.01-setup.exe">Download for Windows</a><br>3.4MB</div>
+        <div style="float: right"><a href="attic-1.01-i386.tar.gz"><IMG
             src="linux_logo.jpg"   alt="Linux"   border="0"></a><br><a
-            href="attic-1.0-i386.tar.gz">Download for Linux</a><br>4.4MB</TD>
-    </TR>
-</table>
+            href="attic-1.01-i386.tar.gz">Download for Linux</a><br>4.4MB</div>
+</div>
 </center>
 
 <br>
@@ -61,8 +63,8 @@ PRE { background-color: #dddddd }
 and run the <B>run-attic.sh</B> script. If you do it from shell, it would go something like this:</P>
 
 <PRE>
-tar -xzf attic-1.0-i386.tar.gz
-cd attic-1.0-i386
+tar -xzf attic-1.01-i386.tar.gz
+cd attic-1.01-i386
 ./run-attic.sh
 </PRE>
 
@@ -75,5 +77,4 @@ lock manager: couldn't set uid to superuser
 
 <P>This is just a harmless warning message printed by program's database engine. You can safely ignore it.</P>
 
-</TD></TR>
-</table>
+</div>

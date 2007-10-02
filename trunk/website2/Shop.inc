@@ -12,8 +12,9 @@
             many other currencies are accepted. You can place your order in English, Spanish,
             Italian, French, German and other languages. Please visit our online shop:
             <br /><br />
-            <a href="https://secure.shareit.com/shareit/checkout.html?PRODUCT[300151338]=1&cartcoupon=1&DELIVERY[300151338]=EML&stylefrom=300151338">Order page for Attic Manager</a></P>
-            <a href="https://secure.shareit.com/shareit/checkout.html?PRODUCT[300137230]=1&languageid=1&stylefrom=300151338">Order page for Scum of the Universe</a>
+            <a href="https://secure.shareit.com/shareit/checkout.html?PRODUCT[300160884]=1&cartcoupon=1&DELIVERY[300160884]=EML&stylefrom=300160884">Order page for Njam</a><br><br>
+            <a href="https://secure.shareit.com/shareit/checkout.html?PRODUCT[300151338]=1&cartcoupon=1&DELIVERY[300151338]=EML&stylefrom=300151338">Order page for Attic Manager</a><br><br>
+            <a href="https://secure.shareit.com/shareit/checkout.html?PRODUCT[300137230]=1&languageid=1&stylefrom=300151338">Order page for Scum of the Universe</a></P>
 
             <br><br><br><br>
             <H2>Need help with payment system?</H2>

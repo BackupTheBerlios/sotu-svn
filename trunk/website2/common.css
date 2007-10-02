@@ -8,6 +8,23 @@ div.atticmenu {
     font-size: 12px; font-family: verdana,sans-serif;
 }
 
+div.njammenu {
+    width: 750px;
+    border: 1px solid #ff1717;
+    background-color: #ff9600;
+    padding: 3px 0px 3px 0px;
+    font-size: 12px; font-family: verdana,sans-serif;
+}
+
+
+div.scummenu {
+    width: 750px;
+    border: 1px solid #669966;
+    background-color: #336633;
+    padding: 3px 0px 3px 0px;
+    font-size: 12px; font-family: verdana,sans-serif;
+}
+
 h1 {
     font-size: 16px;
     margin: 0 0 4px 0;

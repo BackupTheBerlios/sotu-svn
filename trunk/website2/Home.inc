@@ -2,13 +2,21 @@
     <div class="levi">
             <br>
             <center>
-            <H1>Scum of the Universe&trade;</H1>
-            <H2>Space trading game</H2>
+            <H1>Njam&trade; 2</H1>
+            <H2>Pac-man type of game</H2>
             </center>
 
-            <P>Scum of the Universe is a space trading game that combines two genres: arcade and strategy. On one side, it's a classic vertical-scrolling <B>space shooter</B> game. On the other side, it is an adventure and strategy. You should choose whether you'll be an independent space trader, firearms smuggler, fierce freedom-fighter or something in between.</P>
-
-            <P>Following the main storyline, you go through the galaxy from one planet to another. Space travel requires fuel, so you need to keep earning money to buy it. You can also buy various upgrades for your spaceship and weapons that affect the arcade part of the game. The storyline itself is not linear. There are also some points where you'll need to make decisions that will determine your destiny.</P>
+            <UL>
+                <LI>Sequel to award-winning Njam arcade</LI>
+                <LI>Single player campaign</LI>
+                <LI>Cooperative mode where two players work together to complete levels</LI>
+                <LI>Duel mode where players compete with each other</LI>
+                <LI>Network play for up to four players</LI>
+                <LI>Great graphics, music and sound effects</LI>
+                <LI>150 brand new high quality levels</LI>
+                <LI>Integrated level editor enables you to extend the playing time</LI>
+                <LI>Joystick/joypad support</LI>
+            </UL>
             <br />
     </div>
     <div class="desni">
@@ -37,9 +45,9 @@
 <div class="container spacer">
     <div class="levi">
         <center>
-        <a href="scum/"><img src="scum350.jpg" alt="Screenshot" border="0"></a>
+        <a href="njam/"><img src="njam350.jpg" alt="Screenshot" border="0"></a>
         <br />
-        <a href="scum/">More...</a>
+        <a href="njam/">More...</a>
         </center>
     </div>
     <div class="desni">
@@ -50,3 +58,43 @@
         </center>
     </div>
 </div>
+
+<br><br>
+
+<!-- SiteSearch Google -->
+<form method="get" action="http://www.google.com/custom" target="_top">
+<table border="0" bgcolor="#ffffff">
+<tr><td nowrap="nowrap" valign="top" align="left" height="32">
+<a href="http://www.google.com/">
+<img src="http://www.google.com/logos/Logo_25wht.gif" border="0" alt="Google" align="middle"></img></a>
+</td>
+<td nowrap="nowrap">
+<input type="hidden" name="domains" value="www.guacosoft.com"></input>
+<label for="sbi" style="display: none">Enter your search terms</label>
+<input type="text" name="q" size="31" maxlength="255" value="" id="sbi"></input>
+<label for="sbb" style="display: none">Submit search form</label>
+<input type="submit" name="sa" value="Search" id="sbb"></input>
+</td></tr>
+<tr>
+<td>&nbsp;</td>
+<td nowrap="nowrap">
+<table>
+<tr>
+<td>
+<input type="radio" name="sitesearch" value="" checked id="ss0"></input>
+<label for="ss0" title="Search the Web"><font size="-1" color="#000000">Web</font></label></td>
+<td>
+<input type="radio" name="sitesearch" value="www.guacosoft.com" id="ss1"></input>
+<label for="ss1" title="Search www.guacosoft.com"><font size="-1" color="#000000">www.guacosoft.com</font></label></td>
+</tr>
+</table>
+<input type="hidden" name="client" value="pub-2072430600789119"></input>
+<input type="hidden" name="forid" value="1"></input>
+<input type="hidden" name="channel" value="2966737701"></input>
+<input type="hidden" name="ie" value="ISO-8859-1"></input>
+<input type="hidden" name="oe" value="ISO-8859-1"></input>
+<input type="hidden" name="cof" value="GALT:#008000;GL:1;DIV:#CCDDFF;VLC:663399;AH:center;BGC:FFFFFF;LBGC:FFFFFF;ALC:0000FF;LC:0000FF;T:000000;GFNT:0000FF;GIMP:0000FF;LH:30;LW:214;L:http://www.guacosoft.com/guacosoft.gif;S:http://www.guacosoft.com;FORID:1"></input>
+<input type="hidden" name="hl" value="en"></input>
+</td></tr></table>
+</form>
+<!-- SiteSearch Google -->

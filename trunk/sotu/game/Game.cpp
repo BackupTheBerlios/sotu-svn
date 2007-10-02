@@ -42,7 +42,7 @@
 #include <MenuManager.hpp>
 #include <ResourceManager.hpp>
 
-#define DEMO
+//#define DEMO
 //#define TRAINER
 //----------------------------------------------------------------------------
 Game::Game(void):

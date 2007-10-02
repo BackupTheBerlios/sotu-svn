@@ -7,6 +7,7 @@
   <meta name="KEYWORDS" content="home inventory, space, trading, shooter, assets, borrow, loan, free, download, linux, windows">
   <meta name="description" content="Home inventory software, space trading and shooter game, and other software products.">
   <link rel="stylesheet" href="common.css" type="text/css">
+  <link rel="shortcut icon" href="/favicon.ico" />
 </head>
 
 <body style="background: #fff url(gradient.jpg) repeat-x; margin: 0; padding: 0;">
@@ -14,7 +15,7 @@
 <div class="container">
     <div id="header">
         <p class="links"><a href="index.php">Home</a> | <a
-            href="index.php?page=Home">Products</a> | <a
+            href="index.php?page=Products">Products</a> | <a
             href="index.php?page=Shop">Shop</a> | <a
             href="index.php?page=About">About us</a>
         </p>
@@ -45,8 +46,12 @@
 <br>
 
 <div class="footer">
-Copyright &copy; 2006, 2007 GuacoSoft.com
+Copyright &copy; 2006, 2007 GuacoSoft.com<br>Hosting by <a href="http://www.kupiauto.com">Auto oglasi</a>
 </div>
 
 </body>
 </html>
+<?
+    //error_reporting(0);
+    //include('stats.php');
+?>
